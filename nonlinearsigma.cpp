@@ -26,8 +26,10 @@ const int num = len*len;  //total number of lattice sites
 void make_lattice(double (&Lattice)[len][len][3]);
 void print_lattice(double Lattice[len][len][3]);
 void print_value(double Lattice[len][len][3], double value[len][len]);
-void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);
-//void write_to_file(double Lattice[len][len][3]);
+void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
+double phi_tot(double Lattice[len][len][3]); //only useful for testing
+void create_logfile();
+void write_to_file(int n, double phi);
 
 int main ()
 {
@@ -35,15 +37,14 @@ int main ()
     double Lattice[len][len][3]; //stores lattice configuration
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
     
-    
     make_lattice(Lattice); //fills lattice with phi values
+    create_logfile(); //generates logfile with header
     //print_lattice(Lattice);
     for (int n = 0; n<10; n++){
-        calculate_phi_magnitude(Lattice, phi_mag);
-        print_value(Lattice, phi_mag);
+        phi = phi_tot(Lattice);
+        write_to_file(n, phi);
         make_lattice(Lattice);
     }
-    //write_to_file(Lattice);
     return 0;
 }
 
@@ -107,13 +108,45 @@ void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude
     {
         for (int j = 0; j<len; j++)
         {
-            phi_magnitude[i][j] += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
+            phi_magnitude[i][j] = pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
         }
     }
 }
 
-/*
-void write_to_file(double Lattice[len][len][3])
+double phi_tot(double Lattice[len][len][3])
+{
+     //cout << "phi_tot" << endl;
+    double phi = 0.0;
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            phi += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
+        }
+    }
+    return phi_tot;
+}
+
+void create_logfile()
+{
+    //cout << "create_logfile" << endl;
+    //create header of logfile before
+    string fname = "nonlinearsigma_data.txt";
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << setw(10) << "step" << setw(10) << "|phi|" << endl;
+    fout.close();
+}
+
+void write_to_file(int n, double phi)
 {
     //cout << "write_to_file" << endl;
     //output both solutions to a .txt file to open in gnuplot
@@ -128,14 +161,6 @@ void write_to_file(double Lattice[len][len][3])
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << "step" << setw(10) << "|phi|" << endl;
-    for (unsigned int n = 0; n<exact_E.size(); n++)
-    {
-        fout.setf(ios::fixed);
-        fout << setw(20) << exact_E[n] << setw(20) << 1.0*mc_E[n]/(1.0*J*num) << setw(20) << temp_vec[n]/(abs(J)) << endl;
-    }
+    fout << setw(10) << n << setw(10) << phi << endl;
     fout.close();
-    exact_E.clear();
-    mc_E.clear();
-    temp_vec.clear();
-}*/
+}
