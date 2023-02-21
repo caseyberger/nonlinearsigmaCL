@@ -110,7 +110,6 @@ void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude
             phi_magnitude[i][j] += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
         }
     }
-    return 0;
 }
 
 /*
