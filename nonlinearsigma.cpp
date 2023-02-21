@@ -9,9 +9,9 @@
 #include <cmath> //M_PI, sin, cos
 #include <iomanip> //setw
 #include <cstdlib> //rand
-//#include <fstream>
+#include <fstream> //fout
 //#include <vector>
-//#include <string>
+#include <string> //string
 //#include <stdio.h>
 //#include <sstream>
 
@@ -25,14 +25,24 @@ const int num = len*len;  //total number of lattice sites
 //function declaration
 void make_lattice(double (&Lattice)[len][len][3]);
 void print_lattice(double Lattice[len][len][3]);
-//void write_to_file();
+void print_value(double Lattice[len][len][3], double value[len][len]);
+double phi_magnitude(double Lattice[len][len][3]);
+//void write_to_file(double Lattice[len][len][3]);
 
 int main ()
 {
     srand(time(NULL)); //seed random number
     double Lattice[len][len][3]; //stores lattice configuration
-    make_lattice(Lattice);
-    print_lattice(Lattice);
+    double phi_mag[len][len]; //stores size of unit vector at each lattice site
+    
+    
+    make_lattice(Lattice); //fills lattice with phi values
+    //print_lattice(Lattice);
+    for (int n = 0; n<10; n++){
+        phi_mag = phi_magnitude(Lattice);
+        print_value(Lattice, phi_mag);
+        make_lattice(Lattice);
+    }
     //write_to_file(Lattice);
     return 0;
 }
@@ -72,12 +82,45 @@ void print_lattice(double Lattice[len][len][3])
     }
     cout << endl;
 }
+
+
+void print_value(double Lattice[len][len][3], double value[len][len])
+{
+    //cout << "print_value" << endl;
+    //prints value calculated on lattice to screen
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            cout << setw(5) << Lattice[i][j][0];
+            cout << setw(5) << Lattice[i][j][1];
+            cout << setw(5) << Lattice[i][j][2];
+            cout << setw(5) << value[i][j]<< endl;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+
+double phi_magnitude(double Lattice[len][len][3]){
+    double phi_mag[len][len];
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            phi_mag[i][j] += Lattice[i][j][0]**2 + Lattice[i][j][1]**2 + Lattice[i][j][2]**2;
+        }
+    }
+    return phi_mag;
+}
+
 /*
-void write_to_file(vector<double> &exact_E, vector<double> &mc_E, vector<double> &temp_vec)
+void write_to_file(double Lattice[len][len][3])
 {
     //cout << "write_to_file" << endl;
     //output both solutions to a .txt file to open in gnuplot
-    string fname = "mc_ising_data.txt";
+    string fname = "nonlinearsigma_data.txt";
     ofstream fout; //output stream
     fout.open(fname.c_str(),ios::out);
     
@@ -88,7 +131,7 @@ void write_to_file(vector<double> &exact_E, vector<double> &mc_E, vector<double>
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(20) << "# E/N exact" << setw(20) << "# E/N mc" << setw(20) << "T/J" << endl;
+    fout << setw(10) << "step" << setw(10) << "|phi|" << endl;
     for (unsigned int n = 0; n<exact_E.size(); n++)
     {
         fout.setf(ios::fixed);
