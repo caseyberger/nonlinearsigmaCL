@@ -23,8 +23,8 @@ const int l_end = len-1; //last spot on lattice
 const int num = len*len;  //total number of lattice sites
 
 //function declaration
-void make_lattice(int (&Lattice)[len][len][3]);
-void print_lattice(int Lattice[len][len][3]);
+void make_lattice(double (&Lattice)[len][len][3]);
+void print_lattice(double Lattice[len][len][3]);
 //void write_to_file();
 
 int main ()
