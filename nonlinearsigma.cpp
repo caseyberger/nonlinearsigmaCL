@@ -31,8 +31,8 @@ int main ()
 {
     srand(time(NULL)); //seed random number
     double Lattice[len][len][3]; //stores lattice configuration
-    make_lattice(Lattice)
-    print_lattice(Lattice)
+    make_lattice(Lattice);
+    print_lattice(Lattice);
     //write_to_file(Lattice);
     return 0;
 }
