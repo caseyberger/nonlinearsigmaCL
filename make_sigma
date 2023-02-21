@@ -1,0 +1,65 @@
+SHELL=/bin/sh
+# Brief notes on makefiles:  Comments start with #.  $(COMMAND) means 
+#  replace with the value of COMMAND assigned with an "=". 
+
+# This file contains a set of rules used by the "make" command.
+# To make the program, use the command:
+#        "make -f make_sigma"
+#
+# To remove the OBJS files, use the command:
+#        "make -f make_sigma clean"
+#
+# To create a zip archive with name $(COMMAND).zip containing this 
+#   makefile and the SRCS and HDRS files, type the command:
+#        "make -f make_sigma zip"
+ 
+# The name of this makefile goes here
+MAKEFILE= make_sigma
+
+# The command you type to run the program (executable name)
+COMMAND=  nonlinearsigma
+
+# Here are the C++ (or whatever) source files to be compiled, with \'s as
+#  continuation lines.  If you get a "missing separator" error pointing 
+#  to a line here, make sure that each \ has NO spaces following it.
+SRCS= \
+nonlinearsigma.cpp 
+
+# Header files (if any) here
+HDRS= \
+
+###########################################################################
+# Commands and options for compiling
+########################################################################### 
+OBJS= $(addsuffix .o, $(basename $(SRCS)))
+ 
+CC= g++
+CFLAGS=  -g -O2
+WARNFLAGS= -Werror -Wall -Wextra -Wshadow -fno-common
+MOREFLAGS= -ansi -pedantic -Wpointer-arith -Wcast-qual -Wcast-align \
+           -Wwrite-strings -fshort-enums 
+LDFLAGS= -lgsl -lgslcblas 
+ 
+###########################################################################
+# Instructions to compile and link -- allow for different dependencies
+########################################################################### 
+ 
+$(COMMAND): $(OBJS) $(HDRS) $(MAKEFILE) 
+	$(CC) -o $(COMMAND) $(OBJS) $(LDFLAGS) $(LIBS)
+                 
+ising.o : ising.cpp $(MAKEFILE) 
+	$(CC) $(CFLAGS) $(WARNFLAGS)  -c ising.cpp -o ising.o
+ 
+##########################################################################
+# Additional tasks 
+##########################################################################
+ 
+clean:
+	rm -f $(OBJS)
+  
+zip:
+	zip -r $(COMMAND).zip $(MAKEFILE) $(SRCS) $(HDRS)
+
+##########################################################################
+# End of makefile 
+##########################################################################
