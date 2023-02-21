@@ -40,6 +40,9 @@ int main ()
     make_lattice(Lattice); //fills lattice with phi values
     create_logfile(); //generates logfile with header
     //print_lattice(Lattice);
+    
+    double phi = 0.0;
+    
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
         write_to_file(n, phi);
@@ -124,7 +127,7 @@ double phi_tot(double Lattice[len][len][3])
             phi += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
         }
     }
-    return phi_tot;
+    return phi;
 }
 
 void create_logfile()
