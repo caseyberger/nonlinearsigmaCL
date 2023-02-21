@@ -6,7 +6,7 @@
 // include files
 #include <time.h>//time (used to set random number seed)
 #include <iostream> //cout
-#include <cmath> //M_PI, sin, cos
+#include <cmath> //M_PI, sin, cos, pow
 #include <iomanip> //setw
 #include <cstdlib> //rand
 #include <fstream> //fout
@@ -26,7 +26,7 @@ const int num = len*len;  //total number of lattice sites
 void make_lattice(double (&Lattice)[len][len][3]);
 void print_lattice(double Lattice[len][len][3]);
 void print_value(double Lattice[len][len][3], double value[len][len]);
-double phi_magnitude(double Lattice[len][len][3]);
+void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);
 //void write_to_file(double Lattice[len][len][3]);
 
 int main ()
@@ -39,7 +39,7 @@ int main ()
     make_lattice(Lattice); //fills lattice with phi values
     //print_lattice(Lattice);
     for (int n = 0; n<10; n++){
-        phi_mag = phi_magnitude(Lattice);
+        calculate_phi_magnitude(Lattice, phi_mag);
         print_value(Lattice, phi_mag);
         make_lattice(Lattice);
     }
@@ -92,10 +92,8 @@ void print_value(double Lattice[len][len][3], double value[len][len])
     {
         for (int j = 0; j<len; j++)
         {
-            cout << setw(5) << Lattice[i][j][0];
-            cout << setw(5) << Lattice[i][j][1];
-            cout << setw(5) << Lattice[i][j][2];
-            cout << setw(5) << value[i][j]<< endl;
+            cout << setw(2) << i << setw(2) << j;
+            cout << setw(10) << value[i][j]<< endl;
         }
         cout << endl;
     }
@@ -103,16 +101,16 @@ void print_value(double Lattice[len][len][3], double value[len][len])
 }
 
 
-double phi_magnitude(double Lattice[len][len][3]){
-    double phi_mag[len][len];
+void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len])
+{
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
         {
-            phi_mag[i][j] += Lattice[i][j][0]**2 + Lattice[i][j][1]**2 + Lattice[i][j][2]**2;
+            phi_magnitude[i][j] += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
         }
     }
-    return phi_mag;
+    return 0;
 }
 
 /*
