@@ -28,6 +28,9 @@ void print_lattice(double Lattice[len][len][3]);
 void print_value(double Lattice[len][len][3], double value[len][len]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
+double dot_product(double vec1[3], double vec2[3]);
+void find_nn(int (&nn_arr)[2]);
+double A_lattice(double gL, double Lattice[len][len][3]);
 void create_logfile();
 void write_to_file(int n, double phi);
 
@@ -42,9 +45,12 @@ int main ()
     //print_lattice(Lattice);
     
     double phi = 0.0;
+    double gL = 1./1.6;
+    double A_L = 0.0;
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
+        A_L = A_lattice(gL, Lattice)
         write_to_file(n, phi);
         make_lattice(Lattice);
     }
@@ -128,6 +134,78 @@ double phi_tot(double Lattice[len][len][3])
         }
     }
     return phi;
+}
+
+double dot_product(double vec1[3], double vec2[3]){
+    //calculates the dot product of two vectors
+    double dot_prod = 0.0;
+    dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
+    return dot_prod;
+}
+
+void find_nn(int (&nn_arr)[2]){
+    //returns the phi nearest neighbor specified
+    int i_nn = nn_arr[0];
+    int j_nn = nn_arr[1];
+    if (j_nn==len){
+        j_nn = 0;
+    }
+    else if (j_nn ==-1){
+        j_nn = len-1;
+    }
+    if (i_nn == len){
+        i_nn = 0;
+    }
+    else if(i_nn == -1){
+        i_nn = len-1;
+    }
+    nn_arr[0] = i_nn;
+    nn_arr[1] = j_nn;
+}
+
+double A_lattice(double gL, double Lattice[len][len][3]){
+    //calculates the standard lattice action A_L
+    double A_L = 0.0;
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            int i_nn,j_nn;
+            int nn_arr[2];
+            //neighbor i+1,j
+            nn_arr[0] = i+1;
+            nn_arr[1] = j;            
+            find_nn(nn_arr);
+            i_nn = nn_arr[0];
+            j_nn = nn_arr[1];
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            
+            //neighbor i-1,j
+            nn_arr[0] = i-1;
+            nn_arr[1] = j;            
+            find_nn(nn_arr);
+            i_nn = nn_arr[0];
+            j_nn = nn_arr[1];
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+        
+            //neighbor i,j+1
+            nn_arr[0] = i;
+            nn_arr[1] = j+1;            
+            find_nn(nn_arr);
+            i_nn = nn_arr[0];
+            j_nn = nn_arr[1];
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            
+            //neighbor i,j-1
+            nn_arr[0] = i;
+            nn_arr[1] = j-1;            
+            find_nn(nn_arr);
+            i_nn = nn_arr[0];
+            j_nn = nn_arr[1];
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            }
+        }
+    return -1.*A_L/gL;
 }
 
 void create_logfile()
