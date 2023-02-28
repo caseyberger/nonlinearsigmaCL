@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Feb 21, 2023
+// Last edited: Feb 28, 2023
 //
 
 // include files
@@ -155,8 +155,8 @@ void write_to_file(int n, double phi)
     //output both solutions to a .txt file to open in gnuplot
     string fname = "nonlinearsigma_data.txt";
     ofstream fout; //output stream
-    fout.open(fname.c_str(),ios::out);
-    
+    fout.open(fname.c_str(),std::ios_base::app);
+
     // check if files are open
     if (!fout.is_open())
     {
