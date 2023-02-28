@@ -50,7 +50,7 @@ int main ()
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
-        A_L = A_lattice(gL, Lattice)
+        A_L = A_lattice(gL, Lattice);
         write_to_file(n, phi);
         make_lattice(Lattice);
     }
@@ -178,7 +178,7 @@ double A_lattice(double gL, double Lattice[len][len][3]){
             find_nn(nn_arr);
             i_nn = nn_arr[0];
             j_nn = nn_arr[1];
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i-1,j
             nn_arr[0] = i-1;
@@ -186,7 +186,7 @@ double A_lattice(double gL, double Lattice[len][len][3]){
             find_nn(nn_arr);
             i_nn = nn_arr[0];
             j_nn = nn_arr[1];
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
         
             //neighbor i,j+1
             nn_arr[0] = i;
@@ -194,7 +194,7 @@ double A_lattice(double gL, double Lattice[len][len][3]){
             find_nn(nn_arr);
             i_nn = nn_arr[0];
             j_nn = nn_arr[1];
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i,j-1
             nn_arr[0] = i;
@@ -202,7 +202,7 @@ double A_lattice(double gL, double Lattice[len][len][3]){
             find_nn(nn_arr);
             i_nn = nn_arr[0];
             j_nn = nn_arr[1];
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j-nn]);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             }
         }
     return -1.*A_L/gL;
