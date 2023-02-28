@@ -32,7 +32,7 @@ double dot_product(double vec1[3], double vec2[3]);
 void find_nn(int (&nn_arr)[2]);
 double A_lattice(double gL, double Lattice[len][len][3]);
 void create_logfile();
-void write_to_file(int n, double phi);
+void write_to_file(int n, double phi, double A_L);
 
 int main ()
 {
@@ -51,7 +51,7 @@ int main ()
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
         A_L = A_lattice(gL, Lattice);
-        write_to_file(n, phi);
+        write_to_file(n, phi, A_L);
         make_lattice(Lattice);
     }
     return 0;
@@ -223,11 +223,11 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << "step" << setw(10) << "|phi|" << endl;
+    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "A_L"<< endl;
     fout.close();
 }
 
-void write_to_file(int n, double phi)
+void write_to_file(int n, double phi, double A_L)
 {
     //cout << "write_to_file" << endl;
     //output both solutions to a .txt file to open in gnuplot
@@ -242,6 +242,6 @@ void write_to_file(int n, double phi)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << n << setw(10) << phi << endl;
+    fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
 }
