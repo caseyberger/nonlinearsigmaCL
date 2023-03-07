@@ -27,7 +27,7 @@ void make_lattice(double (&Lattice)[len][len][3]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
-double cross_product(double vec1[3], double vec2[3]);
+double * cross_product(double vec1[3], double vec2[3]);
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
@@ -248,7 +248,8 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
 }
 
 double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
-    double phi1, phi2, phi3, rho, rho2, QLcos, phi2crossphi3, QLsin;
+    double phi1[3], phi2[3], phi3[3];
+    double rho, rho2, QLcos, phi2crossphi3, QLsin;
     int i1,j1,i2,j2,i3,j3;
     i1 = current_triangle[0][0];
     j1 = current_triangle[0][1];
