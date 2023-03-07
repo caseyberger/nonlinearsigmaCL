@@ -246,23 +246,23 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
 }
 
 double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
-    double phi1[3], phi2[3], phi3[3], phi2crossphi3[3];
+    double phi2crossphi3[3];
     double rho, rho2, QLcos, QLsin;
     int i1,j1,i2,j2,i3,j3;
     i1 = current_triangle[0][0];
     j1 = current_triangle[0][1];
-    phi1 = Lattice[i1][j1];
+    //phi1 = Lattice[i1][j1];
     i2 = current_triangle[1][0];
     j2 = current_triangle[1][1];
-    phi2 = Lattice[i2][j2];
+    //phi2 = Lattice[i2][j2];
     i3 = current_triangle[2][0];
     j3 = current_triangle[2][1];
-    phi3 = Lattice[i3][j3];
-    rho2 = 2.*(1. + dot_product(phi1, phi2))*(1. + dot_product(phi2, phi3))*(1. + dot_product(phi3, phi1));
+    //phi3 = Lattice[i3][j3];
+    rho2 = 2.*(1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]))*(1. + dot_product(Lattice[i2][j2], Lattice[i3][j3]))*(1. + dot_product(Lattice[i3][j3], Lattice[i1][j1]));
     rho = sqrt(rho2);
-    QLcos = (1. + dot_product(phi1, phi2) + dot_product(phi2, phi3) + dot_product(phi3, phi1))/rho;
-    cross_product(phi2,phi3,phi2crossphi3);
-    QLsin = dot_product(phi1,phi2crossphi3)/rho;
+    QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
+    cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
+    QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
     test_QL(acos(QLcos), asin(QLsin));
     return 0;
 }
