@@ -52,13 +52,14 @@ int main ()
     double beta = 1.6;
     double A_L = 0.0;
     
-    for (int n = 0; n<10; n++){
+    for (int n = 0; n<1; n++){
         phi = phi_tot(Lattice);
         A_L = A_lattice(beta, Lattice);
         write_to_file(n, phi, A_L);
         make_lattice(Lattice);
     }
     
+    /*
     //testing triangles and plus one minus one
     int triangles[8][3][2];
     int i = 1;
@@ -72,6 +73,7 @@ int main ()
         cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
     }
     cout << endl;
+    */
     
     return 0;
 }
@@ -189,26 +191,42 @@ double A_lattice(double beta, double Lattice[len][len][3]){
     {
         for (int j = 0; j<len; j++)
         {
+            //test
+            cout << setw(2) << i << setw(2) << j;
+            
             int i_nn,j_nn;
             //neighbor i+1,j
             i_nn = plus_one(i);
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
+            //test
+            cout << setw(2) << i_nn << setw(2) << j_nn;
+            
             //neighbor i-1,j
             i_nn = minus_one(i);
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
         
+            //test
+            cout << setw(2) << i_nn << setw(2) << j_nn;
+            
             //neighbor i,j+1
             i_nn = i;
             j_nn = plus_one(j);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
+            //test
+            cout << setw(2) << i_nn << setw(2) << j_nn;
+            
             //neighbor i,j-1
             i_nn = i;
             j_nn = minus_one(j);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            
+            //test
+            cout << setw(2) << i_nn << setw(2) << j_nn << endl;
+        
             }
         }
     return -1.*beta*A_L;
