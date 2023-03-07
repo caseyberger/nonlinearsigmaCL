@@ -283,9 +283,9 @@ double Q_lattice(double Lattice[len][len][3]){
         for (int j = 0; j<len; j++)
         {
             make_triangles(i,j,triangles);
-            for (int n = 0; n < 8; n++){
-                int curr_tri[3][2] = triangles[n];
-                double QL_tri = QL_triangle(curr_tri, Lattice);
+            for (int n = 0; n < 8; n++)
+            {
+                double QL_tri = QL_triangle(triangles[n], Lattice);
             }
         }
     }
