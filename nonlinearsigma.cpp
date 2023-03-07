@@ -32,7 +32,7 @@ double dot_product(double vec1[3], double vec2[3]);
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
-void make_triangles(int i, int j, int (&triangles)[8][3])
+void make_triangles(int i, int j, int (&triangles)[8][3]);
 double Q_lattice(double Lattice[len][len][3]);
 double Z_renorm(double beta, int len);
 void create_logfile();
@@ -63,7 +63,7 @@ int main ()
     int triangles[8][3][2];
     int i = 1;
     int j = 1;
-    void make_triangles(i,j,triangles);
+    make_triangles(i,j,triangles);
     for (int n = 0; n<8;n++)
     {
         cout << setw(2) << i << setw(2) << j;
