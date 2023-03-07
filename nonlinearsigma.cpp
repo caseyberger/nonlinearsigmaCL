@@ -29,8 +29,12 @@ void print_value(double Lattice[len][len][3], double value[len][len]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
-void find_nn(int (&nn_arr)[2]);
-double A_lattice(double gL, double Lattice[len][len][3]);
+int plus_one(int i);
+int minus_one(int i);
+double A_lattice(double beta, double Lattice[len][len][3]);
+void make_triangles(int i, int j, int (&triangles)[8][3])
+double Q_lattice(double Lattice[len][len][3]);
+double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
 
@@ -45,15 +49,30 @@ int main ()
     //print_lattice(Lattice);
     
     double phi = 0.0;
-    double gL = 1./1.6;
+    double beta = 1.6;
     double A_L = 0.0;
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
-        A_L = A_lattice(gL, Lattice);
+        A_L = A_lattice(beta, Lattice);
         write_to_file(n, phi, A_L);
         make_lattice(Lattice);
     }
+    
+    //testing triangles and plus one minus one
+    int triangles[8][3][2];
+    int i = 1;
+    int j = 1;
+    void make_triangles(i,j,triangles);
+    for (int n = 0; n<8;n++)
+    {
+        cout << setw(2) << i << setw(2) << j;
+        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
+        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
+        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
+    }
+    cout << endl;
+    
     return 0;
 }
 
@@ -143,27 +162,27 @@ double dot_product(double vec1[3], double vec2[3]){
     return dot_prod;
 }
 
-void find_nn(int (&nn_arr)[2]){
-    //returns the phi nearest neighbor specified
-    int i_nn = nn_arr[0];
-    int j_nn = nn_arr[1];
-    if (j_nn==len){
-        j_nn = 0;
+int plus_one(int i){
+    //returns site plus one, using periodic boundary conditions
+    if (i==len){
+        return 0;
     }
-    else if (j_nn ==-1){
-        j_nn = len-1;
+    else{
+        return i;
     }
-    if (i_nn == len){
-        i_nn = 0;
-    }
-    else if(i_nn == -1){
-        i_nn = len-1;
-    }
-    nn_arr[0] = i_nn;
-    nn_arr[1] = j_nn;
 }
 
-double A_lattice(double gL, double Lattice[len][len][3]){
+int minus_one(int i){
+    //returns site minus one, using periodic boundary conditions
+    if (i==0){
+        return len-1;
+    }
+    else{
+        return i;
+    }
+}
+
+double A_lattice(double beta, double Lattice[len][len][3]){
     //calculates the standard lattice action A_L
     double A_L = 0.0;
     for (int i = 0; i<len; i++)
@@ -171,41 +190,126 @@ double A_lattice(double gL, double Lattice[len][len][3]){
         for (int j = 0; j<len; j++)
         {
             int i_nn,j_nn;
-            int nn_arr[2];
             //neighbor i+1,j
-            nn_arr[0] = i+1;
-            nn_arr[1] = j;            
-            find_nn(nn_arr);
-            i_nn = nn_arr[0];
-            j_nn = nn_arr[1];
+            i_nn = plus_one(i);
+            j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i-1,j
-            nn_arr[0] = i-1;
-            nn_arr[1] = j;            
-            find_nn(nn_arr);
-            i_nn = nn_arr[0];
-            j_nn = nn_arr[1];
+            i_nn = minus_one(i);
+            j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
         
             //neighbor i,j+1
-            nn_arr[0] = i;
-            nn_arr[1] = j+1;            
-            find_nn(nn_arr);
-            i_nn = nn_arr[0];
-            j_nn = nn_arr[1];
+            i_nn = i;
+            j_nn = plus_one(j);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i,j-1
-            nn_arr[0] = i;
-            nn_arr[1] = j-1;            
-            find_nn(nn_arr);
-            i_nn = nn_arr[0];
-            j_nn = nn_arr[1];
+            i_nn = i;
+            j_nn = minus_one(j);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             }
         }
-    return -1.*A_L/gL;
+    return -1.*beta*A_L;
+}
+
+void make_triangles(int i, int j, int (&triangles)[8][3][2]){
+    //returns the 8 triangles formed by the plaquettes surrounding the point you're on
+    //you need to do this with nearest neighbors! Do you need to do a plus_one, minus_one function??
+    //triangle 1 
+    triangles[0][0][0] = i;
+    triangles[0][0][1] = j;
+    triangles[0][1][0] = plus_one(i);
+    triangles[0][1][1] = plus_one(j);
+    triangles[0][2][0] = plus_one(i);
+    triangles[0][2][1] = j;
+    
+    //triangle 2
+    triangles[1][0][0] = i;
+    triangles[1][0][1] = j;
+    triangles[1][1][0] = i;
+    triangles[1][1][1] = plus_one(j);
+    triangles[1][2][0] = plus_one(i);
+    triangles[1][2][1] = plus_one(j);
+    
+    //triangle 3
+    triangles[2][0][0] = i;
+    triangles[2][0][1] = j;
+    triangles[2][1][0] = minus_one(i);
+    triangles[2][1][1] = plus_one(j);
+    triangles[2][2][0] = i;
+    triangles[2][2][1] = plus_one(j);
+    
+    //triangle 4
+    triangles[3][0][0] = i;
+    triangles[3][0][1] = j;
+    triangles[3][1][0] = minus_one(i);
+    triangles[3][1][1] = j;
+    triangles[3][2][0] = minus_one(i);
+    triangles[3][2][1] = plus_one(j);
+    
+    //triangle 5
+    triangles[4][0][0] = i;
+    triangles[4][0][1] = j;
+    triangles[4][1][0] = minus_one(i);
+    triangles[4][1][1] = minus_one(j);
+    triangles[4][2][0] = minus_one(i);
+    triangles[4][2][1] = j;
+    
+    //triangle 6
+    triangles[5][0][0] = i;
+    triangles[5][0][1] = j;
+    triangles[5][1][0] = i;
+    triangles[5][1][1] = minus_one(j);
+    triangles[5][2][0] = minus_one(i);
+    triangles[5][2][1] = minus_one(j);
+    
+    //triangle 7
+    triangles[6][0][0] = i;
+    triangles[6][0][1] = j;
+    triangles[6][1][0] = plus_one(i);
+    triangles[6][1][1] = minus_one(j);
+    triangles[6][2][0] = i;
+    triangles[6][2][1] = minus_one(j);
+    
+    //triangle 8
+    triangles[7][0][0] = i;
+    triangles[7][0][1] = j;
+    triangles[7][1][0] = plus_one(i);
+    triangles[7][1][1] = j;
+    triangles[7][2][0] = plus_one(i);
+    triangles[7][2][1] = minus_one(j);
+}
+
+double Q_lattice(double Lattice[len][len][3]){
+    //calculates topological charge
+    /*
+    How to do this...
+    You need to loop over 8 triangles
+    You will need a function to identify each triangle, maybe return all of them... an array?
+    Then you calculate rho squared (double) by summing over the triangles
+    Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
+    */
+    return 0;
+}
+double Z_renorm(double beta, int len){
+    //pulls renormalization factor from table given in paper
+    if (beta == 1.5 and len==120){
+        return 0.285;
+    }
+    else if (beta == 1.6 and len==180){
+        return 0.325;
+    }
+    else if (beta == 1.7 and len==340){
+        return 0.380;
+    }
+    else if (beta == 1.75 and len==470){
+        return 0.412;
+    }
+    else{
+        return 0.;
+    }
 }
 
 void create_logfile()
