@@ -27,7 +27,7 @@ void make_lattice(double (&Lattice)[len][len][3]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
-double * cross_product(double vec1[3], double vec2[3]);
+double * cross_product(double vec1[3], double vec2[3])[3];
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
