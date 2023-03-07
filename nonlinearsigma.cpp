@@ -164,7 +164,7 @@ double dot_product(double vec1[3], double vec2[3]){
 
 int plus_one(int i){
     //returns site plus one, using periodic boundary conditions
-    if (i==len){
+    if (i==len-1){
         return 0;
     }
     else{
@@ -174,7 +174,7 @@ int plus_one(int i){
 
 int minus_one(int i){
     //returns site minus one, using periodic boundary conditions
-    if (i==0){
+    if (i==-1){
         return len-1;
     }
     else{
