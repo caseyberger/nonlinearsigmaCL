@@ -56,10 +56,12 @@ int main ()
     double phi = 0.0;
     double beta = 1.6;
     double A_L = 0.0;
+    double Q_L = 0.0;
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
         A_L = A_lattice(beta, Lattice);
+        Q_L = Q_lattice(Lattice);
         write_to_file(n, phi, A_L);
         make_lattice(Lattice);
     }
@@ -397,6 +399,7 @@ void test_triangles(int i, int j)
     cout << endl;
 }
 
-void test_QL(double QLcos, double QLsin){
+void test_QL(double QLcos, double QLsin)
+{
     cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
