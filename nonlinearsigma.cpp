@@ -24,19 +24,24 @@ const int num = len*len;  //total number of lattice sites
 
 //function declaration
 void make_lattice(double (&Lattice)[len][len][3]);
-void print_lattice(double Lattice[len][len][3]);
-void print_value(double Lattice[len][len][3], double value[len][len]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
+double cross_product(double vec1[3], double vec2[3]);
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
 void make_triangles(int i, int j, int (&triangles)[8][3][2]);
+double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]);
 double Q_lattice(double Lattice[len][len][3]);
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
+//functions - testing
+void print_lattice(double Lattice[len][len][3]);
+void print_value(double Lattice[len][len][3], double value[len][len]);
+void test_triangles(int i, int j);
+void test_QL(double QLcos, double QLsin);
 
 int main ()
 {
@@ -59,20 +64,6 @@ int main ()
         make_lattice(Lattice);
     }
     
-    //testing triangles and plus one minus one
-    int triangles[8][3][2];
-    int i = 1;
-    int j = 1;
-    make_triangles(i,j,triangles);
-    for (int n = 0; n<8;n++)
-    {
-        cout << setw(2) << i << setw(2) << j;
-        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
-        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
-        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
-    }
-    cout << endl;
-    
     return 0;
 }
 
@@ -94,41 +85,6 @@ void make_lattice(double (&Lattice)[len][len][3])
         }
     }
 }
-
-void print_lattice(double Lattice[len][len][3])
-{
-    //cout << "print_lattice" << endl;
-    //prints lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(5) << Lattice[i][j][0];
-            cout << setw(5) << Lattice[i][j][1];
-            cout << setw(5) << Lattice[i][j][2] << endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-
-void print_value(double Lattice[len][len][3], double value[len][len])
-{
-    //cout << "print_value" << endl;
-    //prints value calculated on lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(2) << i << setw(2) << j;
-            cout << setw(10) << value[i][j]<< endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
 
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len])
 {
@@ -160,6 +116,15 @@ double dot_product(double vec1[3], double vec2[3]){
     double dot_prod = 0.0;
     dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
     return dot_prod;
+}
+
+double cross_product(double vec1[3], double vec2[3]){
+    //calculates the cross product of two vectors
+    double cross_prod[3];
+    cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
+    cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
+    cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+    return cross_prod;
 }
 
 int plus_one(int i){
@@ -282,6 +247,27 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
     triangles[7][2][1] = minus_one(j);
 }
 
+double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
+    double phi1, phi2, phi3, rho, rho2, QLcos, phi2crossphi3, QLsin;
+    int i1,j1,i2,j2,i3,j3;
+    i1 = current_triangle[0][0];
+    j1 = current_triangle[0][1];
+    phi1 = Lattice[i1][j1];
+    i2 = current_triangle[1][0];
+    j2 = current_triangle[1][1];
+    phi2 = Lattice[i2][j2];
+    i3 = current_triangle[2][0];
+    j3 = current_triangle[2][1];
+    phi3 = Lattice[i3][j3];
+    rho2 = 2.*(1. + dot_product(phi1, phi2))*(1. + dot_product(phi2, phi3))*(1. + dot_product(phi3, phi1));
+    rho = sqrt(rho2);
+    QLcos = (1. + dot_product(phi1, phi2) + dot_product(phi2, phi3) + dot_product(phi3, phi1))/rho;
+    phi2crossphi3 = cross_product(phi2,phi3);
+    QLsin = dot_product(phi1,phi2crossphi3)/rho;
+    test_QL(acos(QLcos), asin(QLsin));
+    return 0;
+}
+
 double Q_lattice(double Lattice[len][len][3]){
     //calculates topological charge
     /*
@@ -291,7 +277,20 @@ double Q_lattice(double Lattice[len][len][3]){
     Then you calculate rho squared (double) by summing over the triangles
     Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
     */
-    return 0;
+    double Q_L = 0.0;
+    int triangles[8][3][2];
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            make_triangles(i,j,triangles);
+            for (int n = 0; n < 8; n++){
+                int curr_tri[3][2] = triangles[n];
+                double QL_tri = QL_triangle(curr_tri, Lattice);
+            }
+        }
+    }
+    return Q_L;
 }
 double Z_renorm(double beta, int len){
     //pulls renormalization factor from table given in paper
@@ -348,4 +347,57 @@ void write_to_file(int n, double phi, double A_L)
     fout.setf(ios::fixed);
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
+}
+
+void print_lattice(double Lattice[len][len][3])
+{
+    //cout << "print_lattice" << endl;
+    //prints lattice to screen
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            cout << setw(5) << Lattice[i][j][0];
+            cout << setw(5) << Lattice[i][j][1];
+            cout << setw(5) << Lattice[i][j][2] << endl;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+
+void print_value(double Lattice[len][len][3], double value[len][len])
+{
+    //cout << "print_value" << endl;
+    //prints value calculated on lattice to screen
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            cout << setw(2) << i << setw(2) << j;
+            cout << setw(10) << value[i][j]<< endl;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void test_triangles(int i, int j)
+{
+    //testing triangles and plus one minus one
+    int triangles[8][3][2];
+    make_triangles(i,j,triangles);
+    for (int n = 0; n<8;n++)
+    {
+        cout << setw(2) << i << setw(2) << j;
+        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
+        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
+        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
+    }
+    cout << endl;
+}
+
+void test_QL(double QLcos, double QLsin){
+    cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
