@@ -27,7 +27,7 @@ void make_lattice(double (&Lattice)[len][len][3]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
-double * cross_product(double vec1[3], double vec2[3])[3];
+void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
@@ -118,13 +118,11 @@ double dot_product(double vec1[3], double vec2[3]){
     return dot_prod;
 }
 
-double cross_product(double vec1[3], double vec2[3]){
+void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
     //calculates the cross product of two vectors
-    double cross_prod[3];
     cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
     cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
     cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
-    return cross_prod;
 }
 
 int plus_one(int i){
@@ -248,8 +246,8 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
 }
 
 double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
-    double phi1[3], phi2[3], phi3[3];
-    double rho, rho2, QLcos, phi2crossphi3, QLsin;
+    double phi1[3], phi2[3], phi3[3], phi2crossphi3[3];
+    double rho, rho2, QLcos, QLsin;
     int i1,j1,i2,j2,i3,j3;
     i1 = current_triangle[0][0];
     j1 = current_triangle[0][1];
@@ -263,7 +261,7 @@ double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
     rho2 = 2.*(1. + dot_product(phi1, phi2))*(1. + dot_product(phi2, phi3))*(1. + dot_product(phi3, phi1));
     rho = sqrt(rho2);
     QLcos = (1. + dot_product(phi1, phi2) + dot_product(phi2, phi3) + dot_product(phi3, phi1))/rho;
-    phi2crossphi3 = cross_product(phi2,phi3);
+    cross_product(phi2,phi3,phi2crossphi3);
     QLsin = dot_product(phi1,phi2crossphi3)/rho;
     test_QL(acos(QLcos), asin(QLsin));
     return 0;
