@@ -265,6 +265,7 @@ double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
     QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
     cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
     QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
+    cout << "QL_triangle"<< endl;
     test_QL(acos(QLcos), asin(QLsin));
     return 0;
 }
