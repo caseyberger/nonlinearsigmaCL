@@ -32,7 +32,7 @@ double dot_product(double vec1[3], double vec2[3]);
 int plus_one(int i);
 int minus_one(int i);
 double A_lattice(double beta, double Lattice[len][len][3]);
-void make_triangles(int i, int j, int (&triangles)[8][3]);
+void make_triangles(int i, int j, int (&triangles)[8][3][2]);
 double Q_lattice(double Lattice[len][len][3]);
 double Z_renorm(double beta, int len);
 void create_logfile();
