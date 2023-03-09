@@ -2,6 +2,8 @@
 // Created: Feb 21, 2023
 // Last edited: Mar 9, 2023
 //
+// takes input file. Run with ./nonlinearsigma inputs
+//
 
 // include files
 #include <time.h>//time (used to set random number seed)
@@ -22,7 +24,6 @@ using namespace std;
 
 //global variables
 const int len = 4; //length of lattice
-const int l_end = len-1; //last spot on lattice
 const int num = len*len;  //total number of lattice sites
 
 //function declaration
@@ -45,9 +46,17 @@ void print_value(double Lattice[len][len][3], double value[len][len]);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
 
+void read_in_inputs(int &len, int &num, double &beta);
+
 int main ()
 {
     srand(time(NULL)); //seed random number
+    
+    int len, num;
+    double beta;
+    
+    read_in_inputs(len, num, beta);
+    
     double Lattice[len][len][3]; //stores lattice configuration
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
     
@@ -56,7 +65,6 @@ int main ()
     //print_lattice(Lattice);
     
     double phi = 0.0;
-    double beta = 1.6;
     double A_L = 0.0;
     double Q_L = 0.0;
     
@@ -403,4 +411,42 @@ void test_triangles(int i, int j)
 void test_QL(double QLcos, double QLsin)
 {
     cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
+}
+
+void read_in_inputs(int &len, int &num, double &beta)
+{
+    //read in parameters
+    string str, filename;
+    int n_params = 2;
+    string inputs [2] = {"L","beta"};//read in keywords for parameters
+    if (argc != 2){ //exits if input file is not given
+        cerr << "Usage: ./v1.4 input_CLB.txt"<<endl << "Exiting program" << endl;
+        exit(10);
+    }
+    else{
+        ifstream input_file(argv[1]);
+        if (!input_file.is_open()){
+            cerr << "input file cannot be opened";
+            exit(10);
+        }
+        else{
+            int count = 0;
+            while (count < n_params) {
+                while (getline(input_file, str)) {
+                    //search for params in input
+                    size_t found = str.find(inputs[count]);
+                    size_t start;
+                    if (found != string::npos) {
+                        start = str.find_last_of(' ');
+                        inputs[count] = str.substr(start + 1);
+                        count++;
+                    }
+                }
+            }
+            len = stod(inputs[0]);
+            num = len*len;
+            beta = stod(inputs[1]);
+            //cout << "parameters acquired" <<endl;    
+        }
+    }
 }
