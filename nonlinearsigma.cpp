@@ -46,16 +46,16 @@ void print_value(double Lattice[len][len][3], double value[len][len]);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
 
-void read_in_inputs(int &len, int &num, double &beta);
+//void read_in_inputs(int &len, int &num, double &beta);
 
 int main ()
 {
     srand(time(NULL)); //seed random number
     
-    int len, num;
-    double beta;
+    //int len, num;
+    double beta = 1.6;
     
-    read_in_inputs(len, num, beta);
+    //read_in_inputs(len, num, beta);
     
     double Lattice[len][len][3]; //stores lattice configuration
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
@@ -413,6 +413,7 @@ void test_QL(double QLcos, double QLsin)
     cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
 
+/* do this later!
 void read_in_inputs(int &len, int &num, double &beta)
 {
     //read in parameters
@@ -450,3 +451,4 @@ void read_in_inputs(int &len, int &num, double &beta)
         }
     }
 }
+*/
