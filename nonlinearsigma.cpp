@@ -16,7 +16,7 @@
 //#include <sstream>
 
 //custom header files
-#include "test_suite.h"
+//#include "test_suite.h"
 
 using namespace std;
 
@@ -40,6 +40,10 @@ double Q_lattice(double Lattice[len][len][3]);
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
+void print_lattice(double Lattice[len][len][3]);
+void print_value(double Lattice[len][len][3], double value[len][len]);
+void test_triangles(int i, int j);
+void test_QL(double QLcos, double QLsin);
 
 int main ()
 {
@@ -346,4 +350,57 @@ void write_to_file(int n, double phi, double A_L)
     fout.setf(ios::fixed);
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
+}
+void print_lattice(double Lattice[len][len][3])
+{
+    //cout << "print_lattice" << endl;
+    //prints lattice to screen
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            cout << setw(5) << Lattice[i][j][0];
+            cout << setw(5) << Lattice[i][j][1];
+            cout << setw(5) << Lattice[i][j][2] << endl;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+
+void print_value(double Lattice[len][len][3], double value[len][len])
+{
+    //cout << "print_value" << endl;
+    //prints value calculated on lattice to screen
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            cout << setw(2) << i << setw(2) << j;
+            cout << setw(10) << value[i][j]<< endl;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void test_triangles(int i, int j)
+{
+    //testing triangles and plus one minus one
+    int triangles[8][3][2];
+    make_triangles(i,j,triangles);
+    for (int n = 0; n<8;n++)
+    {
+        cout << setw(2) << i << setw(2) << j;
+        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
+        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
+        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
+    }
+    cout << endl;
+}
+
+void test_QL(double QLcos, double QLsin)
+{
+    cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
