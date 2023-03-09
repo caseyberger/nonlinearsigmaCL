@@ -7,6 +7,8 @@
 #include <cmath> //M_PI, sin, cos, pow
 #include <iomanip> //setw
 
+#include "test_suite.h"
+
 //global variables
 const int len = 4; //length of lattice
 const int l_end = len-1; //last spot on lattice
