@@ -7,6 +7,11 @@
 #include <cmath> //M_PI, sin, cos, pow
 #include <iomanip> //setw
 
+//global variables
+const int len = 4; //length of lattice
+const int l_end = len-1; //last spot on lattice
+const int num = len*len;  //total number of lattice sites
+
 void print_lattice(double Lattice[len][len][3])
 {
     //cout << "print_lattice" << endl;
