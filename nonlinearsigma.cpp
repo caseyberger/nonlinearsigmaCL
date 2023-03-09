@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Feb 28, 2023
+// Last edited: Mar 9, 2023
 //
 
 // include files
@@ -14,6 +14,9 @@
 #include <string> //string
 //#include <stdio.h>
 //#include <sstream>
+
+//custom header files
+#include "test_suite.h"
 
 using namespace std;
 
@@ -37,11 +40,6 @@ double Q_lattice(double Lattice[len][len][3]);
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
-//functions - testing
-void print_lattice(double Lattice[len][len][3]);
-void print_value(double Lattice[len][len][3], double value[len][len]);
-void test_triangles(int i, int j);
-void test_QL(double QLcos, double QLsin);
 
 int main ()
 {
@@ -248,18 +246,17 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
 }
 
 double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
+    //Calculates QL on a single triangle
+    // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
     double phi2crossphi3[3];
     double rho, rho2, QLcos, QLsin;
     int i1,j1,i2,j2,i3,j3;
     i1 = current_triangle[0][0];
     j1 = current_triangle[0][1];
-    //phi1 = Lattice[i1][j1];
     i2 = current_triangle[1][0];
     j2 = current_triangle[1][1];
-    //phi2 = Lattice[i2][j2];
     i3 = current_triangle[2][0];
     j3 = current_triangle[2][1];
-    //phi3 = Lattice[i3][j3];
     rho2 = 2.*(1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]))*(1. + dot_product(Lattice[i2][j2], Lattice[i3][j3]))*(1. + dot_product(Lattice[i3][j3], Lattice[i1][j1]));
     rho = sqrt(rho2);
     QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
@@ -349,58 +346,4 @@ void write_to_file(int n, double phi, double A_L)
     fout.setf(ios::fixed);
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
-}
-
-void print_lattice(double Lattice[len][len][3])
-{
-    //cout << "print_lattice" << endl;
-    //prints lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(5) << Lattice[i][j][0];
-            cout << setw(5) << Lattice[i][j][1];
-            cout << setw(5) << Lattice[i][j][2] << endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-
-void print_value(double Lattice[len][len][3], double value[len][len])
-{
-    //cout << "print_value" << endl;
-    //prints value calculated on lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(2) << i << setw(2) << j;
-            cout << setw(10) << value[i][j]<< endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-void test_triangles(int i, int j)
-{
-    //testing triangles and plus one minus one
-    int triangles[8][3][2];
-    make_triangles(i,j,triangles);
-    for (int n = 0; n<8;n++)
-    {
-        cout << setw(2) << i << setw(2) << j;
-        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
-        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
-        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
-    }
-    cout << endl;
-}
-
-void test_QL(double QLcos, double QLsin)
-{
-    cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
