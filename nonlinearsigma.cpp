@@ -29,20 +29,20 @@ const int num = len*len;  //total number of lattice sites
 
 //function declaration
 void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
-double phi_tot(double Lattice[len][len][3]); //only useful for testing
+double phi_tot(double *** Lattice); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
 void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
 int plus_one(int i);
 int minus_one(int i);
-double A_lattice(double beta, double Lattice[len][len][3]);
+//double A_lattice(double beta, double *** Lattice);
 void make_triangles(int i, int j, int (&triangles)[8][3][2]);
-double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]);
-double Q_lattice(double Lattice[len][len][3]);
+//double QL_triangle(int current_triangle[3][2], double *** Lattice);
+//double Q_lattice(double *** Lattice);
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
-void print_lattice(double Lattice[len][len][3]);
-void print_value(double Lattice[len][len][3], double value[len][len]);
+void print_lattice(double *** Lattice);
+void print_value(double *** Lattice, double value[len][len]);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
 
@@ -82,8 +82,8 @@ int main ()
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice);
-        A_L = A_lattice(beta, Lattice);
-        Q_L = Q_lattice(Lattice);
+        //A_L = A_lattice(beta, Lattice);
+        //Q_L = Q_lattice(Lattice);
         write_to_file(n, phi, A_L);
         lattice_init(Lattice, len);
     }
@@ -149,7 +149,7 @@ int minus_one(int i){
         return i-1;
     }
 }
-
+/*
 double A_lattice(double beta, double *** Lattice){
     //calculates the standard lattice action A_L
     double A_L = 0.0;
@@ -181,7 +181,7 @@ double A_lattice(double beta, double *** Lattice){
         }
     return -1.*beta*A_L;
 }
-
+*/
 void make_triangles(int i, int j, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
     //you need to do this with nearest neighbors! Do you need to do a plus_one, minus_one function??
@@ -249,7 +249,7 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
     triangles[7][2][0] = plus_one(i);
     triangles[7][2][1] = minus_one(j);
 }
-
+/*
 double QL_triangle(int current_triangle[3][2], double *** Lattice){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
@@ -271,16 +271,16 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice){
     test_QL(acos(QLcos), asin(QLsin));
     return 0;
 }
-
+*/
+/*
 double Q_lattice(double *** Lattice){
     //calculates topological charge
-    /*
-    How to do this...
-    You need to loop over 8 triangles
-    You will need a function to identify each triangle, maybe return all of them... an array?
-    Then you calculate rho squared (double) by summing over the triangles
-    Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
-    */
+    
+    //How to do this...
+    //You need to loop over 8 triangles
+    //You will need a function to identify each triangle, maybe return all of them... an array?
+    //Then you calculate rho squared (double) by summing over the triangles
+    //Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
     double Q_L = 0.0;
     int triangles[8][3][2];
     for (int i = 0; i<len; i++)
@@ -295,7 +295,7 @@ double Q_lattice(double *** Lattice){
         }
     }
     return Q_L;
-}
+}*/
 double Z_renorm(double beta, int len){
     //pulls renormalization factor from table given in paper
     if (beta == 1.5 and len==120){
