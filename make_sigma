@@ -24,7 +24,7 @@ TARGET = nonlinearsigma
 # Targets needed to bring the executable up to date
 
 nonlinearsigma: nonlinearsigma.o lattice.o
-    $(CXX) -o nonlinearsigma nonlinearsigma.o
+    $(CXX) -o nonlinearsigma nonlinearsigma.o lattice.o
 
 nonlinearsigma.o: nonlinearsigma.cpp lattice.h
     $(CXX) -c nonlinearsigma.cpp 
