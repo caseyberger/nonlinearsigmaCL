@@ -19,6 +19,7 @@
 
 //custom header files
 //#include "test_suite.h"
+#include "lattice.h"
 
 using namespace std;
 
@@ -27,7 +28,6 @@ const int len = 4; //length of lattice
 const int num = len*len;  //total number of lattice sites
 
 //function declaration
-void make_lattice(double (&Lattice)[len][len][3]);
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
@@ -50,17 +50,29 @@ void test_QL(double QLcos, double QLsin);
 
 int main ()
 {
-    srand(time(NULL)); //seed random number
+
     
     //int len, num;
     double beta = 1.6;
     
     //read_in_inputs(len, num, beta);
     
-    double Lattice[len][len][3]; //stores lattice configuration
+    //Initalize the lattice - dynamically allocate the memory for the lattice
+    double *** Lattice = new double**[num];
+    for(int i = 0; i < vol; i++){
+        Lattice[i] = new double*[Nt];
+    }
+    //allocation - 3 phi components
+    //note: can this be put into a separate file as well? Think about how that would work
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            Lattice[i][j] = new double[3];
+        }
+    }
+    make_lattice(Lattice, len);//initialize phi everywhere
+        
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
-    
-    make_lattice(Lattice); //fills lattice with phi values
+
     create_logfile(); //generates logfile with header
     //print_lattice(Lattice);
     
@@ -73,29 +85,10 @@ int main ()
         A_L = A_lattice(beta, Lattice);
         Q_L = Q_lattice(Lattice);
         write_to_file(n, phi, A_L);
-        make_lattice(Lattice);
+        make_lattice(Lattice, len);
     }
     
     return 0;
-}
-
-void make_lattice(double (&Lattice)[len][len][3])
-{
-    //cout << "make_lattice" << endl;
-    //generates random configuration
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            //generate a random polar and azimuthal angle
-            double inclination =   M_PI * ((double)rand())/((double)RAND_MAX); //polar angle = inclination
-            double azimuth =  2. * M_PI * ((double)rand())/((double)RAND_MAX); //azimuthal angle = azimuth
-            //create unit spin vector components from angles
-            Lattice[i][j][0] = sin(inclination) * cos(azimuth);
-            Lattice[i][j][1] = sin(inclination) * sin(azimuth);
-            Lattice[i][j][2] = cos(inclination);
-        }
-    }
 }
 
 void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len])

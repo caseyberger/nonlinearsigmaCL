@@ -29,15 +29,18 @@ nonlinearsigma: nonlinearsigma.o
 nonlinearsigma.o: nonlinearsigma.cpp
 	$(CXX) -c nonlinearsigma.cpp
 
-#nonlinearsigma: nonlinearsigma.o test_suite.o
-#	$(CXX) -o nonlinearsigma nonlinearsigma.o test_suite.o    
+nonlinearsigma: nonlinearsigma.o lattice.o
+	$(CXX) -o nonlinearsigma nonlinearsigma.o lattice.o    
 
-#nonlinearsigma.o: nonlinearsigma.cpp test_suite.h
-#	$(CXX) -c nonlinearsigma.cpp
+nonlinearsigma.o: nonlinearsigma.cpp lattice.h
+	$(CXX) -c nonlinearsigma.cpp
 
 # Dependencies
 #test_suite.o: test_suite.cpp test_suite.h
 #	$(CXX) -c test_suite.cpp
+
+lattice.o: lattice.cpp lattice.h
+    $(CXX) -c lattice.cpp
  
 ##########################################################################
 # Additional tasks 
