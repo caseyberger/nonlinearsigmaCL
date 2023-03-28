@@ -28,7 +28,7 @@ const int len = 4; //length of lattice
 const int num = len*len;  //total number of lattice sites
 
 //function declaration
-void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
+void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
 double phi_tot(double Lattice[len][len][3]); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
 void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
@@ -59,8 +59,8 @@ int main ()
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
     double *** Lattice = new double**[num];
-    for(int i = 0; i < vol; i++){
-        Lattice[i] = new double*[Nt];
+    for(int i = 0; i < len; i++){
+        Lattice[i] = new double*[len];
     }
     //allocation - 3 phi components
     //note: can this be put into a separate file as well? Think about how that would work
@@ -69,7 +69,7 @@ int main ()
             Lattice[i][j] = new double[3];
         }
     }
-    make_lattice(Lattice, len);//initialize phi everywhere
+    lattice_init(Lattice, len);//initialize phi everywhere
         
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
 
@@ -85,13 +85,13 @@ int main ()
         A_L = A_lattice(beta, Lattice);
         Q_L = Q_lattice(Lattice);
         write_to_file(n, phi, A_L);
-        make_lattice(Lattice, len);
+        lattice_init(Lattice, len);
     }
     
     return 0;
 }
 
-void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude)[len][len])
+void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len])
 {
     for (int i = 0; i<len; i++)
     {
@@ -102,7 +102,7 @@ void calculate_phi_magnitude(double Lattice[len][len][3], double (&phi_magnitude
     }
 }
 
-double phi_tot(double Lattice[len][len][3])
+double phi_tot(double *** Lattice)
 {
      //cout << "phi_tot" << endl;
     double phi = 0.0;
@@ -150,7 +150,7 @@ int minus_one(int i){
     }
 }
 
-double A_lattice(double beta, double Lattice[len][len][3]){
+double A_lattice(double beta, double *** Lattice){
     //calculates the standard lattice action A_L
     double A_L = 0.0;
     for (int i = 0; i<len; i++)
@@ -250,7 +250,7 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
     triangles[7][2][1] = minus_one(j);
 }
 
-double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
+double QL_triangle(int current_triangle[3][2], double *** Lattice){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
     double phi2crossphi3[3];
@@ -272,7 +272,7 @@ double QL_triangle(int current_triangle[3][2], double Lattice[len][len][3]){
     return 0;
 }
 
-double Q_lattice(double Lattice[len][len][3]){
+double Q_lattice(double *** Lattice){
     //calculates topological charge
     /*
     How to do this...
@@ -352,7 +352,7 @@ void write_to_file(int n, double phi, double A_L)
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
 }
-void print_lattice(double Lattice[len][len][3])
+void print_lattice(double *** Lattice)
 {
     //cout << "print_lattice" << endl;
     //prints lattice to screen
@@ -370,7 +370,7 @@ void print_lattice(double Lattice[len][len][3])
 }
 
 
-void print_value(double Lattice[len][len][3], double value[len][len])
+void print_value(double *** Lattice, double value[len][len])
 {
     //cout << "print_value" << endl;
     //prints value calculated on lattice to screen
