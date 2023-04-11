@@ -28,7 +28,7 @@ using namespace std;
 //const int num = len*len;  //total number of lattice sites
 
 //function declaration
-void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
+void check_phi_magnitude(double *** Lattice, int len);
 double phi_tot(double *** Lattice); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
 void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
@@ -42,7 +42,7 @@ double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
 void print_lattice(double *** Lattice);
-void print_value(double *** Lattice, double value[len][len]);
+void print_value(double *** Lattice, int i, int j, double value);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
 void read_in_inputs(int &len, int &num, double &beta);
@@ -90,13 +90,19 @@ int main ()
     return 0;
 }
 
-void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len])
+void check_phi_magnitude(double *** Lattice, int len)
 {
+    double phi_magnitude = 0.0;
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
         {
-            phi_magnitude[i][j] = pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
+            phi_magnitude = pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
+            if (phi_magnitude != 1.){
+                cout << "Phi is not a unit vector. Magnitude = ";
+                cout << setw(5) << phi_magnitude << "at location";
+                cout << "i,j = " << i << "," << j << endl;
+            }
         }
     }
 }
@@ -369,7 +375,7 @@ void print_lattice(double *** Lattice)
 }
 
 
-void print_value(double *** Lattice, double value[len][len])
+void print_value(double *** Lattice, int i, int j, double value)
 {
     //cout << "print_value" << endl;
     //prints value calculated on lattice to screen
@@ -378,7 +384,7 @@ void print_value(double *** Lattice, double value[len][len])
         for (int j = 0; j<len; j++)
         {
             cout << setw(2) << i << setw(2) << j;
-            cout << setw(10) << value[i][j]<< endl;
+            cout << setw(10) << value<< endl;
         }
         cout << endl;
     }
