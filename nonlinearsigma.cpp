@@ -43,7 +43,7 @@ void create_logfile();
 void write_to_file(int n, double phi, double A_L);
 void print_lattice(double *** Lattice, int len);
 void print_value(double *** Lattice, int i, int j, int len, double value);
-void test_triangles(int i, int j);
+void test_triangles(int i, int j, int len);
 void test_QL(double QLcos, double QLsin);
 void read_in_inputs(int &len, int &num, double &beta);
 
@@ -80,7 +80,7 @@ int main ()
     double Q_L = 0.0;
     
     for (int n = 0; n<10; n++){
-        phi = phi_tot(Lattice);
+        phi = phi_tot(Lattice, len);
         //A_L = A_lattice(beta, Lattice);
         //Q_L = Q_lattice(Lattice);
         write_to_file(n, phi, A_L);
@@ -391,7 +391,7 @@ void print_value(double *** Lattice, int i, int j, int len, double value)
     cout << endl;
 }
 
-void test_triangles(int i, int j)
+void test_triangles(int i, int j, int len)
 {
     //testing triangles and plus one minus one
     int triangles[8][3][2];
