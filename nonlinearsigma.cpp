@@ -35,13 +35,13 @@ void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
 int plus_one(int i, int len);
 int minus_one(int i, int len);
 //double A_lattice(double beta, double *** Lattice);
-void make_triangles(int i, int j, int (&triangles)[8][3][2]);
+void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]);
 //double QL_triangle(int current_triangle[3][2], double *** Lattice);
 //double Q_lattice(double *** Lattice);
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
-void print_lattice(double *** Lattice);
+void print_lattice(double *** Lattice, int len);
 void print_value(double *** Lattice, int i, int j, int len, double value);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
@@ -73,7 +73,7 @@ int main ()
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
 
     create_logfile(); //generates logfile with header
-    //print_lattice(Lattice);
+    //print_lattice(Lattice, len);
     
     double phi = 0.0;
     double A_L = 0.0;
@@ -123,7 +123,7 @@ double phi_tot(double *** Lattice, int len)
 
 double dot_product(double vec1[3], double vec2[3]){
     //calculates the dot product of two vectors
-    double dot_prod =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 0.0;
+    double dot_prod = 0.0;
     dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
     return dot_prod;
 }
@@ -187,7 +187,7 @@ double A_lattice(double beta, double *** Lattice){
     return -1.*beta*A_L;
 }
 */
-void make_triangles(int i, int j, int (&triangles)[8][3][2]){
+void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
     //you need to do this with nearest neighbors! Do you need to do a plus_one, minus_one function??
     //triangle 1 
@@ -292,7 +292,7 @@ double Q_lattice(double *** Lattice){
     {
         for (int j = 0; j<len; j++)
         {
-            make_triangles(i,j,triangles);
+            make_triangles(i,j,len,triangles);
             for (int n = 0; n < 8; n++)
             {
                 double QL_tri = QL_triangle(triangles[n], Lattice);
@@ -357,7 +357,7 @@ void write_to_file(int n, double phi, double A_L)
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
 }
-void print_lattice(double *** Lattice)
+void print_lattice(double *** Lattice, int len)
 {
     //cout << "print_lattice" << endl;
     //prints lattice to screen
@@ -395,7 +395,7 @@ void test_triangles(int i, int j)
 {
     //testing triangles and plus one minus one
     int triangles[8][3][2];
-    make_triangles(i,j,triangles);
+    make_triangles(i,j,len,triangles);
     for (int n = 0; n<8;n++)
     {
         cout << setw(2) << i << setw(2) << j;
