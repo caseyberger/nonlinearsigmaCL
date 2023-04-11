@@ -54,7 +54,7 @@ int main (int argc, char *argv[])
     int len, num;
     double beta = 1.6;
     
-    read_in_inputs(len, num, beta);
+    read_in_inputs(argc, argv,len, num, beta);
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
     double *** Lattice = new double**[num];
