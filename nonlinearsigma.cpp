@@ -42,7 +42,7 @@ double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
 void print_lattice(double *** Lattice);
-void print_value(double *** Lattice, int i, int j, double value);
+void print_value(double *** Lattice, int i, int j, int len, double value);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
 void read_in_inputs(int &len, int &num, double &beta);
@@ -123,7 +123,7 @@ double phi_tot(double *** Lattice, int len)
 
 double dot_product(double vec1[3], double vec2[3]){
     //calculates the dot product of two vectors
-    double dot_prod = 0.0;
+    double dot_prod =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 0.0;
     dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
     return dot_prod;
 }
@@ -375,7 +375,7 @@ void print_lattice(double *** Lattice)
 }
 
 
-void print_value(double *** Lattice, int i, int j, double value)
+void print_value(double *** Lattice, int i, int j, int len, double value)
 {
     //cout << "print_value" << endl;
     //prints value calculated on lattice to screen
