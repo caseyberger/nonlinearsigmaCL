@@ -29,11 +29,11 @@ using namespace std;
 
 //function declaration
 void check_phi_magnitude(double *** Lattice, int len);
-double phi_tot(double *** Lattice); //only useful for testing
+double phi_tot(double *** Lattice, int len); //only useful for testing
 double dot_product(double vec1[3], double vec2[3]);
 void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
-int plus_one(int i);
-int minus_one(int i);
+int plus_one(int i, int len);
+int minus_one(int i, int len);
 //double A_lattice(double beta, double *** Lattice);
 void make_triangles(int i, int j, int (&triangles)[8][3][2]);
 //double QL_triangle(int current_triangle[3][2], double *** Lattice);
@@ -107,7 +107,7 @@ void check_phi_magnitude(double *** Lattice, int len)
     }
 }
 
-double phi_tot(double *** Lattice)
+double phi_tot(double *** Lattice, int len)
 {
      //cout << "phi_tot" << endl;
     double phi = 0.0;
@@ -135,7 +135,7 @@ void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
     cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }
 
-int plus_one(int i){
+int plus_one(int i, int len){
     //returns site plus one, using periodic boundary conditions
     if (i==len-1){
         return 0;
@@ -145,7 +145,7 @@ int plus_one(int i){
     }
 }
 
-int minus_one(int i){
+int minus_one(int i, int len){
     //returns site minus one, using periodic boundary conditions
     if (i==0){
         return len-1;
@@ -164,23 +164,23 @@ double A_lattice(double beta, double *** Lattice){
         {
             int i_nn,j_nn;
             //neighbor i+1,j
-            i_nn = plus_one(i);
+            i_nn = plus_one(i,len);
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i-1,j
-            i_nn = minus_one(i);
+            i_nn = minus_one(i,len);
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i,j+1
             i_nn = i;
-            j_nn = plus_one(j);
+            j_nn = plus_one(j,len);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
             //neighbor i,j-1
             i_nn = i;
-            j_nn = minus_one(j);
+            j_nn = minus_one(j,len);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             }
         }
@@ -193,66 +193,66 @@ void make_triangles(int i, int j, int (&triangles)[8][3][2]){
     //triangle 1 
     triangles[0][0][0] = i;
     triangles[0][0][1] = j;
-    triangles[0][1][0] = plus_one(i);
-    triangles[0][1][1] = plus_one(j);
-    triangles[0][2][0] = plus_one(i);
+    triangles[0][1][0] = plus_one(i,len);
+    triangles[0][1][1] = plus_one(j,len);
+    triangles[0][2][0] = plus_one(i,len);
     triangles[0][2][1] = j;
     
     //triangle 2
     triangles[1][0][0] = i;
     triangles[1][0][1] = j;
     triangles[1][1][0] = i;
-    triangles[1][1][1] = plus_one(j);
-    triangles[1][2][0] = plus_one(i);
-    triangles[1][2][1] = plus_one(j);
+    triangles[1][1][1] = plus_one(j,len);
+    triangles[1][2][0] = plus_one(i,len);
+    triangles[1][2][1] = plus_one(j,len);
     
     //triangle 3
     triangles[2][0][0] = i;
     triangles[2][0][1] = j;
-    triangles[2][1][0] = minus_one(i);
-    triangles[2][1][1] = plus_one(j);
+    triangles[2][1][0] = minus_one(i,len);
+    triangles[2][1][1] = plus_one(j,len);
     triangles[2][2][0] = i;
-    triangles[2][2][1] = plus_one(j);
+    triangles[2][2][1] = plus_one(j,len);
     
     //triangle 4
     triangles[3][0][0] = i;
     triangles[3][0][1] = j;
-    triangles[3][1][0] = minus_one(i);
+    triangles[3][1][0] = minus_one(i,len);
     triangles[3][1][1] = j;
-    triangles[3][2][0] = minus_one(i);
-    triangles[3][2][1] = plus_one(j);
+    triangles[3][2][0] = minus_one(i,len);
+    triangles[3][2][1] = plus_one(j,len);
     
     //triangle 5
     triangles[4][0][0] = i;
     triangles[4][0][1] = j;
-    triangles[4][1][0] = minus_one(i);
-    triangles[4][1][1] = minus_one(j);
-    triangles[4][2][0] = minus_one(i);
+    triangles[4][1][0] = minus_one(i,len);
+    triangles[4][1][1] = minus_one(j,len);
+    triangles[4][2][0] = minus_one(i,len);
     triangles[4][2][1] = j;
     
     //triangle 6
     triangles[5][0][0] = i;
     triangles[5][0][1] = j;
     triangles[5][1][0] = i;
-    triangles[5][1][1] = minus_one(j);
-    triangles[5][2][0] = minus_one(i);
-    triangles[5][2][1] = minus_one(j);
+    triangles[5][1][1] = minus_one(j,len);
+    triangles[5][2][0] = minus_one(i,len);
+    triangles[5][2][1] = minus_one(j,len);
     
     //triangle 7
     triangles[6][0][0] = i;
     triangles[6][0][1] = j;
-    triangles[6][1][0] = plus_one(i);
-    triangles[6][1][1] = minus_one(j);
+    triangles[6][1][0] = plus_one(i,len);
+    triangles[6][1][1] = minus_one(j,len);
     triangles[6][2][0] = i;
-    triangles[6][2][1] = minus_one(j);
+    triangles[6][2][1] = minus_one(j,len);
     
     //triangle 8
     triangles[7][0][0] = i;
     triangles[7][0][1] = j;
-    triangles[7][1][0] = plus_one(i);
+    triangles[7][1][0] = plus_one(i,len);
     triangles[7][1][1] = j;
-    triangles[7][2][0] = plus_one(i);
-    triangles[7][2][1] = minus_one(j);
+    triangles[7][2][0] = plus_one(i,len);
+    triangles[7][2][1] = minus_one(j,len);
 }
 /*
 double QL_triangle(int current_triangle[3][2], double *** Lattice){
