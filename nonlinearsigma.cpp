@@ -55,8 +55,11 @@ int main (int argc, char *argv[])
     double beta = 1.6;
     
     read_in_inputs(argc, argv,len, num, beta);
+    cout << "len = " << cout << len << endl;
+    cout << "beta = " << cout << len << endl;
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
+    cout << "Initializing lattice" << endl;
     double *** Lattice = new double**[num];
     for(int i = 0; i < len; i++){
         Lattice[i] = new double*[len];
@@ -71,7 +74,7 @@ int main (int argc, char *argv[])
     lattice_init(Lattice, len);//initialize phi everywhere
         
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
-
+    
     create_logfile(); //generates logfile with header
     //print_lattice(Lattice, len);
     
@@ -322,7 +325,7 @@ double Z_renorm(double beta, int len){
 
 void create_logfile()
 {
-    //cout << "create_logfile" << endl;
+    cout << "create_logfile" << endl;
     //create header of logfile before
     string fname = "nonlinearsigma_data.txt";
     ofstream fout; //output stream
@@ -414,11 +417,12 @@ void test_QL(double QLcos, double QLsin)
 void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
 {
     //read in parameters
+    cout << "Reading in parameters from input file" << endl;
     string str, filename;
     int n_params = 2;
     string inputs [2] = {"L","beta"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
-        cerr << "Usage: ./v1.4 input_CLB.txt"<<endl << "Exiting program" << endl;
+        cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
         exit(10);
     }
     else{
@@ -444,7 +448,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
             len = stod(inputs[0]);
             num = len*len;
             beta = stod(inputs[1]);
-            //cout << "parameters acquired" <<endl;    
+            cout << "parameters acquired" <<endl;    
         }
     }
 }
