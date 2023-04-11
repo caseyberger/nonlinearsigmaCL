@@ -45,7 +45,7 @@ void print_lattice(double *** Lattice, int len);
 void print_value(double *** Lattice, int i, int j, int len, double value);
 void test_triangles(int i, int j, int len);
 void test_QL(double QLcos, double QLsin);
-void read_in_inputs(int &len, int &num, double &beta);
+void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta);
 
 int main (int argc, char *argv[])
 {
@@ -411,7 +411,7 @@ void test_QL(double QLcos, double QLsin)
     cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
 
-void read_in_inputs(int &len, int &num, double &beta)
+void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
 {
     //read in parameters
     string str, filename;
