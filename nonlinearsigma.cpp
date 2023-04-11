@@ -47,7 +47,7 @@ void test_triangles(int i, int j, int len);
 void test_QL(double QLcos, double QLsin);
 void read_in_inputs(int &len, int &num, double &beta);
 
-int main ()
+int main (int argc, char *argv[])
 {
 
     
