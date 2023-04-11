@@ -24,8 +24,8 @@
 using namespace std;
 
 //global variables
-const int len = 4; //length of lattice
-const int num = len*len;  //total number of lattice sites
+//const int len = 4; //length of lattice
+//const int num = len*len;  //total number of lattice sites
 
 //function declaration
 void calculate_phi_magnitude(double *** Lattice, double (&phi_magnitude)[len][len]);//consider changing to a "check" function that returns an error?
@@ -45,17 +45,16 @@ void print_lattice(double *** Lattice);
 void print_value(double *** Lattice, double value[len][len]);
 void test_triangles(int i, int j);
 void test_QL(double QLcos, double QLsin);
-
-//void read_in_inputs(int &len, int &num, double &beta);
+void read_in_inputs(int &len, int &num, double &beta);
 
 int main ()
 {
 
     
-    //int len, num;
+    int len, num;
     double beta = 1.6;
     
-    //read_in_inputs(len, num, beta);
+    read_in_inputs(len, num, beta);
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
     double *** Lattice = new double**[num];
@@ -406,7 +405,6 @@ void test_QL(double QLcos, double QLsin)
     cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
 }
 
-/* do this later!
 void read_in_inputs(int &len, int &num, double &beta)
 {
     //read in parameters
@@ -444,4 +442,3 @@ void read_in_inputs(int &len, int &num, double &beta)
         }
     }
 }
-*/
