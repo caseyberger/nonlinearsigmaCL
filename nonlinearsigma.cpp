@@ -55,8 +55,8 @@ int main (int argc, char *argv[])
     double beta = 1.6;
     
     read_in_inputs(argc, argv,len, num, beta);
-    cout << "len = " << cout << len << endl;
-    cout << "beta = " << cout << len << endl;
+    cout << "len = " << len << endl;
+    cout << "beta = " << len << endl;
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
     cout << "Initializing lattice" << endl;
