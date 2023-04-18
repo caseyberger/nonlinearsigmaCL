@@ -31,8 +31,6 @@ using namespace std;
 //function declaration
 void check_phi_magnitude(double *** Lattice, int len); //move to testing suite
 double phi_tot(double *** Lattice, int len); //only useful for testing - move to testing suite
-double dot_product(double vec1[3], double vec2[3]); //make some sort of lattice math suite or put in lattice file?
-void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);//make some sort of lattice math suite or put in lattice file?
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
@@ -132,20 +130,6 @@ double phi_tot(double *** Lattice, int len)
         }
     }
     return phi;
-}
-
-double dot_product(double vec1[3], double vec2[3]){
-    //calculates the dot product of two vectors
-    double dot_prod = 0.0;
-    dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
-    return dot_prod;
-}
-
-void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
-    //calculates the cross product of two vectors
-    cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
-    cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
-    cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }
 
 double Z_renorm(double beta, int len){

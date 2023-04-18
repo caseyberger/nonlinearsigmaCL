@@ -58,3 +58,17 @@ int minus_one(int i, int len){
         return i-1;
     }
 }
+
+double dot_product(double vec1[3], double vec2[3]){
+    //calculates the dot product of two vectors
+    double dot_prod = 0.0;
+    dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
+    return dot_prod;
+}
+
+void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
+    //calculates the cross product of two vectors
+    cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
+    cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
+    cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+}
