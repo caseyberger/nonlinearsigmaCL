@@ -31,11 +31,8 @@ using namespace std;
 //function declaration
 void check_phi_magnitude(double *** Lattice, int len); //move to testing suite
 double phi_tot(double *** Lattice, int len); //only useful for testing - move to testing suite
-double dot_product(double vec1[3], double vec2[3]); //make some sort of lattice math suite?
-void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);//make some sort of lattice math suite?
-//double A_lattice(double beta, double *** Lattice);
-//double QL_triangle(int current_triangle[3][2], double *** Lattice);
-//double Q_lattice(double *** Lattice);
+double dot_product(double vec1[3], double vec2[3]); //make some sort of lattice math suite or put in lattice file?
+void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);//make some sort of lattice math suite or put in lattice file?
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
@@ -71,6 +68,7 @@ int main (int argc, char *argv[])
     
     //testing out the triangles function
     int triangles[8][3][2];
+    double QL_tri;
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
@@ -78,15 +76,8 @@ int main (int argc, char *argv[])
             make_triangles(i,j,len,triangles);
             for (int n = 0; n < 8; n++)
             {
-                int i1,j1,i2,j2,i3,j3;
-                i1 = triangles[n][0][0];
-                j1 = triangles[n][0][1];
-                i2 = triangles[n][1][0];
-                j2 = triangles[n][1][1];
-                i3 = triangles[n][2][0];
-                j3 = triangles[n][2][1];
-                cout << "triangle "<< n << " = (" << i1 <<","<< j1 << "), (";
-                cout << i2 <<","<< j2 << "), ("<< i3<<","<< j3 << ")" << endl;
+                QL_tri = QL_triangle(triangles[n], Lattice);
+                cout << "Q_L for triangle " << n << " = " << QL_tri << endl;
             }
         }
     }
@@ -157,87 +148,6 @@ void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
     cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }
 
-
-/*
-double A_lattice(double beta, double *** Lattice){
-    //calculates the standard lattice action A_L
-    double A_L = 0.0;
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            int i_nn,j_nn;
-            //neighbor i+1,j
-            i_nn = plus_one(i,len);
-            j_nn = j;
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
-            
-            //neighbor i-1,j
-            i_nn = minus_one(i,len);
-            j_nn = j;
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
-            
-            //neighbor i,j+1
-            i_nn = i;
-            j_nn = plus_one(j,len);
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
-            
-            //neighbor i,j-1
-            i_nn = i;
-            j_nn = minus_one(j,len);
-            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
-            }
-        }
-    return -1.*beta*A_L;
-}
-*/
-/*
-double QL_triangle(int current_triangle[3][2], double *** Lattice){
-    //Calculates QL on a single triangle
-    // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
-    double phi2crossphi3[3];
-    double rho, rho2, QLcos, QLsin;
-    int i1,j1,i2,j2,i3,j3;
-    i1 = current_triangle[0][0];
-    j1 = current_triangle[0][1];
-    i2 = current_triangle[1][0];
-    j2 = current_triangle[1][1];
-    i3 = current_triangle[2][0];
-    j3 = current_triangle[2][1];
-    rho2 = 2.*(1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]))*(1. + dot_product(Lattice[i2][j2], Lattice[i3][j3]))*(1. + dot_product(Lattice[i3][j3], Lattice[i1][j1]));
-    rho = sqrt(rho2);
-    QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
-    cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
-    QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
-    cout << "QL_triangle"<< endl;
-    test_QL(acos(QLcos), asin(QLsin));
-    return 0;
-}
-*/
-/*
-double Q_lattice(double *** Lattice){
-    //calculates topological charge
-    
-    //How to do this...
-    //You need to loop over 8 triangles
-    //You will need a function to identify each triangle, maybe return all of them... an array?
-    //Then you calculate rho squared (double) by summing over the triangles
-    //Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
-    double Q_L = 0.0;
-    int triangles[8][3][2];
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            make_triangles(i,j,len,triangles);
-            for (int n = 0; n < 8; n++)
-            {
-                double QL_tri = QL_triangle(triangles[n], Lattice);
-            }
-        }
-    }
-    return Q_L;
-}*/
 double Z_renorm(double beta, int len){
     //pulls renormalization factor from table given in paper
     if (beta == 1.5 and len==120){

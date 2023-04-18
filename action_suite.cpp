@@ -81,3 +81,84 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     triangles[7][2][0] = plus_one(i,len);
     triangles[7][2][1] = minus_one(j,len);
 }
+
+double QL_triangle(int current_triangle[3][2], double *** Lattice){
+    //Calculates QL on a single triangle
+    // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
+    double phi2crossphi3[3];
+    double rho, rho2, QLcos, QLsin;
+    int i1,j1,i2,j2,i3,j3;
+    i1 = current_triangle[0][0];
+    j1 = current_triangle[0][1];
+    i2 = current_triangle[1][0];
+    j2 = current_triangle[1][1];
+    i3 = current_triangle[2][0];
+    j3 = current_triangle[2][1];
+    rho2 = 2.*(1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]))*(1. + dot_product(Lattice[i2][j2], Lattice[i3][j3]))*(1. + dot_product(Lattice[i3][j3], Lattice[i1][j1]));
+    rho = sqrt(rho2);
+    QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
+    cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
+    QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
+    cout << "QL_triangle"<< endl;
+    //test_QL(acos(QLcos), asin(QLsin));
+    return acos(QLcos);
+}
+
+/*
+double A_lattice(double beta, double *** Lattice){
+    //calculates the standard lattice action A_L
+    double A_L = 0.0;
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            int i_nn,j_nn;
+            //neighbor i+1,j
+            i_nn = plus_one(i,len);
+            j_nn = j;
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            
+            //neighbor i-1,j
+            i_nn = minus_one(i,len);
+            j_nn = j;
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            
+            //neighbor i,j+1
+            i_nn = i;
+            j_nn = plus_one(j,len);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            
+            //neighbor i,j-1
+            i_nn = i;
+            j_nn = minus_one(j,len);
+            A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            }
+        }
+    return -1.*beta*A_L;
+}
+*/
+/*
+double Q_lattice(double *** Lattice){
+    //calculates topological charge
+    
+    //How to do this...
+    //You need to loop over 8 triangles
+    //You will need a function to identify each triangle, maybe return all of them... an array?
+    //Then you calculate rho squared (double) by summing over the triangles
+    //Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
+    double Q_L = 0.0;
+    int triangles[8][3][2];
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            make_triangles(i,j,len,triangles);
+            for (int n = 0; n < 8; n++)
+            {
+                double QL_tri = QL_triangle(triangles[n], Lattice);
+            }
+        }
+    }
+    return Q_L;
+}
+*/
