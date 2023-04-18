@@ -5,19 +5,24 @@
 #include <iostream>
 #include <cstdlib>
 #include "lattice.h"
+
 /*
-Dynamically generates a 2D square lattice with a three-component phi at each site.
-See NRRB via CL code for alternative random number generator if you run into issues.
+This file contains all the lattice admin operations, such as 
+initializing, saving, etc.
 */
 
-
 void lattice_init(double *** Lattice, int len){
+
+//Dynamically generates a 2D square lattice with a three-component phi at each site.
+//See NRRB via CL code for alternative random number generator if you run into issues.
+    
 #ifdef TEST_CONSTANT_RNG
     double r = 1.0;
 #else
     srand(time(NULL)); //seed random number
     double r = ((double)rand())/((double)RAND_MAX);
 #endif
+    std::cout << "Initializing fields on lattice" << std::endl;
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
