@@ -433,6 +433,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
         }
         else{
             int count = 0;
+            cout << "Starting param search in file."<<endl;
             while (count < n_params) {
                 while (getline(input_file, str)) {
                     //search for params in input
@@ -442,6 +443,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
                         start = str.find_last_of(' ');
                         inputs[count] = str.substr(start + 1);
                         count++;
+                        cout << "Found parameter number" << count << ": "<< inputs[count] << endl;
                     }
                 }
             }
