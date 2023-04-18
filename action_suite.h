@@ -3,8 +3,8 @@
 #include <cstdlib>
 
 
-#ifndef LATTICE_H
-#define LATTICE_H
+#ifndef ACTION_H
+#define ACTION_H
 
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]);
 
