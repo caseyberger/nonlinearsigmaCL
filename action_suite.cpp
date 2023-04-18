@@ -90,6 +90,7 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
 double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
+    //std::cout << "QL_triangle"<< std::endl;
     double phi2crossphi3[3];
     double rho, rho2, QLcos, QLsin;
     int i1,j1,i2,j2,i3,j3;
@@ -104,14 +105,32 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
     cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
     QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
-    std::cout << "QL_triangle"<< std::endl;
-    //test_QL(acos(QLcos), asin(QLsin));
     if (arcsin){
         return asin(QLsin);
     }
     else{
         return acos(QLcos);
     }   
+}
+
+double Q_lattice(double *** Lattice){
+    //calculates topological charge
+    //std::cout << "function: Q_lattice in action_suite" << std::endl;
+    double Q_L = 0.0;
+    int triangles[8][3][2];
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            make_triangles(i,j,len,triangles);
+            for (int n = 0; n < 8; n++) //loop over 8 triangles
+            {
+                double QL_tri = QL_triangle(triangles[n], Lattice, true);
+                Q_L += QL_tri;
+            }
+        }
+    }
+    return Q_L;//This Q_L is not renormalized. You can renormalize it later with Z
 }
 
 /*
@@ -145,30 +164,5 @@ double A_lattice(double beta, double *** Lattice){
             }
         }
     return -1.*beta*A_L;
-}
-*/
-/*
-double Q_lattice(double *** Lattice){
-    //calculates topological charge
-    
-    //How to do this...
-    //You need to loop over 8 triangles
-    //You will need a function to identify each triangle, maybe return all of them... an array?
-    //Then you calculate rho squared (double) by summing over the triangles
-    //Then you calculate the not renormalized Q from rho squared (double) and return it. You can renormalize it later with Z
-    double Q_L = 0.0;
-    int triangles[8][3][2];
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            make_triangles(i,j,len,triangles);
-            for (int n = 0; n < 8; n++)
-            {
-                double QL_tri = QL_triangle(triangles[n], Lattice);
-            }
-        }
-    }
-    return Q_L;
 }
 */

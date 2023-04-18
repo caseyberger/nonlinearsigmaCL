@@ -117,5 +117,13 @@ void test_QL(double *** Lattice, int i, int j, int len)
         std::cout << std::setw(10) << "triangle " << std::setw(2) << n;
         std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
         std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;
+        if(QLsin < -0.5 or QLsin > 0.5){
+            std::cerr << "QLsin out of range: " << QLsin << std::endl;
+            std::exit(15);
+        }
+        else if (QLcos < -0.5 or QLcos > 0.5){
+            std::cerr << "QLsin out of range: " << QLsin << std::endl;
+            std::exit(15);
+        }
     }
 }

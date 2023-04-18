@@ -57,25 +57,6 @@ int main (int argc, char *argv[])
         }
     }
     lattice_init(Lattice, len);//initialize phi everywhere
-    
-    //testing out the triangles function
-    int triangles[8][3][2];
-    double QL_tri;
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            make_triangles(i,j,len,triangles);
-            for (int n = 0; n < 8; n++)
-            {
-                QL_tri = QL_triangle(triangles[n], Lattice, true);
-                //string valname = "QL_triangle";
-                //print_value(Lattice, i, j, len, QL_tri, valname);
-                test_QL(Lattice, i, j, len);
-            }
-        }
-    }
-    //end testing triangles function
         
     double phi_mag[len][len]; //stores size of unit vector at each lattice site
     
@@ -89,8 +70,8 @@ int main (int argc, char *argv[])
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice, len);
         //A_L = A_lattice(beta, Lattice);
-        //Q_L = Q_lattice(Lattice);
-        write_to_file(n, phi, A_L);
+        Q_L = Q_lattice(Lattice);
+        write_to_file(n, phi, Q_L);
         lattice_init(Lattice, len);
     }
     
@@ -132,11 +113,11 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "A_L"<< endl;
+    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "Q_L"<< endl;
     fout.close();
 }
 
-void write_to_file(int n, double phi, double A_L)
+void write_to_file(int n, double phi, double Q_L)
 {
     //cout << "write_to_file" << endl;
     //output both solutions to a .txt file to open in gnuplot
@@ -151,7 +132,7 @@ void write_to_file(int n, double phi, double A_L)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
+    fout << setw(10) << n << setw(10) << phi<< setw(10) << Q_L << endl;
     fout.close();
 }
 
