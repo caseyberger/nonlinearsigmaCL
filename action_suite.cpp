@@ -9,6 +9,7 @@
 
 #include "action_suite.h"
 #include "lattice.h"
+#include "test_suite.h"
 
 /*
 This file contains all the operations needed to calculate the 
