@@ -113,7 +113,7 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     }   
 }
 
-double Q_lattice(double *** Lattice){
+double Q_lattice(double *** Lattice, int len){
     //calculates topological charge
     //std::cout << "function: Q_lattice in action_suite" << std::endl;
     double Q_L = 0.0;

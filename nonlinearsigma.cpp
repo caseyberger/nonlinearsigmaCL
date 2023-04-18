@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice, len);
         //A_L = A_lattice(beta, Lattice);
-        Q_L = Q_lattice(Lattice);
+        Q_L = Q_lattice(Lattice, len);
         write_to_file(n, phi, Q_L);
         lattice_init(Lattice, len);
     }
