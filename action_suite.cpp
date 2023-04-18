@@ -87,7 +87,7 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     triangles[7][2][1] = minus_one(j,len);
 }
 
-double QL_triangle(int current_triangle[3][2], double *** Lattice){
+double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
     double phi2crossphi3[3];
@@ -105,8 +105,13 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice){
     cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
     QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
     std::cout << "QL_triangle"<< std::endl;
-    test_QL(acos(QLcos), asin(QLsin));
-    return acos(QLcos);
+    //test_QL(acos(QLcos), asin(QLsin));
+    if (arcsin){
+        return asin(QLsin);
+    }
+    else{
+        return acos(QLcos);
+    }   
 }
 
 /*

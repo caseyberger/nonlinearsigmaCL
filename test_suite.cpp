@@ -105,8 +105,16 @@ void test_triangles(int i, int j, int len)
     std::cout << std::endl;
 }
 
-void test_QL(double QLcos, double QLsin)
+void test_QL(int i, int j)
 {
-    std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
-    std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
+    int triangles[8][3][2];
+    double QL_sin, QL_cos;
+    make_triangles(i,j,len,triangles);
+    for (int n = 0; n < 8; n++)
+    {
+        QL_sin = QL_triangle(triangles[n], Lattice, true);
+        QL_sin = QL_triangle(triangles[n], Lattice, false);
+        std::cout << std::setw(10) << "triangle " << std::setw(2) << n;
+        std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
+        std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
 }

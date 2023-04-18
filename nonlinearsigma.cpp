@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
             make_triangles(i,j,len,triangles);
             for (int n = 0; n < 8; n++)
             {
-                QL_tri = QL_triangle(triangles[n], Lattice);
+                QL_tri = QL_triangle(triangles[n], Lattice, true);
                 //string valname = "QL_triangle";
                 //print_value(Lattice, i, j, len, QL_tri, valname);
             }
