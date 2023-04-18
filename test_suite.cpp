@@ -107,5 +107,6 @@ void test_triangles(int i, int j, int len)
 
 void test_QL(double QLcos, double QLsin)
 {
-    std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
+    std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
+    std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
 }

@@ -105,7 +105,7 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice){
     cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
     QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
     std::cout << "QL_triangle"<< std::endl;
-    //test_QL(acos(QLcos), asin(QLsin));
+    test_QL(acos(QLcos), asin(QLsin));
     return acos(QLcos);
 }
 
