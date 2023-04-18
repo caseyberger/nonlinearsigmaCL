@@ -152,3 +152,48 @@ void write_to_file(int n, double phi, double A_L)
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
 }
+
+void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
+{
+    //read in parameters
+    cout << "Reading in parameters from input file" << endl;
+    string str, filename;
+    int n_params = 2;
+    string inputs [2] = {"L","beta"};//read in keywords for parameters
+    if (argc != 2){ //exits if input file is not given
+        cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
+        exit(10);
+    }
+    else{
+        ifstream input_file(argv[1]);
+        if (!input_file.is_open()){
+            cerr << "input file cannot be opened";
+            exit(10);
+        }
+        else{
+            int count = 0;
+            cout << "Starting param search in file."<<endl;
+            while (count < n_params) {
+                while (getline(input_file, str)) {
+                    //search for params in input
+                    size_t found = str.find(inputs[count]);
+                    size_t start;
+                    if (found != string::npos) {
+                        start = str.find_last_of(' ');
+                        inputs[count] = str.substr(start + 1);
+                        count++;
+                    }
+                    else{
+                        //if your inputs file doesn't have that parameter listed 
+                        cerr << "parameter "<< inputs[count] << " not in input file.";
+                        exit(10);
+                    }
+                }
+            }
+            len = stod(inputs[0]);
+            num = len*len;
+            beta = stod(inputs[1]);
+            cout << "parameters acquired" <<endl;    
+        }
+    }
+}
