@@ -116,5 +116,6 @@ void test_QL(double *** Lattice, int i, int j, int len)
         QLsin = QL_triangle(triangles[n], Lattice, false);
         std::cout << std::setw(10) << "triangle " << std::setw(2) << n;
         std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
-        std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
+        std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;
+    }
 }
