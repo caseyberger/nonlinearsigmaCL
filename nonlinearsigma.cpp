@@ -71,6 +71,7 @@ int main (int argc, char *argv[])
                 QL_tri = QL_triangle(triangles[n], Lattice, true);
                 //string valname = "QL_triangle";
                 //print_value(Lattice, i, j, len, QL_tri, valname);
+                test_QL(Lattice, i, j, len);
             }
         }
     }

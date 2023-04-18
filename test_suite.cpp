@@ -105,7 +105,7 @@ void test_triangles(int i, int j, int len)
     std::cout << std::endl;
 }
 
-void test_QL(int i, int j)
+void test_QL(double *** Lattice, int i, int j, int len)
 {
     int triangles[8][3][2];
     double QLsin, QLcos;
