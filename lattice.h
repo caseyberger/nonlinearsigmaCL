@@ -1,3 +1,7 @@
+// Casey Berger
+// Created: Mar 28, 2023
+// Last edited: Apr 18, 2023
+
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>

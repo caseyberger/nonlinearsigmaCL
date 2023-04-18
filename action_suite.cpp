@@ -1,4 +1,7 @@
-//#include <stdio.h>
+// Casey Berger
+// Created: Apr 18, 2023
+// Last edited: Apr 18, 2023
+
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>

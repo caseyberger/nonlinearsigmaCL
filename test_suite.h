@@ -1,12 +1,18 @@
 // Casey Berger
 // Created: Mar 9, 2023
-// Last edited: Mar 9, 2023
-//NOTE: need to read in the global variables first. This will require a major update of the code. Return to this later.
+// Last edited: Apr 18, 2023
 
 #include <string> //string
 #include <iostream> //cout
 #include <cmath> //M_PI, sin, cos, pow
 #include <iomanip> //setw
 
+#include "lattice.h"
+#include "action_suite.h"
 
-
+void check_phi_magnitude(double *** Lattice, int len); 
+double phi_tot(double *** Lattice, int len); 
+void print_lattice(double *** Lattice, int len);
+void print_value(double *** Lattice, int i, int j, int len, double value);
+void test_triangles(int i, int j, int len);
+void test_QL(double QLcos, double QLsin);

@@ -23,10 +23,10 @@ TARGET = nonlinearsigma
 # ****************************************************
 # Targets needed to bring the executable up to date
 
-nonlinearsigma: nonlinearsigma.o lattice.o action_suite.o
-	$(CXX) -o nonlinearsigma nonlinearsigma.o lattice.o action_suite.o
+nonlinearsigma: nonlinearsigma.o lattice.o action_suite.o test_suite.o
+	$(CXX) -o nonlinearsigma nonlinearsigma.o lattice.o action_suite.o test_suite.o
 
-nonlinearsigma.o: nonlinearsigma.cpp lattice.h action_suite.h
+nonlinearsigma.o: nonlinearsigma.cpp lattice.h action_suite.h test_suite.h
 	$(CXX) -c nonlinearsigma.cpp 
 
 # Dependencies
@@ -36,8 +36,8 @@ lattice.o: lattice.cpp lattice.h
 action_suite.o: action_suite.cpp action_suite.h
 	$(CXX) -c action_suite.cpp
     
-#test_suite.o: test_suite.cpp test_suite.h
-#	$(CXX) -c test_suite.cpp 
+test_suite.o: test_suite.cpp test_suite.h
+	$(CXX) -c test_suite.cpp 
  
 ##########################################################################
 # Additional tasks 

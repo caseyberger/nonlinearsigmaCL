@@ -18,7 +18,7 @@
 //#include <sstream>
 
 //custom header files
-//#include "test_suite.h"
+#include "test_suite.h"
 #include "lattice.h"
 #include "action_suite.h"
 
@@ -29,15 +29,9 @@ using namespace std;
 //const int num = len*len;  //total number of lattice sites
 
 //function declaration
-void check_phi_magnitude(double *** Lattice, int len); //move to testing suite
-double phi_tot(double *** Lattice, int len); //only useful for testing - move to testing suite
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double A_L);
-void print_lattice(double *** Lattice, int len);
-void print_value(double *** Lattice, int i, int j, int len, double value);
-void test_triangles(int i, int j, int len);
-void test_QL(double QLcos, double QLsin);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta);
 
 int main (int argc, char *argv[])
@@ -75,7 +69,7 @@ int main (int argc, char *argv[])
             for (int n = 0; n < 8; n++)
             {
                 QL_tri = QL_triangle(triangles[n], Lattice);
-                cout << "Q_L for triangle " << n << " = " << QL_tri << endl;
+                print_value(Lattice, i, j, len, QL_tri);
             }
         }
     }
@@ -101,36 +95,6 @@ int main (int argc, char *argv[])
     return 0;
 }
 
-void check_phi_magnitude(double *** Lattice, int len)
-{
-    double phi_magnitude = 0.0;
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            phi_magnitude = pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
-            if (phi_magnitude != 1.){
-                cout << "Phi is not a unit vector. Magnitude = ";
-                cout << setw(5) << phi_magnitude << "at location";
-                cout << "i,j = " << i << "," << j << endl;
-            }
-        }
-    }
-}
-
-double phi_tot(double *** Lattice, int len)
-{
-     //cout << "phi_tot" << endl;
-    double phi = 0.0;
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            phi += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
-        }
-    }
-    return phi;
-}
 
 double Z_renorm(double beta, int len){
     //pulls renormalization factor from table given in paper
@@ -187,102 +151,4 @@ void write_to_file(int n, double phi, double A_L)
     fout.setf(ios::fixed);
     fout << setw(10) << n << setw(10) << phi<< setw(10) << A_L << endl;
     fout.close();
-}
-void print_lattice(double *** Lattice, int len)
-{
-    //cout << "print_lattice" << endl;
-    //prints lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(5) << Lattice[i][j][0];
-            cout << setw(5) << Lattice[i][j][1];
-            cout << setw(5) << Lattice[i][j][2] << endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-
-void print_value(double *** Lattice, int i, int j, int len, double value)
-{
-    //cout << "print_value" << endl;
-    //prints value calculated on lattice to screen
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            cout << setw(2) << i << setw(2) << j;
-            cout << setw(10) << value<< endl;
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-void test_triangles(int i, int j, int len)
-{
-    //testing triangles and plus one minus one
-    int triangles[8][3][2];
-    make_triangles(i,j,len,triangles);
-    for (int n = 0; n<8;n++)
-    {
-        cout << setw(2) << i << setw(2) << j;
-        cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
-        cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
-        cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
-    }
-    cout << endl;
-}
-
-void test_QL(double QLcos, double QLsin)
-{
-    cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
-}
-
-void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
-{
-    //read in parameters
-    cout << "Reading in parameters from input file" << endl;
-    string str, filename;
-    int n_params = 2;
-    string inputs [2] = {"L","beta"};//read in keywords for parameters
-    if (argc != 2){ //exits if input file is not given
-        cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
-        exit(10);
-    }
-    else{
-        ifstream input_file(argv[1]);
-        if (!input_file.is_open()){
-            cerr << "input file cannot be opened";
-            exit(10);
-        }
-        else{
-            int count = 0;
-            cout << "Starting param search in file."<<endl;
-            while (count < n_params) {
-                while (getline(input_file, str)) {
-                    //search for params in input
-                    size_t found = str.find(inputs[count]);
-                    size_t start;
-                    if (found != string::npos) {
-                        start = str.find_last_of(' ');
-                        inputs[count] = str.substr(start + 1);
-                        count++;
-                    }
-                    else{
-                        //if your inputs file doesn't have that parameter listed 
-                        cerr << "parameter "<< inputs[count] << " not in input file.";
-                        exit(10);
-                    }
-                }
-            }
-            len = stod(inputs[0]);
-            num = len*len;
-            beta = stod(inputs[1]);
-            cout << "parameters acquired" <<endl;    
-        }
-    }
 }
