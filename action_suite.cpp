@@ -133,9 +133,9 @@ double Q_lattice(double *** Lattice, int len){
     return Q_L;//This Q_L is not renormalized. You can renormalize it later with Z
 }
 
-/*
-double A_lattice(double beta, double *** Lattice){
+double A_lattice(double beta, double *** Lattice, int len){
     //calculates the standard lattice action A_L
+    //std::cout << "function: A_lattice in action_suite" << std::endl;
     double A_L = 0.0;
     for (int i = 0; i<len; i++)
     {
@@ -165,4 +165,3 @@ double A_lattice(double beta, double *** Lattice){
         }
     return -1.*beta*A_L;
 }
-*/

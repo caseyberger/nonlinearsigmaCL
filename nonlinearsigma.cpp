@@ -69,9 +69,9 @@ int main (int argc, char *argv[])
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice, len);
-        //A_L = A_lattice(beta, Lattice);
+        A_L = A_lattice(beta, Lattice, len);
         Q_L = Q_lattice(Lattice, len);
-        write_to_file(n, phi, Q_L);
+        write_to_file(n, phi, Q_L, A_L);
         lattice_init(Lattice, len);
     }
     
@@ -113,11 +113,11 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "Q_L"<< endl;
+    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "Q_L"<< setw(10) << "A_L"<< endl;
     fout.close();
 }
 
-void write_to_file(int n, double phi, double Q_L)
+void write_to_file(int n, double phi, double Q_L, double A_L)
 {
     //cout << "write_to_file" << endl;
     //output both solutions to a .txt file to open in gnuplot
@@ -132,7 +132,7 @@ void write_to_file(int n, double phi, double Q_L)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << n << setw(10) << phi<< setw(10) << Q_L << endl;
+    fout << setw(10) << n << setw(10) << phi<< setw(10) << Q_L<< setw(10) << A_L << endl;
     fout.close();
 }
 

@@ -13,5 +13,5 @@
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]);
 double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin);
 double Q_lattice(double *** Lattice, int len);
-//double A_lattice(double beta, double *** Lattice);
+double A_lattice(double beta, double *** Lattice, int len);
 #endif
