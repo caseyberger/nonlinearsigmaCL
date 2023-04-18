@@ -6,7 +6,6 @@
 #include <cstdlib>
 
 #include "lattice.h"
-#include "test_suite.h"
 
 #ifndef ACTION_H
 #define ACTION_H
