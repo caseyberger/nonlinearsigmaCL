@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
+
 #include "action_suite.h"
+#include "lattice.h"
 
 /*
 This file contains all the operations needed to calculate the 

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "lattice.h"
 
 #ifndef ACTION_H
 #define ACTION_H
