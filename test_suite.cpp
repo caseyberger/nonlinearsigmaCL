@@ -5,7 +5,7 @@
 #include <string> //string
 #include <iostream> //cout
 #include <cmath> //M_PI, sin, cos, pow
-#include <iomanip> //setw
+#include <iomanip> //std::setw
 
 #include "test_suite.h"
 #include "lattice.h"
@@ -33,8 +33,8 @@ void check_phi_magnitude(double *** Lattice, int len)
             phi_magnitude = pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
             if (phi_magnitude != 1.){
                 std::cout << "Phi is not a unit vector. Magnitude = ";
-                std::cout << setw(5) << phi_magnitude << "at location";
-                std::cout << "i,j = " << i << "," << j << endl;
+                std::cout << std::setw(5) << phi_magnitude << "at location";
+                std::cout << "i,j = " << i << "," << j << std::endl;
             }
         }
     }
@@ -42,7 +42,7 @@ void check_phi_magnitude(double *** Lattice, int len)
 
 double phi_tot(double *** Lattice, int len)
 {
-     //std::cout << "phi_tot" << endl;
+     //std::cout << "phi_tot" << std::endl;
     double phi = 0.0;
     for (int i = 0; i<len; i++)
     {
@@ -56,36 +56,36 @@ double phi_tot(double *** Lattice, int len)
 
 void print_lattice(double *** Lattice, int len)
 {
-    //std::cout << "print_lattice" << endl;
+    //std::cout << "print_lattice" << std::endl;
     //prints lattice to screen
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
         {
-            std::cout << setw(5) << Lattice[i][j][0];
-            std::cout << setw(5) << Lattice[i][j][1];
-            std::cout << setw(5) << Lattice[i][j][2] << endl;
+            std::cout << std::setw(5) << Lattice[i][j][0];
+            std::cout << std::setw(5) << Lattice[i][j][1];
+            std::cout << std::setw(5) << Lattice[i][j][2] << std::endl;
         }
-        std::cout << endl;
+        std::cout << std::endl;
     }
-    std::cout << endl;
+    std::cout << std::endl;
 }
 
 
 void print_value(double *** Lattice, int i, int j, int len, double value)
 {
-    //std::cout << "print_value" << endl;
+    //std::cout << "print_value" << std::endl;
     //prints value calculated on lattice to screen
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
         {
-            std::cout << setw(2) << i << setw(2) << j;
-            std::cout << setw(10) << value<< endl;
+            std::cout << std::setw(2) << i << std::setw(2) << j;
+            std::cout << std::setw(10) << value<< std::endl;
         }
-        std::cout << endl;
+        std::cout << std::endl;
     }
-    std::cout << endl;
+    std::cout << std::endl;
 }
 
 void test_triangles(int i, int j, int len)
@@ -95,15 +95,15 @@ void test_triangles(int i, int j, int len)
     make_triangles(i,j,len,triangles);
     for (int n = 0; n<8;n++)
     {
-        std::cout << setw(2) << i << setw(2) << j;
-        std::cout << setw(2) << triangles[n][0][0] << setw(2) << triangles[n][0][1];
-        std::cout << setw(2) << triangles[n][1][0] << setw(2) << triangles[n][1][1];
-        std::cout << setw(2) << triangles[n][2][0] << setw(2) << triangles[n][2][1]<< endl;
+        std::cout << std::setw(2) << i << std::setw(2) << j;
+        std::cout << std::setw(2) << triangles[n][0][0] << std::setw(2) << triangles[n][0][1];
+        std::cout << std::setw(2) << triangles[n][1][0] << std::setw(2) << triangles[n][1][1];
+        std::cout << std::setw(2) << triangles[n][2][0] << std::setw(2) << triangles[n][2][1]<< std::endl;
     }
-    std::cout << endl;
+    std::cout << std::endl;
 }
 
 void test_QL(double QLcos, double QLsin)
 {
-    std::cout << setw(10) << "QLcos = " << setw(10) << QLcos << setw(10) << "QLsin = "<< setw(10) << QLsin << endl;   
+    std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;   
 }
