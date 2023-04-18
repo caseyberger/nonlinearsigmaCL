@@ -13,6 +13,6 @@ pwd; hostname; date
 
 echo "Running nonlinear sigma on single CPU core"
 
-nonlinearsigma inputs.txt
+./nonlinearsigma inputs.txt
 
 date
