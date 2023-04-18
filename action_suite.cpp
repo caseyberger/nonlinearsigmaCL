@@ -17,6 +17,8 @@ MAY NEED TO CALL LATTICE.H???
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
     //you need to do this with nearest neighbors! Do you need to do a plus_one, minus_one function??
+    //std::cout << "make_triangles" << std::endl;
+    
     //triangle 1 
     triangles[0][0][0] = i;
     triangles[0][0][1] = j;
@@ -99,7 +101,7 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice){
     QLcos = (1. + dot_product(Lattice[i1][j1], Lattice[i2][j2]) + dot_product(Lattice[i2][j2], Lattice[i3][j3]) + dot_product(Lattice[i3][j3], Lattice[i1][j1]))/rho;
     cross_product(Lattice[i2][j2],Lattice[i3][j3],phi2crossphi3);
     QLsin = dot_product(Lattice[i1][j1],phi2crossphi3)/rho;
-    cout << "QL_triangle"<< endl;
+    std::cout << "QL_triangle"<< std::endl;
     //test_QL(acos(QLcos), asin(QLsin));
     return acos(QLcos);
 }
