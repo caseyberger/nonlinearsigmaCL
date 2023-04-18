@@ -33,8 +33,6 @@ void check_phi_magnitude(double *** Lattice, int len); //move to testing suite
 double phi_tot(double *** Lattice, int len); //only useful for testing - move to testing suite
 double dot_product(double vec1[3], double vec2[3]); //make some sort of lattice math suite?
 void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);//make some sort of lattice math suite?
-int plus_one(int i, int len);//does this go in the lattice file?
-int minus_one(int i, int len);//does this go in the lattice file?
 //double A_lattice(double beta, double *** Lattice);
 //double QL_triangle(int current_triangle[3][2], double *** Lattice);
 //double Q_lattice(double *** Lattice);
@@ -159,25 +157,7 @@ void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
     cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }
 
-int plus_one(int i, int len){
-    //returns site plus one, using periodic boundary conditions
-    if (i==len-1){
-        return 0;
-    }
-    else{
-        return i+1;
-    }
-}
 
-int minus_one(int i, int len){
-    //returns site minus one, using periodic boundary conditions
-    if (i==0){
-        return len-1;
-    }
-    else{
-        return i-1;
-    }
-}
 /*
 double A_lattice(double beta, double *** Lattice){
     //calculates the standard lattice action A_L

@@ -38,3 +38,23 @@ void lattice_init(double *** Lattice, int len){
     }
     std::cout << "Lattice initialized" << std::endl;
 }
+
+int plus_one(int i, int len){
+    //returns site plus one, using periodic boundary conditions
+    if (i==len-1){
+        return 0;
+    }
+    else{
+        return i+1;
+    }
+}
+
+int minus_one(int i, int len){
+    //returns site minus one, using periodic boundary conditions
+    if (i==0){
+        return len-1;
+    }
+    else{
+        return i-1;
+    }
+}
