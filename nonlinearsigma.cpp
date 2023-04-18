@@ -443,7 +443,10 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
                         start = str.find_last_of(' ');
                         inputs[count] = str.substr(start + 1);
                         count++;
-                        cout << "Found parameter number" << count << ": "<< inputs[count] << endl;
+                    }
+                    else{
+                        cerr << "parameter "<< inputs[count] << " not in input file.";
+                        exit(10);
                     }
                 }
             }
