@@ -69,7 +69,7 @@ int main (int argc, char *argv[])
             for (int n = 0; n < 8; n++)
             {
                 QL_tri = QL_triangle(triangles[n], Lattice);
-                str valname = "QL_triangle"
+                string valname = "QL_triangle"
                 print_value(Lattice, i, j, len, QL_tri, valname);
             }
         }

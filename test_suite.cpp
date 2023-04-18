@@ -72,7 +72,7 @@ void print_lattice(double *** Lattice, int len)
 }
 
 
-void print_value(double *** Lattice, int i, int j, int len, double value, str valname)
+void print_value(double *** Lattice, int i, int j, int len, double value, string valname)
 {
     //std::cout << "function: print_value in test_suite.cpp" << std::endl;
     //prints value calculated on lattice to screen
