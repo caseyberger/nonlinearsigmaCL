@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
     int len, num, ntherm, nMC;
     double beta = 1.6;
     
-    read_in_inputs(argc, argv,len, num, ntherm, nMC beta);
+    read_in_inputs(argc, argv,len, num, ntherm, nMC, beta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
     
