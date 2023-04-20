@@ -116,8 +116,8 @@ void create_logfile()
 void write_to_file(int n, double phi, double Q_L, double A_L)
 {
     //cout << "write_to_file" << endl;
-    //output both solutions to a .txt file to open in gnuplot
-    string fname = "nonlinearsigma_data.txt";
+    //output calculations .csv file
+    string fname = "nonlinearsigma_data.csv";
     ofstream fout; //output stream
     fout.open(fname.c_str(),std::ios_base::app);
 
