@@ -27,7 +27,7 @@ using namespace std;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
-void write_to_file(int n, double phi, double Q_L, double A_L, double S_L;
+void write_to_file(int n, double phi, double Q_L, double A_L, double S_L);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta);
 
 int main (int argc, char *argv[])
