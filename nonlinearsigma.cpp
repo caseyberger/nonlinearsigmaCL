@@ -28,14 +28,14 @@ using namespace std;
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(int n, double phi, double Q_L, double A_L, double S_L);
-void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta);
+void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta);
 
 int main (int argc, char *argv[])
 {
-    int len, num;
+    int len, num, ntherm, nMC;
     double beta = 1.6;
     
-    read_in_inputs(argc, argv,len, num, beta);
+    read_in_inputs(argc, argv,len, num, ntherm, nMC beta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
     
@@ -65,7 +65,15 @@ int main (int argc, char *argv[])
     double S_L = 0.0;
     double itheta = M_PI;
     
-    for (int n = 0; n<10; n++){
+    //thermalization loop
+    for (int n = 0; n<ntherm; n++){
+        //some sort of updating function in here
+        lattice_init(Lattice, len);
+    }
+    
+    //MC loop
+    for (int n = 0; n<nMC; n++){
+        //some sort of updating function in here
         phi = phi_tot(Lattice, len);
         A_L = A_lattice(beta, Lattice, len);
         Q_L = Q_lattice(Lattice, len);
@@ -135,7 +143,7 @@ void write_to_file(int n, double phi, double Q_L, double A_L, double S_L)
     fout.close();
 }
 
-void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
+void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta)
 {
     //read in parameters
     cout << "Reading in parameters from input file" << endl;
@@ -175,6 +183,8 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta)
             len = stod(inputs[0]);
             num = len*len;
             beta = stod(inputs[1]);
+            ntherm = stod(inputs[2]);
+            nMC = stod(inputs[3]);
             cout << "parameters acquired" <<endl;    
         }
     }
