@@ -19,7 +19,6 @@ MAY NEED TO CALL LATTICE.H???
 
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
-    //you need to do this with nearest neighbors! Do you need to do a plus_one, minus_one function??
     //std::cout << "make_triangles" << std::endl;
     
     //triangle 1 
@@ -147,21 +146,34 @@ double A_lattice(double beta, double *** Lattice, int len){
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
             
+            /* only positive nn?
             //neighbor i-1,j
             i_nn = minus_one(i,len);
             j_nn = j;
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            */
             
             //neighbor i,j+1
             i_nn = i;
             j_nn = plus_one(j,len);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
-            
+            /* only positive nn?
             //neighbor i,j-1
             i_nn = i;
             j_nn = minus_one(j,len);
             A_L += dot_product(Lattice[i][j],Lattice[i_nn][j_nn]);
+            */
             }
         }
     return -1.*beta*A_L;
+}
+
+double S_lattice(double beta, double *** Lattice, int len, double itheta){
+    //calculates the full lattice action S_L = A_L - i theta Q_L
+    //not sure yet how to deal with the imaginary part, so right now I'm making one variable called itheta that will be real and analytically continued to imaginary values
+    //std::cout << "function: S_lattice in action_suite" << std::endl;
+    double S_L = 0.0;
+    S_L = A_lattice(beta,Lattice,len);
+    S_L += -1. * itheta * Q_lattice(Lattice, len);
+    return S_L;
 }

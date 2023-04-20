@@ -27,7 +27,7 @@ using namespace std;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
-void write_to_file(int n, double phi, double Q_L, double A_L);
+void write_to_file(int n, double phi, double Q_L, double A_L, double S_L;
 void read_in_inputs(int argc, char *argv[],int &len, int &num, double &beta);
 
 int main (int argc, char *argv[])
@@ -62,12 +62,15 @@ int main (int argc, char *argv[])
     double phi = 0.0;
     double A_L = 0.0;
     double Q_L = 0.0;
+    double S_L = 0.0;
+    double itheta = M_PI;
     
     for (int n = 0; n<10; n++){
         phi = phi_tot(Lattice, len);
         A_L = A_lattice(beta, Lattice, len);
         Q_L = Q_lattice(Lattice, len);
-        write_to_file(n, phi, Q_L, A_L);
+        S_L = S_lattice(beta, Lattice, len, itheta);
+        write_to_file(n, phi, Q_L, A_L, S_L);
         lattice_init(Lattice, len);
     }
     
@@ -96,7 +99,7 @@ double Z_renorm(double beta, int len){
 
 void create_logfile()
 {
-    cout << "create_logfile" << endl;
+    //cout << "create_logfile" << endl;
     //create header of logfile before
     string fname = "nonlinearsigma_data.csv";
     ofstream fout; //output stream
@@ -109,11 +112,11 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout  << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< endl;
+    fout  << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< "," << "S_L"<< endl;
     fout.close();
 }
 
-void write_to_file(int n, double phi, double Q_L, double A_L)
+void write_to_file(int n, double phi, double Q_L, double A_L, double S_L)
 {
     //cout << "write_to_file" << endl;
     //output calculations .csv file
@@ -128,7 +131,7 @@ void write_to_file(int n, double phi, double Q_L, double A_L)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << n << "," << phi<< "," << Q_L<< "," << A_L << endl;
+    fout << n << "," << phi<< "," << Q_L<< "," << A_L <<"," << S_L << endl;
     fout.close();
 }
 
