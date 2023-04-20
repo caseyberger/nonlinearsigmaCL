@@ -24,10 +24,6 @@
 
 using namespace std;
 
-//global variables
-//const int len = 4; //length of lattice
-//const int num = len*len;  //total number of lattice sites
-
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
@@ -102,7 +98,7 @@ void create_logfile()
 {
     cout << "create_logfile" << endl;
     //create header of logfile before
-    string fname = "nonlinearsigma_data.txt";
+    string fname = "nonlinearsigma_data.csv";
     ofstream fout; //output stream
     fout.open(fname.c_str(),ios::out);
     
@@ -113,7 +109,7 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << "step" << setw(10) << "|phi|" << setw(10) << "Q_L"<< setw(10) << "A_L"<< endl;
+    fout  << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< endl;
     fout.close();
 }
 
@@ -132,7 +128,7 @@ void write_to_file(int n, double phi, double Q_L, double A_L)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << setw(10) << n << setw(10) << phi<< setw(10) << Q_L<< setw(10) << A_L << endl;
+    fout << n << "," << phi<< "," << Q_L<< "," << A_L << endl;
     fout.close();
 }
 
