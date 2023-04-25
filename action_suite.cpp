@@ -118,9 +118,9 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin, 
     j2 = current_triangle[1][1];
     i3 = current_triangle[2][0];
     j3 = current_triangle[2][1];
-    pick_phi(i1,j1, phi1, Lattice, old_lattice)//set phi1
-    pick_phi(i2,j2, phi2, Lattice, old_lattice)//set phi2
-    pick_phi(i3,j3, phi3, Lattice, old_lattice)//set phi3
+    pick_phi(i1,j1, phi1, Lattice, old_lattice);//set phi1
+    pick_phi(i2,j2, phi2, Lattice, old_lattice);//set phi2
+    pick_phi(i3,j3, phi3, Lattice, old_lattice);//set phi3
         
     rho2 = 2.*(1. + dot_product(phi1, phi2))*(1. + dot_product(phi2, phi3))*(1. + dot_product(phi3, phi1));
     rho = sqrt(rho2);
@@ -172,16 +172,16 @@ double A_lattice(double beta, double *** Lattice, int len, bool old_lattice){
             //neighbor i+1,j
             i_nn = plus_one(i,len);
             j_nn = j;
-            pick_phi(i,j, phi, Lattice, old_lattice)//set phi
-            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice)//set phi_nn
+            pick_phi(i,j, phi, Lattice, old_lattice);//set phi
+            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice);//set phi_nn
             A_L += dot_product(phi,phi_nn);
             
             /* only positive nn?
             //neighbor i-1,j
             i_nn = minus_one(i,len);
             j_nn = j;
-            pick_phi(i,j, phi, Lattice, old_lattice)//set phi
-            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice)//set phi_nn
+            pick_phi(i,j, phi, Lattice, old_lattice);//set phi
+            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice);//set phi_nn
             phi_nn[2] = Lattice[i_nn][jj_nn][2];
             A_L += dot_product(phi,phi_nn);
             */
@@ -189,15 +189,15 @@ double A_lattice(double beta, double *** Lattice, int len, bool old_lattice){
             //neighbor i,j+1
             i_nn = i;
             j_nn = plus_one(j,len);
-            pick_phi(i,j, phi, Lattice, old_lattice)//set phi
-            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice)//set phi_nn
+            pick_phi(i,j, phi, Lattice, old_lattice);//set phi
+            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice);//set phi_nn
             A_L += dot_product(phi,phi_nn);
             /* only positive nn?
             //neighbor i,j-1
             i_nn = i;
             j_nn = minus_one(j,len);//set phi
-            pick_phi(i,j, phi, Lattice, old_lattice)//set phi
-            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice)//set phi_nn
+            pick_phi(i,j, phi, Lattice, old_lattice);//set phi
+            pick_phi(i_nn,j_nn, phi_nn, Lattice, old_lattice);//set phi_nn
             A_L += dot_product(phi,phi_nn);
             */
             }
