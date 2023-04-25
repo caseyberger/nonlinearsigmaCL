@@ -22,7 +22,8 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
     std:: cout << "Function: Metropolis loop in monte_carlo" << std::endl;
     std:: cout << "Note: Currently, looping over the lattice in sequential order. Update to make this a random order." << std::endl;
 #endif
-    double S_old, S_new, delta_S, phi_new;
+    double S_old, S_new, delta_S;
+    double phi_new[3];
     bool old_lattice = true;
     bool new_lattice = false;
     for (int i = 0; i<len; i++)
