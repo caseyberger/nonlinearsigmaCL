@@ -91,7 +91,7 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
 double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: QL_triangle"<< std::endl;
 #endif  
     double phi2crossphi3[3];
@@ -118,7 +118,7 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
 
 double Q_lattice(double *** Lattice, int len){
     //calculates topological charge
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: Q_lattice in action_suite"<< std::endl;
 #endif  
     double Q_L = 0.0;
@@ -140,7 +140,7 @@ double Q_lattice(double *** Lattice, int len){
 
 double A_lattice(double beta, double *** Lattice, int len){
     //calculates the standard lattice action A_L
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: A_lattice in action_suite"<< std::endl;
 #endif  
     double A_L = 0.0;
@@ -179,7 +179,7 @@ double A_lattice(double beta, double *** Lattice, int len){
 double S_lattice(double beta, double *** Lattice, int len, double itheta){
     //calculates the full lattice action S_L = A_L - i theta Q_L
     //not sure yet how to deal with the imaginary part, so right now I'm making one variable called itheta that will be real and analytically continued to imaginary values
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: S_lattice in action_suite"<< std::endl;
     std::cout << "Note: not sure yet how to deal with the imaginary part, so right now I'm making one variable called itheta that will be real and analytically continued to imaginary values" << std::endl;
 #endif  

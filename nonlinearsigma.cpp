@@ -72,12 +72,18 @@ int main (int argc, char *argv[])
     double itheta = M_PI;
     
     //thermalization loop
+#ifdef TESTING_MODE
+    cout << "Starting thermalization loop of length " << ntherm << endl;
+#endif
     for (int n = 0; n<ntherm; n++){
         //some sort of updating function in here
         lattice_init(Lattice, len);
     }
     
     //MC loop
+#ifdef TESTING_MODE
+    cout << "Starting Monte Carlo loop of length " << nMC << endl;
+#endif
     for (int n = 0; n<nMC; n++){
         //some sort of updating function in here
         phi = phi_tot(Lattice, len);

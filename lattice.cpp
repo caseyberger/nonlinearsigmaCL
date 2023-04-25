@@ -19,13 +19,17 @@ void lattice_init(double *** Lattice, int len){
 //Dynamically generates a 2D square lattice with a three-component phi at each site.
 //See NRRB via CL code for alternative random number generator if you run into issues.
     
-#ifdef TEST_CONSTANT_RNG
+#ifdef TEST_CONSTANT_RN
     double r = 1.0;
 #else
     srand(time(NULL)); //seed random number
     double r = ((double)rand())/((double)RAND_MAX);
 #endif
-    std::cout << "Initializing fields on lattice" << std::endl;
+    
+#ifdef TESTING_MODE
+    std:: cout << "Function: lattice_init in lattice" << std::endl;
+#endif
+
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
@@ -43,6 +47,9 @@ void lattice_init(double *** Lattice, int len){
 }
 
 int plus_one(int i, int len){
+#ifdef EXTREME_TESTING_MODE
+    std:: cout << "Function: plus_one in lattice" << std::endl;
+#endif
     //returns site plus one, using periodic boundary conditions
     if (i==len-1){
         return 0;
@@ -53,6 +60,9 @@ int plus_one(int i, int len){
 }
 
 int minus_one(int i, int len){
+#ifdef EXTREME_TESTING_MODE
+    std:: cout << "Function: minus_one in lattice" << std::endl;
+#endif
     //returns site minus one, using periodic boundary conditions
     if (i==0){
         return len-1;
@@ -63,6 +73,9 @@ int minus_one(int i, int len){
 }
 
 double dot_product(double vec1[3], double vec2[3]){
+#ifdef EXTREME_TESTING_MODE
+    std:: cout << "Function: dot_product in lattice" << std::endl;
+#endif
     //calculates the dot product of two vectors
     double dot_prod = 0.0;
     dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
@@ -70,6 +83,9 @@ double dot_product(double vec1[3], double vec2[3]){
 }
 
 void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
+#ifdef EXTREME_TESTING_MODE
+    std:: cout << "Function: cross_product in lattice" << std::endl;
+#endif
     //calculates the cross product of two vectors
     cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
     cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
