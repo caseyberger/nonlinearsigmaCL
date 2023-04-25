@@ -12,4 +12,6 @@
 #ifndef MC_H
 #define MC_H
 
+void Metropolis_loop(double beta, double itheta, double *** Lattice, int len);
+
 #endif
