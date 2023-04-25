@@ -141,6 +141,7 @@ double Q_lattice(double *** Lattice, int len, bool old_lattice){
     std:: cout << "Function: Q_lattice in action_suite"<< std::endl;
 #endif  
     double Q_L = 0.0;
+    bool arcsin = true;//uses arcsin instead of arccos for Q
     int triangles[8][3][2];
     for (int i = 0; i<len; i++)
     {
@@ -149,7 +150,7 @@ double Q_lattice(double *** Lattice, int len, bool old_lattice){
             make_triangles(i,j,len,triangles);
             for (int n = 0; n < 8; n++) //loop over 8 triangles
             {
-                double QL_tri = QL_triangle(triangles[n], Lattice, old_lattice);
+                double QL_tri = QL_triangle(triangles[n], Lattice, arcsin, old_lattice);
                 Q_L += QL_tri;
             }
         }
