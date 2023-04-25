@@ -16,7 +16,17 @@ MAKEFILE= make_sigma
 # The command you type to run the program (executable name)
 COMMAND =  nonlinearsigma
 
+# special definitions for testing, etc
+
+USE_TEST_PRINT_STATEMENTS ?= TRUE
+
+ifeq ($(USE_TEST_PRINT_STATEMENTS), TRUE)
+	DEFINES += -DTESTING_MODE
+endif
+
 CXX = g++
+
+CXXFLAGS += $(DEFINES)
 
 TARGET = nonlinearsigma
 
@@ -24,20 +34,20 @@ TARGET = nonlinearsigma
 # Targets needed to bring the executable up to date
 
 nonlinearsigma: nonlinearsigma.o lattice.o action_suite.o test_suite.o
-	$(CXX) -o nonlinearsigma nonlinearsigma.o lattice.o action_suite.o test_suite.o
+	$(CXX) $(CXXFLAGS) -o nonlinearsigma nonlinearsigma.o lattice.o action_suite.o test_suite.o
 
 nonlinearsigma.o: nonlinearsigma.cpp lattice.h action_suite.h test_suite.h
-	$(CXX) -c nonlinearsigma.cpp 
+	$(CXX) $(CXXFLAGS) -c nonlinearsigma.cpp 
 
 # Dependencies
 lattice.o: lattice.cpp lattice.h 
-	$(CXX) -c lattice.cpp
+	$(CXX) $(CXXFLAGS) -c lattice.cpp
     
 action_suite.o: action_suite.cpp action_suite.h
-	$(CXX) -c action_suite.cpp
+	$(CXX) $(CXXFLAGS) -c action_suite.cpp
     
 test_suite.o: test_suite.cpp test_suite.h
-	$(CXX) -c test_suite.cpp 
+	$(CXX) $(CXXFLAGS) -c test_suite.cpp 
  
 ##########################################################################
 # Additional tasks 

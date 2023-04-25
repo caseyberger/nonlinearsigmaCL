@@ -32,6 +32,10 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
 
 int main (int argc, char *argv[])
 {
+#ifdef TESTING_MODE
+    cout << "Testing mode ON." << endl;
+#endif
+
     int len, num, ntherm, nMC;
     double beta = 1.6;
     
@@ -40,7 +44,9 @@ int main (int argc, char *argv[])
     cout << "beta = " << beta << endl;
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
+#ifdef TESTING_MODE
     cout << "Allocating memory for lattice" << endl;
+#endif
     double *** Lattice = new double**[num];
     for(int i = 0; i < len; i++){
         Lattice[i] = new double*[len];
@@ -88,6 +94,9 @@ int main (int argc, char *argv[])
 
 double Z_renorm(double beta, int len){
     //pulls renormalization factor from table given in paper
+#ifdef TESTING_MODE
+    cout << "Function: Z_renorm" << endl;
+#endif
     if (beta == 1.5 and len==120){
         return 0.285;
     }
@@ -107,9 +116,14 @@ double Z_renorm(double beta, int len){
 
 void create_logfile()
 {
-    //cout << "create_logfile" << endl;
-    //create header of logfile before
+#ifdef TESTING_MODE
+    cout << "Function: create_logfile" << endl;
+#endif
+    //create header of logfile
     string fname = "nonlinearsigma_data.csv";
+#ifdef TESTING_MODE
+    cout << "logfile name: " << fname << endl;
+#endif
     ofstream fout; //output stream
     fout.open(fname.c_str(),ios::out);
     
