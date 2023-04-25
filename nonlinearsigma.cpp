@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Mar 9, 2023
+// Last edited: Apr 25, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -21,6 +21,7 @@
 #include "test_suite.h"
 #include "lattice.h"
 #include "action_suite.h"
+#include "monte_carlo.h"
 
 using namespace std;
 
@@ -60,7 +61,7 @@ int main (int argc, char *argv[])
     //note: can this be put into a separate file as well? Think about how that would work
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
-            Lattice[i][j] = new double[3];
+            Lattice[i][j] = new double[6];
         }
     }
     lattice_init(Lattice, len);//initialize phi everywhere
@@ -82,7 +83,7 @@ int main (int argc, char *argv[])
 #endif
     for (int n = 0; n<ntherm; n++){
         //some sort of updating function in here
-        lattice_init(Lattice, len);
+        Metropolis_loop(beta, itheta, Lattice, len);
     }
     
     //MC loop

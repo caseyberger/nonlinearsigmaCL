@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Apr 18, 2023
+// Last edited: Apr 25, 2023
 
 #include <math.h>
 #include <time.h>
@@ -14,36 +14,61 @@ This file contains all the lattice admin operations, such as
 initializing, saving, etc.
 */
 
-void lattice_init(double *** Lattice, int len){
-
-//Dynamically generates a 2D square lattice with a three-component phi at each site.
-//See NRRB via CL code for alternative random number generator if you run into issues.
-    
+void generate_phi(double (&phi)[3]){
 #ifdef TEST_CONSTANT_RN
     double r = 1.0;
 #else
     srand(time(NULL)); //seed random number
     double r = ((double)rand())/((double)RAND_MAX);
 #endif
+    //generate a random polar and azimuthal angle
+    double inclination =   M_PI * r; //polar angle = inclination
+    double azimuth =  2. * M_PI * r; //azimuthal angle = azimuth
+    //create unit spin vector components from angles
+    phi[0] = sin(inclination) * cos(azimuth);
+    phi[1] = sin(inclination) * sin(azimuth);
+    phi[2] = cos(inclination);
+}
+
+void lattice_init(double *** Lattice, int len){
+
+//Dynamically generates a 2D square lattice with two three-component phis at each site (an old and a new)
+//See NRRB via CL code for alternative random number generator if you run into issues.
     
 #ifdef TESTING_MODE
     std:: cout << "Function: lattice_init in lattice" << std::endl;
 #endif
-
+    double phi[3];
     for (int i = 0; i<len; i++)
     {
         for (int j = 0; j<len; j++)
         {
-            //generate a random polar and azimuthal angle
-            double inclination =   M_PI * r; //polar angle = inclination
-            double azimuth =  2. * M_PI * r; //azimuthal angle = azimuth
-            //create unit spin vector components from angles
-            Lattice[i][j][0] = sin(inclination) * cos(azimuth);
-            Lattice[i][j][1] = sin(inclination) * sin(azimuth);
-            Lattice[i][j][2] = cos(inclination);
+            generate_phi(phi);
+            Lattice[i][j][0] = phi[0]; //holds current phi
+            Lattice[i][j][1] = phi[1]; //holds current phi
+            Lattice[i][j][2] = phi[2]; //holds current phi
+            Lattice[i][j][3] = 0.0; //holds new phi
+            Lattice[i][j][4] = 0.0; //holds new phi
+            Lattice[i][j][5] = 0.0; //holds new phi
         }
     }
     std::cout << "Lattice initialized" << std::endl;
+}
+
+void lattice_flush(double *** Lattice, int len){
+//updates old phi with new phi and sets new phi to zero
+    for (int i = 0; i<len; i++)
+    {
+        for (int j = 0; j<len; j++)
+        {
+            Lattice[i][j][0] = Lattice[i][j][3];//update
+            Lattice[i][j][1] = Lattice[i][j][4];//update
+            Lattice[i][j][2] = Lattice[i][j][5];//update
+            Lattice[i][j][3] = 0.0; //reset
+            Lattice[i][j][4] = 0.0; //reset 
+            Lattice[i][j][5] = 0.0; //reset 
+        }
+    }
 }
 
 int plus_one(int i, int len){
