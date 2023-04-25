@@ -140,9 +140,14 @@ void create_logfile()
 
 void write_to_file(int n, double phi, double Q_L, double A_L, double S_L)
 {
-    //cout << "write_to_file" << endl;
+#ifdef TESTING_MODE
+    cout << "Function: write_to_file" << endl;
+#endif
     //output calculations .csv file
     string fname = "nonlinearsigma_data.csv";
+#ifdef TESTING_MODE
+    cout << "Filename: " << fname << endl;
+#endif
     ofstream fout; //output stream
     fout.open(fname.c_str(),std::ios_base::app);
 
@@ -160,10 +165,12 @@ void write_to_file(int n, double phi, double Q_L, double A_L, double S_L)
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta)
 {
     //read in parameters
-    cout << "Reading in parameters from input file" << endl;
+#ifdef TESTING_MODE
+    cout << "Function: read_in_inputs" << endl;
+#endif
     string str, filename;
     int n_params = 2;
-    string inputs [2] = {"L","beta"};//read in keywords for parameters
+    string inputs [4] = {"L","beta", "ntherm","nMC"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
         cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
         exit(10);
@@ -176,7 +183,13 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
         }
         else{
             int count = 0;
-            cout << "Starting param search in file."<<endl;
+#ifdef TESTING_MODE
+    cout << "Starting param search in file: ";
+    for (n=0; n<n_params; n++){
+        cout << inputs[n] << ',';
+    }
+    cout << endl;
+#endif  
             while (count < n_params) {
                 while (getline(input_file, str)) {
                     //search for params in input
@@ -199,7 +212,13 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
             beta = stod(inputs[1]);
             ntherm = stod(inputs[2]);
             nMC = stod(inputs[3]);
-            cout << "parameters acquired" <<endl;    
+#ifdef TESTING_MODE
+    cout << "parameters acquired: ";
+    for (n=0; n<n_params; n++){
+        cout << inputs[n] << ',';
+    }
+    cout << endl;
+#endif  
         }
     }
 }
