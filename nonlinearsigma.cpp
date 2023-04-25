@@ -185,7 +185,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
             int count = 0;
 #ifdef TESTING_MODE
     cout << "Starting param search in file: ";
-    for (n=0; n<n_params; n++){
+    for (int n=0; n<n_params; n++){
         cout << inputs[n] << ',';
     }
     cout << endl;
@@ -214,7 +214,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
             nMC = stod(inputs[3]);
 #ifdef TESTING_MODE
     cout << "parameters acquired: ";
-    for (n=0; n<n_params; n++){
+    for (int n=0; n<n_params; n++){
         cout << inputs[n] << ',';
     }
     cout << endl;
