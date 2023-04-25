@@ -35,6 +35,11 @@ int main (int argc, char *argv[])
 #ifdef TESTING_MODE
     cout << "Testing mode ON." << endl;
 #endif
+    
+#ifdef EXTREME_TESTING_MODE
+    cout << "Testing mode is EXTREME." << endl;
+#endif
+
 
     int len, num, ntherm, nMC;
     double beta = 1.6;

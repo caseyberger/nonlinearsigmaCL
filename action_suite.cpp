@@ -20,7 +20,7 @@ MAY NEED TO CALL LATTICE.H???
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
     //std::cout << "make_triangles" << std::endl;
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: make_triangles"<< std::endl;
 #endif  
     //triangle 1 
