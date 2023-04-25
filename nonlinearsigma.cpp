@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
         write_to_file(dt, n, phi, Q_L, A_L, S_L);
         lattice_init(Lattice, len);
     }
-    time(&end_mc)
+    time(&end_mc);
     
     dt = end_mc - begin_mc;
 #ifdef TESTING_MODE
@@ -173,7 +173,7 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout  "dt"<< "," << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< "," << "S_L"<< endl;
+    fout << "dt"<< "," << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< "," << "S_L"<< endl;
     fout.close();
 }
 
