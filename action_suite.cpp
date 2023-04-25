@@ -20,7 +20,9 @@ MAY NEED TO CALL LATTICE.H???
 void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     //returns the 8 triangles formed by the plaquettes surrounding the point you're on
     //std::cout << "make_triangles" << std::endl;
-    
+#ifdef TESTING_MODE
+    std:: cout << "Function: make_triangles"<< std::endl;
+#endif  
     //triangle 1 
     triangles[0][0][0] = i;
     triangles[0][0][1] = j;
@@ -89,7 +91,9 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
 double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
     //Calculates QL on a single triangle
     // note -- this is not returning the same value of QL from sin and cos... is there another way to get rid of the imaginary part?
-    //std::cout << "QL_triangle"<< std::endl;
+#ifdef TESTING_MODE
+    std:: cout << "Function: QL_triangle"<< std::endl;
+#endif  
     double phi2crossphi3[3];
     double rho, rho2, QLcos, QLsin;
     int i1,j1,i2,j2,i3,j3;
@@ -114,7 +118,9 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin){
 
 double Q_lattice(double *** Lattice, int len){
     //calculates topological charge
-    //std::cout << "function: Q_lattice in action_suite" << std::endl;
+#ifdef TESTING_MODE
+    std:: cout << "Function: Q_lattice in action_suite"<< std::endl;
+#endif  
     double Q_L = 0.0;
     int triangles[8][3][2];
     for (int i = 0; i<len; i++)
@@ -134,7 +140,9 @@ double Q_lattice(double *** Lattice, int len){
 
 double A_lattice(double beta, double *** Lattice, int len){
     //calculates the standard lattice action A_L
-    //std::cout << "function: A_lattice in action_suite" << std::endl;
+#ifdef TESTING_MODE
+    std:: cout << "Function: A_lattice in action_suite"<< std::endl;
+#endif  
     double A_L = 0.0;
     for (int i = 0; i<len; i++)
     {
@@ -171,7 +179,10 @@ double A_lattice(double beta, double *** Lattice, int len){
 double S_lattice(double beta, double *** Lattice, int len, double itheta){
     //calculates the full lattice action S_L = A_L - i theta Q_L
     //not sure yet how to deal with the imaginary part, so right now I'm making one variable called itheta that will be real and analytically continued to imaginary values
-    //std::cout << "function: S_lattice in action_suite" << std::endl;
+#ifdef TESTING_MODE
+    std:: cout << "Function: S_lattice in action_suite"<< std::endl;
+    std::cout << "Note: not sure yet how to deal with the imaginary part, so right now I'm making one variable called itheta that will be real and analytically continued to imaginary values" << std::endl;
+#endif  
     double S_L = 0.0;
     S_L = A_lattice(beta,Lattice,len);
     S_L += -1. * itheta * Q_lattice(Lattice, len);
