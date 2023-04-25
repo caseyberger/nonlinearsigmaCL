@@ -40,7 +40,7 @@ void check_phi_magnitude(double *** Lattice, int len)
     }
 }
 
-double phi_tot(double *** Lattice, int len)
+double phi_tot(double *** Lattice, int len, bool old_lattice)
 {
      //std::cout << "phi_tot" << std::endl;
     double phi = 0.0;
@@ -48,7 +48,9 @@ double phi_tot(double *** Lattice, int len)
     {
         for (int j = 0; j<len; j++)
         {
-            phi += pow(Lattice[i][j][0],2) + pow(Lattice[i][j][1],2) + pow(Lattice[i][j][2],2);
+            double phi_ij[3];
+            pick_phi(i,j,phi_ij, Lattice, old_lattice);
+            phi += pow(phi_ij[0],2) + pow(phi_ij[1],2) + pow(phi_ij[2],2);
         }
     }
     return phi;

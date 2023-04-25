@@ -17,7 +17,7 @@ the topological charge Q_L and A_L
 MAY NEED TO CALL LATTICE.H???
 */
 
-void pick_phi(int i, int j, int (&phi)[3], double *** Lattice, bool old_lattice){
+void pick_phi(int i, int j, double (&phi)[3], double *** Lattice, bool old_lattice){
     if(old_lattice==true){
         //set phi
         phi[0] = Lattice[i][j][0];

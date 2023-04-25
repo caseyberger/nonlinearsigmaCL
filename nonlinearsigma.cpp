@@ -76,6 +76,7 @@ int main (int argc, char *argv[])
     double Q_L = 0.0;
     double S_L = 0.0;
     double itheta = M_PI;
+    bool old_lattice = true;
     
     //thermalization loop
 #ifdef TESTING_MODE
@@ -93,9 +94,9 @@ int main (int argc, char *argv[])
     for (int n = 0; n<nMC; n++){
         //some sort of updating function in here
         phi = phi_tot(Lattice, len);
-        A_L = A_lattice(beta, Lattice, len);
-        Q_L = Q_lattice(Lattice, len);
-        S_L = S_lattice(beta, Lattice, len, itheta);
+        A_L = A_lattice(beta, Lattice, len, old_lattice);
+        Q_L = Q_lattice(Lattice, len, old_lattice);
+        S_L = S_lattice(beta, Lattice, len, itheta, old_lattice);
         write_to_file(n, phi, Q_L, A_L, S_L);
         lattice_init(Lattice, len);
     }
