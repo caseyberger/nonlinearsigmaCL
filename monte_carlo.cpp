@@ -37,7 +37,7 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
             double r = ((double)rand())/((double)RAND_MAX);
 #endif
             S_old = S_lattice(beta, Lattice, len, itheta, old_lattice);
-            phi_new = generate_phi(phi_new);
+            generate_phi(phi_new);
             Lattice[i][j][3] = phi_new[0];
             Lattice[i][j][4] = phi_new[1];
             Lattice[i][j][5] = phi_new[2];
