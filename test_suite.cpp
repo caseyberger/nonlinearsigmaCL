@@ -111,11 +111,14 @@ void test_QL(double *** Lattice, int i, int j, int len)
 {
     int triangles[8][3][2];
     double QLsin, QLcos;
+    bool arcsin = true;
+    bool arccos = false;
+    bool old_lattice = true;
     make_triangles(i,j,len,triangles);
     for (int n = 0; n < 8; n++)
     {
-        QLsin = QL_triangle(triangles[n], Lattice, true);
-        QLsin = QL_triangle(triangles[n], Lattice, false);
+        QLsin = QL_triangle(triangles[n], Lattice, arcsin, old_lattice);
+        QLsin = QL_triangle(triangles[n], Lattice, arccos, old_lattice);
         std::cout << std::setw(10) << "triangle " << std::setw(2) << n;
         std::cout << std::setw(10) << "QLcos = " << std::setw(10) << QLcos;
         std::cout << std::setw(10) << "QLsin = "<< std::setw(10) << QLsin << std::endl;
