@@ -14,14 +14,15 @@
 /* 
 Anything needed to test things while debugging -- 
 print functions, testing values, etc
+*/
 
 void check_phi_magnitude(double *** Lattice, int len); 
-double phi_tot(double *** Lattice, int len); 
+double phi_tot(double *** Lattice, int len, bool old_lattice); 
 void print_lattice(double *** Lattice, int len);
 void print_value(double *** Lattice, int i, int j, int len, double value);
 void test_triangles(int i, int j, int len);
 void test_QL(double QLcos, double QLsin);
-*/
+
 
 void check_phi_magnitude(double *** Lattice, int len)
 {

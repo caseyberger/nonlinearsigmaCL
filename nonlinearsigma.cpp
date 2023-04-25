@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
 #endif
     for (int n = 0; n<nMC; n++){
         //some sort of updating function in here
-        phi = phi_tot(Lattice, len);
+        phi = phi_tot(Lattice, len, old_lattice);
         A_L = A_lattice(beta, Lattice, len, old_lattice);
         Q_L = Q_lattice(Lattice, len, old_lattice);
         S_L = S_lattice(beta, Lattice, len, itheta, old_lattice);
