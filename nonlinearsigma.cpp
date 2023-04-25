@@ -177,7 +177,7 @@ void create_logfile()
     fout.close();
 }
 
-void write_to_file(auto dt, int n, double phi, double Q_L, double A_L, double S_L)
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L)
 {
 #ifdef TESTING_MODE
     cout << "Function: write_to_file" << endl;
