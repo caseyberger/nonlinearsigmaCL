@@ -15,9 +15,7 @@ the boltzmann weight, accept-reject, etc.
 */
 
 void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
-    //loop over lattice -- randomly? Or just start randomly?
-    //accept-reject
-    //flush lattice
+    //to make the loop random, try shuffling the list of i and j coordinates: https://www.geeksforgeeks.org/shuffle-an-array-using-stl-in-c/
 #ifdef EXTREME_TESTING_MODE
     std:: cout << "Function: Metropolis loop in monte_carlo" << std::endl;
     std:: cout << "Note: Currently, looping over the lattice in sequential order. Update to make this a random order." << std::endl;

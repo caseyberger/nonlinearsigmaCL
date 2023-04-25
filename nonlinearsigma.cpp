@@ -6,13 +6,12 @@
 //
 
 // include files
-#include <time.h>//time (used to set random number seed)
+#include <time.h>//time (used to set random number seed, and to calculate dt)
 #include <iostream> //cout
 #include <cmath> //M_PI, sin, cos, pow
 #include <iomanip> //setw
 #include <cstdlib> //rand
 #include <fstream> //fout
-#include <chrono> //timing of functions
 #include <string> //string
 //#include <vector>
 //#include <stdio.h>
@@ -29,7 +28,7 @@ using namespace std;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
-void write_to_file(auto dt, int n, double phi, double Q_L, double A_L, double S_L);
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta);
 
 int main (int argc, char *argv[])
@@ -38,7 +37,11 @@ int main (int argc, char *argv[])
     cout << "Testing mode ON." << endl;
     cout << "Starting clock." << endl;
 #endif
-    auto begin = std::chrono::high_resolution_clock::now();
+    time_t begin, end, begin_therm, end_therm, begin_mc, dt_end, dt_start, end_mc;
+    double dt;
+    
+    time(&begin);
+    
 #ifdef EXTREME_TESTING_MODE
     cout << "Testing mode is EXTREME." << endl;
 #endif
@@ -84,44 +87,45 @@ int main (int argc, char *argv[])
 #ifdef TESTING_MODE
     cout << "Starting thermalization loop of length " << ntherm << endl;
 #endif
-    auto begin_therm = std::chrono::high_resolution_clock::now();
+    
+    time(&begin_therm);
     for (int n = 0; n<ntherm; n++){
         //some sort of updating function in here
         Metropolis_loop(beta, itheta, Lattice, len);
     }
-    auto end_therm = std::chrono::high_resolution_clock::now();
+    time(&end_therm);
     
-    auto therm_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_therm - begin_therm);
-    
+    dt = end_therm - begin_therm;
     //MC loop
 #ifdef TESTING_MODE
-    cout << "Thermalization loop duration: " << therm_time..count() * 1e-9 << " seconds."<< endl;
+    cout << "Thermalization loop duration: " << dt << " seconds."<< endl;
     cout << "Starting Monte Carlo loop of length " << nMC << endl;
 #endif
     
-    auto begin_MC = std::chrono::high_resolution_clock::now();
-    auto dt = std::chrono::high_resolution_clock::now();
+    time(&begin_mc);
+
     for (int n = 0; n<nMC; n++){
         //some sort of updating function in here
+        time(&dt_start);
         phi = phi_tot(Lattice, len, old_lattice);
         A_L = A_lattice(beta, Lattice, len, old_lattice);
         Q_L = Q_lattice(Lattice, len, old_lattice);
         S_L = S_lattice(beta, Lattice, len, itheta, old_lattice);
-        dt = std::chrono::high_resolution_clock::now() - begin_MC;
-        dt = dt.count()*1e-9;
+        time(&dt_end);
+        dt = dt_end-dt_start;
         write_to_file(dt, n, phi, Q_L, A_L, S_L);
         lattice_init(Lattice, len);
     }
-    auto end_MC = std::chrono::high_resolution_clock::now();
+    time(&end_mc)
     
-    auto MC_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_MC - begin_MC);
+    dt = end_mc - begin_mc;
 #ifdef TESTING_MODE
-     cout << "MC loop duration: " << MC_time.count() * 1e-9 << " seconds." << endl;
+     cout << "MC loop duration: " << dt << " seconds." << endl;
 #endif
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    time(&end);
+    dt = end - begin;
 #ifdef TESTING_MODE
-     cout << "Total time elapsed: " << elapsed.count() * 1e-9 << " seconds." << endl;
+     cout << "Total time elapsed: " << dt << " seconds." << endl;
 #endif
     return 0;
 }
