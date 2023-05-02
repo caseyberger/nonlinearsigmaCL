@@ -29,7 +29,7 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
         for (int j = 0; j<len; j++)
         {
 #ifdef TEST_CONSTANT_RN
-            double r = 1.0;
+            double r = 0.5;
 #else
             srand(time(NULL)); //seed random number
             double r = ((double)rand())/((double)RAND_MAX);

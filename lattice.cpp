@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Apr 25, 2023
+// Last edited: May 2, 2023
 
 #include <math.h>
 #include <time.h>
@@ -16,14 +16,15 @@ initializing, saving, etc.
 
 void generate_phi(double (&phi)[3]){
 #ifdef TEST_CONSTANT_RN
-    double r = 1.0;
+    double r = 0.5;
 #else
     srand(time(NULL)); //seed random number
-    double r = ((double)rand())/((double)RAND_MAX);
+    double r1 = ((double)rand())/((double)RAND_MAX);
+    double r2 = ((double)rand())/((double)RAND_MAX);
 #endif
     //generate a random polar and azimuthal angle
-    double inclination =   M_PI * r; //polar angle = inclination
-    double azimuth =  2. * M_PI * r; //azimuthal angle = azimuth
+    double inclination =   M_PI * r1; //polar angle = inclination
+    double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
     //create unit spin vector components from angles
     phi[0] = sin(inclination) * cos(azimuth);
     phi[1] = sin(inclination) * sin(azimuth);

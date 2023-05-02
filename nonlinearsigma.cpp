@@ -46,7 +46,6 @@ int main (int argc, char *argv[])
     cout << "Testing mode is EXTREME." << endl;
 #endif
 
-
     int len, num, ntherm, nMC;
     double beta = 1.6;
     
