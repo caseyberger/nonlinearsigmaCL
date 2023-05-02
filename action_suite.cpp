@@ -127,7 +127,11 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin, 
     QLcos = (1. + dot_product(phi1, phi2) + dot_product(phi2, phi3) + dot_product(phi3, phi1))/rho;
     cross_product(phi2, phi3, phi2crossphi3);
     QLsin = dot_product(phi1,phi2crossphi3)/rho;
-    if (arcsin){
+#ifdef EXTREME_TESTING_MODE
+    std:: cout << "QL from sine: "<< asin(QLsin) << std::endl;
+    std:: cout << "QL from cosine: "<< acos(QLcos) << std::endl;
+#endif
+    if (arcsin){ 
         return asin(QLsin);
     }
     else{
