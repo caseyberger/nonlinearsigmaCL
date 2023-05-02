@@ -1,2 +1,4 @@
-len = 4
+L = 5
 beta = 1.6
+ntherm = 10
+nMC = 10
