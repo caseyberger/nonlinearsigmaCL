@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Apr 18, 2023
-// Last edited: Apr 25, 2023
+// Last edited: May 2, 2023
 
 #include <math.h>
 #include <stdlib.h>
@@ -14,7 +14,6 @@
 This file contains all the operations needed to calculate the 
 lattice action, such as constructing the triangles, calculating
 the topological charge Q_L and A_L
-MAY NEED TO CALL LATTICE.H???
 */
 
 void pick_phi(int i, int j, double (&phi)[3], double *** Lattice, bool old_lattice){
@@ -127,7 +126,7 @@ double QL_triangle(int current_triangle[3][2], double *** Lattice, bool arcsin, 
     QLcos = (1. + dot_product(phi1, phi2) + dot_product(phi2, phi3) + dot_product(phi3, phi1))/rho;
     cross_product(phi2, phi3, phi2crossphi3);
     QLsin = dot_product(phi1,phi2crossphi3)/rho;
-#ifdef EXTREME_TESTING_MODE
+#ifdef TESTING_MODE
     std:: cout << "QL from sine: "<< asin(QLsin) << std::endl;
     std:: cout << "QL from cosine: "<< acos(QLcos) << std::endl;
 #endif
