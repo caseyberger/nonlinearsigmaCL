@@ -97,7 +97,7 @@ void make_triangles(int i, int j, int len, int (&triangles)[8][3][2]){
     triangles[7][0][0] = i;
     triangles[7][0][1] = j;
     triangles[7][1][0] = plus_one(i,len);
-    triangles[7][1][1] = plus_one(j,len);
+    triangles[7][1][1] = j;
     triangles[7][2][0] = plus_one(i,len);
     triangles[7][2][1] = plus_one(j,len);
 }
