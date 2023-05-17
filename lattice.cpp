@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: May 2, 2023
+// Last edited: May 17, 2023
 
 #include <math.h>
 #include <time.h>
@@ -16,7 +16,8 @@ initializing, saving, etc.
 
 void generate_phi(double (&phi)[3]){
 #ifdef TEST_CONSTANT_RN
-    double r = 0.5;
+    double r1 = 0.5;
+    double r2 = 0.5;
 #else
     double r1 = ((double)rand())/((double)RAND_MAX);
     double r2 = ((double)rand())/((double)RAND_MAX);

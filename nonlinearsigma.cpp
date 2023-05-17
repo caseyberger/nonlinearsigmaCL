@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Apr 25, 2023
+// Last edited: May 17, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -62,8 +62,7 @@ int main (int argc, char *argv[])
     for(int i = 0; i < len; i++){
         Lattice[i] = new double*[len];
     }
-    //allocation - 3 phi components
-    //note: can this be put into a separate file as well? Think about how that would work
+    //allocation - 3 phi components x 2 (old and new)
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
             Lattice[i][j] = new double[6];
