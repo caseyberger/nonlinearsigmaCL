@@ -18,7 +18,6 @@ void generate_phi(double (&phi)[3]){
 #ifdef TEST_CONSTANT_RN
     double r = 0.5;
 #else
-    srand(time(NULL)); //seed random number
     double r1 = ((double)rand())/((double)RAND_MAX);
     double r2 = ((double)rand())/((double)RAND_MAX);
 #endif

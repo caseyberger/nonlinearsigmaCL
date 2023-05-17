@@ -50,7 +50,7 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
                 std:: cout << "Accept" << std::endl;
             }
             else{
-                std:: cout << "Accept" << std::endl;
+                std:: cout << "Reject" << std::endl;
             }
 #endif
         }//loop over j
