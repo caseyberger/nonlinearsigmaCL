@@ -31,7 +31,6 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
 #ifdef TEST_CONSTANT_RN
             double r = 0.5;
 #else
-            srand(time(NULL)); //seed random number
             double r = ((double)rand())/((double)RAND_MAX);
 #endif
             S_old = S_lattice(beta, Lattice, len, itheta, old_lattice);
@@ -46,6 +45,14 @@ void Metropolis_loop(double beta, double itheta, double *** Lattice, int len){
                 Lattice[i][j][1] = Lattice[i][j][4];
                 Lattice[i][j][2] = Lattice[i][j][5];
             }//accept-reject step
+#ifdef TESTING_MODE
+            if(delta_S < 0 || exp(delta_S) > r){
+                std:: cout << "Accept" << std::endl;
+            }
+            else{
+                std:: cout << "Accept" << std::endl;
+            }
+#endif
         }//loop over j
     }//loop over i
 }
