@@ -197,7 +197,7 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << dt << n << "," << phi<< "," << Q_L<< "," << A_L <<"," << S_L << endl;
+    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L <<"," << S_L << endl;
     fout.close();
 }
 
