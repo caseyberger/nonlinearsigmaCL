@@ -1,0 +1,7 @@
+*.o
+output/nonlinearsigma
+output/nonlinearsigma_data.*
+.idea/
+run/qmc_runner
+run/submit_sigma.sh
+nonlinearsigma

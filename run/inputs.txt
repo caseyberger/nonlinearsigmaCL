@@ -1,0 +1,4 @@
+L = 5
+beta = 1.6
+ntherm = 1
+nMC = 1

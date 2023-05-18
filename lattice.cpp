@@ -10,7 +10,7 @@
 #include "lattice.h"
 
 /*
-This file contains all the lattice admin operations, such as 
+This file contains all the lattice admin operations, such as
 initializing, saving, etc.
 */
 
@@ -28,13 +28,15 @@ void generate_phi(double (&phi)[3]){
     phi[0] = sin(inclination) * cos(azimuth);
     phi[1] = sin(inclination) * sin(azimuth);
     phi[2] = cos(inclination);
+
+    std:: cout << dot_product(phi, phi) << std::endl;
 }
 
 void lattice_init(double *** Lattice, int len){
 
 //Dynamically generates a 2D square lattice with two three-component phis at each site (an old and a new)
 //See NRRB via CL code for alternative random number generator if you run into issues.
-    
+
 #ifdef TESTING_MODE
     std:: cout << "Function: lattice_init in lattice" << std::endl;
 #endif
@@ -65,8 +67,8 @@ void lattice_flush(double *** Lattice, int len){
             Lattice[i][j][1] = Lattice[i][j][4];//update
             Lattice[i][j][2] = Lattice[i][j][5];//update
             Lattice[i][j][3] = 0.0; //reset
-            Lattice[i][j][4] = 0.0; //reset 
-            Lattice[i][j][5] = 0.0; //reset 
+            Lattice[i][j][4] = 0.0; //reset
+            Lattice[i][j][5] = 0.0; //reset
         }
     }
 }
@@ -113,6 +115,6 @@ void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
 #endif
     //calculates the cross product of two vectors
     cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
-    cross_prod[1] = vec1[0]*vec2[2] - vec1[2]*vec2[0];
+    cross_prod[1] = - vec1[0]*vec2[2] + vec1[2]*vec2[0];
     cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }
