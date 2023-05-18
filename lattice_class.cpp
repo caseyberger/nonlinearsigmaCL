@@ -1,81 +1,27 @@
 #include "lattice_class.h"
 #include "helper.h"
-#include <iostream>
 #include <numeric>
 #include <vector>
 #include <iterator>
 
-void SquareLattice::init_lattice() {
-    for (SiteIndex s=0; s < n_sites; s++) {
-        phi.push_back(generate_random_unit_vector());
-    }
-}
 
-// DEBUG STUFF.
-void SquareLattice::dump() {
-    for (SiteIndex s=0; s < n_sites; s++) {
-//        double dot = std::inner_product(phi[s].begin(), phi[s].end(), phi[s].begin(), 0.0);
-//        std::cout << dot << " [" << phi[s][0] << " // " << phi[s][1] << " // " << phi[s][2] << "]" << std::endl;
-        std::cout << " [" << triangles[s][0][0] << " // " << triangles[s][0][1]  << "]" << std::endl;
-    }
-}
+SquareLattice::FieldType SquareLattice::generate_random_field_value(){
+    double inclination =   M_PI * ((double)rand())/((double)RAND_MAX);
+    double azimuth =  2. * M_PI * ((double)rand())/((double)RAND_MAX);
 
-void SquareLattice::make_triangles(){
-    for (int i=0; i<Lx; i++) {
-        for (int j=0; j<Ly;j++){
-            array<array<SiteIndex,2>,8> triangle;
-
-            triangle[0] = {
-                get_site(i, previous_y(j)),
-                get_site(next_x(i), previous_y(j))
-            };
-            triangle[1] = {
-                get_site(next_x(i), previous_y(j)),
-                get_site(next_x(i), j)
-            };
-            triangle[2] = {
-                get_site(next_x(i), j),
-                get_site(next_x(i), next_y(j))
-            };
-            triangle[3] = {
-                get_site(next_x(i), next_y(j)),
-                get_site(i, next_y(j))
-            };
-            triangle[4] = {
-                get_site(i, next_y(j)),
-                get_site(previous_x(i), next_y(j))
-            };
-            triangle[5] = {
-                get_site(previous_x(i), next_y(j)),
-                get_site(previous_x(i), j)
-            };
-            triangle[6] = {
-                get_site(previous_x(i), j),
-                get_site(previous_x(i), previous_y(j))
-            };
-            triangle[7] = {
-                get_site(previous_x(i), previous_y(j)),
-                get_site(i, previous_y(j))
-            };
-
-            triangles.push_back(triangle);
-        }
-    }
+    return {
+        sin(inclination) * cos(azimuth),
+        sin(inclination) * sin(azimuth),
+        cos(inclination)
+    };
 }
 
 
+// Sometimes this gives nan -> Why? Because of the way the phi are randomized?
 SquareLattice::PhiType SquareLattice::compute_QL_for_single_triangle(SiteIndex s, int t) {
-//    array<PhiType,3> phi_1 = phi[s];
-//    array<PhiType,3> phi_2 = phi[triangles[s][t][0]];
-//    array<PhiType,3> phi_3 = phi[triangles[s][t][1]];
-
-    array<PhiType,3> phi_1 = generate_random_unit_vector();
-    array<PhiType,3> phi_2 = generate_random_unit_vector();
-    array<PhiType,3> phi_3 = generate_random_unit_vector();
-
-//    array<PhiType,3> phi_1 = normalize({1, 2, 3});
-//    array<PhiType,3> phi_2 = normalize({4, 5, 6});
-//    array<PhiType,3> phi_3 = normalize({7, 8, 1});
+    FieldType phi_1 = phi[s];
+    FieldType phi_2 = phi[triangles[s][t][0]];
+    FieldType phi_3 = phi[triangles[s][t][1]];
 
     PhiType norm1 = sqrt(std::inner_product(phi_1.begin(), phi_1.end(), phi_1.begin(), 0.0));
     PhiType norm2 = sqrt(std::inner_product(phi_2.begin(), phi_2.end(), phi_2.begin(), 0.0));
@@ -89,7 +35,7 @@ SquareLattice::PhiType SquareLattice::compute_QL_for_single_triangle(SiteIndex s
     PhiType rho = sqrt(2.0 * (1.+dot_12) * (1.+dot_23) * (1.+dot_31));
     PhiType ql_cos = (1. + dot_12 + dot_23 + dot_31) / rho;
 
-    array<PhiType,3> cross_product = outer_product(phi_2, phi_3);
+    FieldType cross_product = outer_product(phi_2, phi_3);
     PhiType ql_sin = std::inner_product(phi_1.begin(), phi_1.end(), cross_product.begin(), 0.0)  / rho;
 
     // std:: cout << "----" << std::endl;
@@ -102,17 +48,25 @@ SquareLattice::PhiType SquareLattice::compute_QL_for_single_triangle(SiteIndex s
     // std::cout << "QL from asin: "<< asin(ql_sin) << " // " << ql_sin << std::endl;
     // std::cout << "Diff: "<< asin(ql_sin) - acos(ql_cos) << " // " << ql_sin << std::endl;
 
-    return acos(ql_cos);
+    return acos(ql_cos) / (2*M_PI);
 }
 
 
-SquareLattice::PhiType SquareLattice:: compute_QL() {
-    PhiType ql = 0.;
+SquareLattice::PhiType SquareLattice:: compute_QL(SiteIndex s) {
+  PhiType ql = 0.;
+  for (int t=0; t<8; t++){
+      ql += compute_QL_for_single_triangle(s, t);
+  }
+  return ql;
+}
 
-    for (SiteIndex s=0; s<n_sites; s++) {
-        for (int t=0; t<8; t++){
-            ql += compute_QL_for_single_triangle(s, t);
-        }
-    }
-    return ql;
+// Attention: There might be a factor 2 here because of double summation of the neighbors.
+// This should be checked.
+SquareLattice::PhiType SquareLattice:: compute_AL(SiteIndex s) {
+  PhiType a_sum = 0.;
+  for (int n=0; n<4; n++){
+      a_sum += std::inner_product(phi[s].begin(), phi[s].end(), phi[neighbors[s][n]].begin(), 0.0);
+      // cout << a_sum*beta << endl;
+  }
+  return -a_sum * beta;
 }
