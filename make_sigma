@@ -16,28 +16,51 @@ MAKEFILE= make_sigma
 # The command you type to run the program (executable name)
 COMMAND =  nonlinearsigma
 
+# special definitions for testing, etc
+
+USE_TEST_PRINT_STATEMENTS ?= TRUE
+USE_EXTREME_TEST_PRINT_STATEMENTS ?= FALSE
+USE_CONST_RN ?= FALSE
+
+ifeq ($(USE_TEST_PRINT_STATEMENTS), TRUE)
+	DEFINES += -DTESTING_MODE
+endif
+
+ifeq ($(USE_EXTREME_TEST_PRINT_STATEMENTS), TRUE)
+	DEFINES += -DEXTREME_TESTING_MODE
+endif
+
+ifeq ($(USE_CONST_RN),TRUE)
+	DEFINES += -DTEST_CONSTANT_RN
+endif
+
 CXX = g++
+
+CXXFLAGS += $(DEFINES)
 
 TARGET = nonlinearsigma
 
 # ****************************************************
 # Targets needed to bring the executable up to date
 
-nonlinearsigma: nonlinearsigma.o
-	$(CXX) -o nonlinearsigma nonlinearsigma.o
+nonlinearsigma: nonlinearsigma.o lattice.o action_suite.o monte_carlo.o test_suite.o
+	$(CXX) $(CXXFLAGS) -o nonlinearsigma nonlinearsigma.o lattice.o action_suite.o monte_carlo.o test_suite.o
 
-nonlinearsigma.o: nonlinearsigma.cpp
-	$(CXX) -c nonlinearsigma.cpp
-
-#nonlinearsigma: nonlinearsigma.o test_suite.o
-#	$(CXX) -o nonlinearsigma nonlinearsigma.o test_suite.o    
-
-#nonlinearsigma.o: nonlinearsigma.cpp test_suite.h
-#	$(CXX) -c nonlinearsigma.cpp
+nonlinearsigma.o: nonlinearsigma.cpp lattice.h action_suite.h monte_carlo.h test_suite.h
+	$(CXX) $(CXXFLAGS) -c nonlinearsigma.cpp 
 
 # Dependencies
-#test_suite.o: test_suite.cpp test_suite.h
-#	$(CXX) -c test_suite.cpp
+lattice.o: lattice.cpp lattice.h 
+	$(CXX) $(CXXFLAGS) -c lattice.cpp
+    
+action_suite.o: action_suite.cpp action_suite.h
+	$(CXX) $(CXXFLAGS) -c action_suite.cpp
+   
+monte_carlo.o: monte_carlo.cpp monte_carlo.h
+	$(CXX) $(CXXFLAGS) -c monte_carlo.cpp
+    
+test_suite.o: test_suite.cpp test_suite.h
+	$(CXX) $(CXXFLAGS) -c test_suite.cpp 
  
 ##########################################################################
 # Additional tasks 
