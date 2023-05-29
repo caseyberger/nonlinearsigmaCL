@@ -14,6 +14,9 @@ This file contains all the lattice admin operations, such as
 initializing, saving, etc.
 */
 
+Lattice::Lattice(int length){//constructor
+    length_ = length;
+}
 void generate_phi(double (&phi)[3]){
 #ifdef TEST_CONSTANT_RN
     double r1 = 0.5;
@@ -31,11 +34,9 @@ void generate_phi(double (&phi)[3]){
     phi[2] = cos(inclination);
 }
 
-void lattice_init(double *** Lattice, int len){
-
+void Lattice::initialize(double *** Lattice, int len){
 //Dynamically generates a 2D square lattice with two three-component phis at each site (an old and a new)
-//See NRRB via CL code for alternative random number generator if you run into issues.
-    
+
 #ifdef TESTING_MODE
     std:: cout << "Function: lattice_init in lattice" << std::endl;
 #endif
@@ -54,22 +55,6 @@ void lattice_init(double *** Lattice, int len){
         }
     }
     std::cout << "Lattice initialized" << std::endl;
-}
-
-void lattice_flush(double *** Lattice, int len){
-//updates old phi with new phi and sets new phi to zero
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
-        {
-            Lattice[i][j][0] = Lattice[i][j][3];//update
-            Lattice[i][j][1] = Lattice[i][j][4];//update
-            Lattice[i][j][2] = Lattice[i][j][5];//update
-            Lattice[i][j][3] = 0.0; //reset
-            Lattice[i][j][4] = 0.0; //reset 
-            Lattice[i][j][5] = 0.0; //reset 
-        }
-    }
 }
 
 int plus_one(int i, int len){

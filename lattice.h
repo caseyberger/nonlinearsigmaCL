@@ -1,6 +1,8 @@
 // Casey Berger
-// Created: Mar 28, 2023
-// Last edited: Apr 18, 2023
+// Created: May 24, 2023
+// Last edited: May 24, 2023
+// This needs to: define a phi at each point in the lattice, pick out phi values given a location on the lattice, calculate dot and cross products.
+#pragma once
 
 #include <time.h>
 #include <stdlib.h>
@@ -11,11 +13,13 @@
 #ifndef LATTICE_H
 #define LATTICE_H
 
-void generate_phi(double (&phi)[3]);
-void lattice_init(double *** Lattice, int len);
-void lattice_flush(double *** Lattice, int len);//may not even need this??
-int plus_one(int i, int len);
-int minus_one(int i, int len);
-double dot_product(double vec1[3], double vec2[3]);
-void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
+class Lattice {
+    public:
+        Lattice(int length);
+        void initialize();
+    
+    private:
+        double length_;
+
+};
 #endif
