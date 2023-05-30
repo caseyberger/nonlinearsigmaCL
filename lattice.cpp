@@ -43,9 +43,7 @@ namespace nonlinearsigma{
     }
     
     double* Lattice::getPhi(int i, int j){
-        static double phi[3];
-        phi = grid_[i][j];
-        return phi;
+        return grid_[i][j];
     }
     
     double Lattice::getPhiMag(int i, int j){
@@ -91,7 +89,7 @@ namespace nonlinearsigma{
             std::cout << "Triangle "<< n+1 << " = (" ;
             std::cout << triangles_[i][j][n][0][0] << ","<< triangles_[i][j][n][0][1] << "), (";
             std::cout << triangles_[i][j][n][1][0] << ","<< triangles_[i][j][n][1][1] << "), (";
-            std::cout <<triangles_[i][j][n][2][0] << ","<< triangles_[i][j][n][2][1]<< ")" std::endl;
+            std::cout <<triangles_[i][j][n][2][0] << ","<< triangles_[i][j][n][2][1]<< ")" << std::endl;
         }
     }
     
