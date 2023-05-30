@@ -72,7 +72,9 @@ namespace nonlinearsigma{
             for (int j = 0; j<length_; j++){
                 grid[i][j] = new double[3];
                 double *phi = Lattice::makePhi_();
-                grid[i][j] = phi;
+                grid[i][j][0] = phi[0];
+                grid[i][j][1] = phi[1];
+                grid[i][j][2] = phi[2];
 #ifdef TESTING_MODE
                 std::cout << "(i,j) = " << i << "," << j << std::endl;
                 std::cout << "phi = (" << phi[0] << "," << phi[1] << "," << phi[2] << ")" << std::endl;
