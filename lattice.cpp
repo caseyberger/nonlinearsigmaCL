@@ -295,12 +295,12 @@ namespace nonlinearsigma{
         return nn;
     }
     
-    double* Lattice::getNeighborPhis_(int i, int j){
-        static int nnPhis[4][3];
-        nnSpins[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
-        nnSpins[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
-        nnSpins[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
-        nnSpins[3] = Lattice::getPhi(i, Lattice::minusOne_(j));
+    double** Lattice::getNeighborPhis_(int i, int j){
+        static double nnPhis[4][3];
+        nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
+        nnPhis[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
+        nnPhis[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
+        nnPhis[3] = Lattice::getPhi(i, Lattice::minusOne_(j));
         return nnPhis;
     }
 }
