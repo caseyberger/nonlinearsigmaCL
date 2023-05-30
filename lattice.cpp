@@ -71,7 +71,7 @@ namespace nonlinearsigma{
         for(int i = 0; i < length_; i++){
             for (int j = 0; j<length_; j++){
                 grid[i][j] = new double[3];
-                double *phi = Lattice::makePhi_()
+                double *phi = Lattice::makePhi_();
                 grid[i][j] = phi;
             }
         }
