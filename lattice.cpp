@@ -243,9 +243,9 @@ namespace nonlinearsigma{
                 triangles[n][k] = new int[2];
             }
         }
-        int v1[2] = {i,j};
-        int v2[2] = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
-        int v3[2] = {Lattice::plusOne_(i),j};
+        static int v1[2] = {i,j};
+        static int v2[2] = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
+        static int v3[2] = {Lattice::plusOne_(i),j};
         //triangle 1 
         //triangles[0][0][0] = i;
         //triangles[0][0][1] = j;
