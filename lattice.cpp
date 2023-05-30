@@ -49,8 +49,7 @@ namespace nonlinearsigma{
     }
     
     double Lattice::getPhiMag(int i, int j){
-        double phi[3];
-        phi = Lattice::getPhi(i,j);
+        double *phi = Lattice::getPhi(i,j);
         double phi_mag = dot(phi,phi);
         return phi_mag;
     }
@@ -82,13 +81,12 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printPhi(int i, int j){
-        double phi[3];
-        phi = Lattice::getPhi(i,j);
+        double *phi = Lattice::getPhi(i,j);
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
     }
     void Lattice::printTriangles(int i, int j){
-        std::cout << "At point (" << i << "," < <j << ")," << std::endl;
+        std::cout << "At point (" << i << "," << j << ")," << std::endl;
         for (int n = 0; n < 8; n++){
             std::cout << "Triangle "<< n+1 << " = (" ;
             std::cout << triangles_[i][j][n][0][0] << ","<< triangles_[i][j][n][0][1] << "), (";
@@ -121,10 +119,8 @@ namespace nonlinearsigma{
         {
             for (int j = 0; j<length_; j++)
             {
-                double phi[3];
-                phi = Lattice::getPhi(i,j);
-                double phiNN[4][3];
-                phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                double *phi = Lattice::getPhi(i,j);
+                double *phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
@@ -190,7 +186,7 @@ namespace nonlinearsigma{
         triangles_ = triangles;
     }
     
-    int*** Lattice::trianglesCCW_(int i, int j){
+    int* Lattice::trianglesCCW_(int i, int j){
         static int triangles[8][3][2];
         
         //triangle 1 
@@ -269,10 +265,9 @@ namespace nonlinearsigma{
         int j2 = triangles_[i][j][n][1][1];
         int i3 = triangles_[i][j][n][2][0];
         int j3 = triangles_[i][j][n][2][1];
-        static double phi1[3], phi2[3], phi3[3];
-        phi1 = Lattice::getPhi(i1,j1);
-        phi2 = Lattice::getPhi(i2,j2);
-        phi3 = Lattice::getPhi(i3,j3);
+        double *phi1 = Lattice::getPhi(i1,j1);
+        double *phi2 = Lattice::getPhi(i2,j2);
+        double *phi3 = Lattice::getPhi(i3,j3);
         rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
         rho = std::sqrt(rho2);
         QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
