@@ -18,9 +18,7 @@
 //#include <sstream>
 
 //custom header files
-#include "test_suite.h"
 #include "lattice.h"
-#include "action_suite.h"
 #include "monte_carlo.h"
 
 using namespace std;
