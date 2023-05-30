@@ -1,15 +1,13 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: May 17, 2023
+// Last edited: May 30, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, acos, asin
 #include "mathlib.h" //dot, cross
 
-/*
-This file contains all the lattice admin operations, such as 
-initializing, saving, etc.
-*/
+#include "lattice.h"
+
 
 namespace nonlinearsigma{
     //public functions
