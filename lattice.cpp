@@ -249,69 +249,118 @@ namespace nonlinearsigma{
         //triangle 1 
         //triangles[0][0][0] = i;
         //triangles[0][0][1] = j;
-        triangles[0][0] = v1;
         //triangles[0][1][0] = Lattice::plusOne_(i);
         //triangles[0][1][1] = Lattice::minusOne_(j);
-        triangles[0][1] = v2;
         //triangles[0][2][0] = Lattice::plusOne_(i);
         //triangles[0][2][1] = j;
+        triangles[0][0] = v1;
+        triangles[0][1] = v2;
         triangles[0][2] = v3;
+        
+        v3 = v2;
+        v2 = {i, Lattice::minusOne_(j)};
 
         //triangle 2
+        /*
         triangles[1][0][0] = i;
         triangles[1][0][1] = j;
         triangles[1][1][0] = i;
         triangles[1][1][1] = Lattice::minusOne_(j);
         triangles[1][2][0] = Lattice::plusOne_(i);
         triangles[1][2][1] = Lattice::minusOne_(j);
+        */
+        triangles[1][0] = v1;
+        triangles[1][1] = v2;
+        triangles[1][2] = v3;
+        
+        v3 = v2;
+        v2 = {Lattice::minusOne_(i), Lattice::minusOne_(j)};
 
         //triangle 3
-        triangles[2][0][0] = i;
+        /*triangles[2][0][0] = i;
         triangles[2][0][1] = j;
         triangles[2][1][0] = Lattice::minusOne_(i);
         triangles[2][1][1] = Lattice::minusOne_(j);
         triangles[2][2][0] = i;
-        triangles[2][2][1] = Lattice::minusOne_(j);
+        triangles[2][2][1] = Lattice::minusOne_(j);*/
+        
+        triangles[2][0] = v1;
+        triangles[2][1] = v2;
+        triangles[2][2] = v3;
+        
+        v3 = v2;
+        v2 = {Lattice::minusOne_(i), j};
 
         //triangle 4
-        triangles[3][0][0] = i;
+        /*triangles[3][0][0] = i;
         triangles[3][0][1] = j;
         triangles[3][1][0] = Lattice::minusOne_(i);
         triangles[3][1][1] = j;
         triangles[3][2][0] = Lattice::minusOne_(i);
-        triangles[3][2][1] = Lattice::minusOne_(j);
+        triangles[3][2][1] = Lattice::minusOne_(j);*/
 
+        triangles[3][0] = v1;
+        triangles[3][1] = v2;
+        triangles[3][2] = v3;
+        
+        v3 = v2;
+        v2 = {Lattice::minusOne_(i), Lattice::plusOne_(j)};
+        
         //triangle 5
-        triangles[4][0][0] = i;
+        /*triangles[4][0][0] = i;
         triangles[4][0][1] = j;
         triangles[4][1][0] = Lattice::minusOne_(i);
         triangles[4][1][1] = Lattice::plusOne_(j);
         triangles[4][2][0] = Lattice::minusOne_(i);
-        triangles[4][2][1] = j;
+        triangles[4][2][1] = j;*/
+        
+        triangles[4][0] = v1;
+        triangles[4][1] = v2;
+        triangles[4][2] = v3;
+        
+        v3 = v2;
+        v2 = {i, Lattice::plusOne_(j)};
 
         //triangle 6
-        triangles[5][0][0] = i;
+        /*triangles[5][0][0] = i;
         triangles[5][0][1] = j;
         triangles[5][1][0] = i;
         triangles[5][1][1] = Lattice::plusOne_(j);
         triangles[5][2][0] = Lattice::minusOne_(i);
-        triangles[5][2][1] = Lattice::plusOne_(j);
+        triangles[5][2][1] = Lattice::plusOne_(j);*/
+        
+        triangles[5][0] = v1;
+        triangles[5][1] = v2;
+        triangles[5][2] = v3;
+        
+        v3 = v2;
+        v2 = {Lattice::plusOne_(i), Lattice::plusOne_(j)};
 
         //triangle 7
-        triangles[6][0][0] = i;
+        /*triangles[6][0][0] = i;
         triangles[6][0][1] = j;
         triangles[6][1][0] = Lattice::plusOne_(i);
         triangles[6][1][1] = Lattice::plusOne_(j);
         triangles[6][2][0] = i;
-        triangles[6][2][1] = Lattice::plusOne_(j);
+        triangles[6][2][1] = Lattice::plusOne_(j);*/
+        
+        triangles[6][0] = v1;
+        triangles[6][1] = v2;
+        triangles[6][2] = v3;
+        
+        v3 = v2;
+        v2 = {Lattice::plusOne_(i), j};
 
         //triangle 8
-        triangles[7][0][0] = i;
+        /*triangles[7][0][0] = i;
         triangles[7][0][1] = j;
         triangles[7][1][0] = Lattice::plusOne_(i);
         triangles[7][1][1] = j;
         triangles[7][2][0] = Lattice::plusOne_(i);
-        triangles[7][2][1] = Lattice::plusOne_(j);
+        triangles[7][2][1] = Lattice::plusOne_(j);*/
+        triangles[6][0] = v1;
+        triangles[6][1] = v2;
+        triangles[6][2] = v3;
         
         return triangles;
     }
