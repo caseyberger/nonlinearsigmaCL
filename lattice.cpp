@@ -118,7 +118,7 @@ namespace nonlinearsigma{
             for (int j = 0; j<length_; j++)
             {
                 double *phi = Lattice::getPhi(i,j);
-                double *phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                double **phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
