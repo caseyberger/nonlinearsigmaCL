@@ -1,6 +1,6 @@
 //Casey Berger
 //Created: May 29, 2023
-//Edited: May 29, 2023
+//Last edited: May 30, 2023
 //all useful math operations stored here
 
 #include "mathlib.h"

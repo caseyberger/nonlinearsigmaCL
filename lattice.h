@@ -1,7 +1,7 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: May 29, 2023
-// This needs to: define a phi at each point in the lattice, pick out phi values given a location on the lattice, calculate dot and cross products.
+// Last edited: May 30, 2023
+
 #pragma once
 
 namespace nonlinearsigma{
@@ -30,18 +30,30 @@ namespace nonlinearsigma{
         void printPhi(int i, int j);
         void printTriangles(int i, int j);
         
-        //calculating lattice quantities
+        //calculate lattice quantities
         double calcQL();
         double calcAL();
         double calcSL();
         
+        //monte carlo tools
+        void metropolisStep();
+        void thermalize(int ntherm);
+        void zeroCount();
+        double acceptanceRate();
     
+        //private members -- only accessible within the class functions
         private:
+        //variables
         int length_;
         double ***grid_;
         int *****triangles_;
         double beta_;
         double itheta_;
+        int acceptCount_;
+        int rejectCount_;
+        double accRate_;
+        
+        //functions
         double* makePhi_();
         int plusOne_(int i);
         int minusOne_(int i);

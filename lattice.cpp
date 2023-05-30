@@ -3,7 +3,7 @@
 // Last edited: May 30, 2023
 
 #include <iostream> //cout, endl
-#include <cmath> //sqrt, acos, asin
+#include <cmath> //sqrt, acos, asin, exp
 #include "mathlib.h" //dot, cross
 
 #include "lattice.h"
@@ -62,7 +62,6 @@ namespace nonlinearsigma{
         return phi_tot;
     }
     
-    
     void Lattice::initialize(){
         double *** grid = new double**[length_];
         for(int i = 0; i < length_; i++){
@@ -83,6 +82,7 @@ namespace nonlinearsigma{
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
     }
+    
     void Lattice::printTriangles(int i, int j){
         std::cout << "At point (" << i << "," << j << ")," << std::endl;
         for (int n = 0; n < 8; n++){
@@ -135,6 +135,57 @@ namespace nonlinearsigma{
         //and analytically continued to imaginary values 
         double S_L = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
         return S_L;
+    }
+    
+    void Lattice::metropolisStep(){
+        double Si, Sf, dS, r;
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                Si = Lattice::calcSL();
+                double *phi_old = Lattice::getPhi(i, j);
+                //update lattice
+                double *phi_new = Lattice::makePhi_();
+                grid_[i][j] = phi_new;
+                Sf = Lattice::calcSL();
+                dS = Sf - Si;
+#ifdef TEST_CONSTANT_RN
+                r = 0.5;
+#else
+                r = ((double)std::rand())/((double)RAND_MAX);
+#endif
+                if(dS < 0 || std::exp(dS) > r){
+                    acceptCount_++;//increment accept counter
+#ifdef TESTING_MODE
+                    std:: cout << "Accept" << std::endl;
+#endif
+                }
+                else{
+                    grid_[i][j] = phi_old;//change the value back to the old phi
+                    rejectCount_++;//increment reject counter
+#ifdef TESTING_MODE
+                    std:: cout << "Reject" << std::endl;
+#endif
+                }
+            }//loop over j
+        }//loop over i
+        double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
+        accRate_ = acc_rate;
+    }
+    
+    void Lattice::thermalize(int ntherm){
+        for (int n = 0; n < ntherm; n++){
+            Lattice::metropolisStep;
+        }
+        //should you zero the count at the end of this?
+    }
+    
+    void Lattice::zeroCount(){
+        acceptCount_ = 0;
+        rejectCount_ = 0;
+    }
+    
+    double Lattice::acceptanceRate(){
+        return accRate_;
     }
     
     //private functions
@@ -307,4 +358,6 @@ namespace nonlinearsigma{
         nnPhis[3] = Lattice::getPhi(i, Lattice::minusOne_(j));
         return nnPhis;
     }
-}
+    
+    
+}//end class definition

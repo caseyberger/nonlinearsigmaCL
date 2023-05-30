@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: May 17, 2023
+// Last edited: May 30, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -19,7 +19,6 @@
 
 //custom header files
 #include "lattice.h"
-#include "monte_carlo.h"
 
 using namespace std;
 using nonlinearsigma::Lattice;
@@ -27,7 +26,7 @@ using nonlinearsigma::Lattice;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L);
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double acc);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
 
 int main (int argc, char *argv[])
@@ -85,6 +84,7 @@ int main (int argc, char *argv[])
     double A_L = 0.0;
     double Q_L = 0.0;
     double S_L = 0.0;
+    double acc = 0.0;
     
     //thermalization loop
 #ifdef TESTING_MODE
@@ -92,11 +92,8 @@ int main (int argc, char *argv[])
 #endif
     
     time(&begin_therm);
-    for (int n = 0; n<ntherm; n++){
-        //some sort of updating function in here
-        //Metropolis_loop(beta, itheta, Lattice, len);
-        phi = 0; //dummy placeholder calc for testing -- replace with thermalization function
-    }
+    L.zeroCount();
+    L.thermalize(ntherm);
     time(&end_therm);
     
     dt = end_therm - begin_therm;
@@ -109,17 +106,16 @@ int main (int argc, char *argv[])
     time(&begin_mc);
 
     for (int n = 0; n<nMC; n++){
-        //some sort of updating function in here
-        //add in the MC loop here...
         time(&dt_start);
+        L.metropolisStep();
         phi = L.getPhiTot();
         A_L = L.calcAL();
         Q_L = L.calcQL();
         S_L = L.calcSL();
+        acc = L.acceptanceRate();
         time(&dt_end);
         dt = dt_end-dt_start;
-        write_to_file(dt, n, phi, Q_L, A_L, S_L);
-        L.initialize();
+        write_to_file(dt, n, phi, Q_L, A_L, S_L, acc);
     }
     time(&end_mc);
     
@@ -160,9 +156,6 @@ double Z_renorm(double beta, int len){
 
 void create_logfile()
 {
-#ifdef TESTING_MODE
-    cout << "Function: create_logfile" << endl;
-#endif
     //create header of logfile
     string fname = "nonlinearsigma_data.csv";
 #ifdef TESTING_MODE
@@ -178,15 +171,12 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "dt"<< "," << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< "," << "S_L"<< endl;
+    fout << "dt,step,|phi|,Q_L,A_L,S_L,acc" << endl;
     fout.close();
 }
 
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L)
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double acc)
 {
-#ifdef TESTING_MODE
-    cout << "Function: write_to_file" << endl;
-#endif
     //output calculations .csv file
     string fname = "nonlinearsigma_data.csv";
 #ifdef TESTING_MODE
@@ -202,7 +192,7 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L <<"," << S_L << endl;
+    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L << "," << S_L << "," << acc << endl;
     fout.close();
 }
 
