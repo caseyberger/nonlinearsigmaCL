@@ -174,7 +174,7 @@ namespace nonlinearsigma{
     
     void Lattice::thermalize(int ntherm){
         for (int n = 0; n < ntherm; n++){
-            Lattice::metropolisStep;
+            Lattice::metropolisStep();
         }
         //should you zero the count at the end of this?
     }
