@@ -28,7 +28,7 @@ using nonlinearsigma::Lattice;
 double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L);
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta);
+void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
 
 int main (int argc, char *argv[])
 {
@@ -119,7 +119,7 @@ int main (int argc, char *argv[])
         time(&dt_end);
         dt = dt_end-dt_start;
         write_to_file(dt, n, phi, Q_L, A_L, S_L);
-        lattice_init(Lattice, len);
+        L.initialize();
     }
     time(&end_mc);
     
