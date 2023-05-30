@@ -174,17 +174,15 @@ namespace nonlinearsigma{
         int ***** triangles = new int****[length_];
         for(int i = 0; i < length_; i++){
             triangles[i] = new int***[length_];
-        }
-        for(int i = 0; i < length_; i++){
             for (int j = 0; j<length_; j++){
-                triangles[i][j] = new int[8][3][2];
+                //triangles[i][j] = new int[8][3][2];
                 triangles[i][j] = Lattice::trianglesCCW_(i, j);
             }
         }
         triangles_ = triangles;
     }
     
-    int* Lattice::trianglesCCW_(int i, int j){
+    int*** Lattice::trianglesCCW_(int i, int j){
         static int triangles[8][3][2];
         
         //triangle 1 
