@@ -86,7 +86,7 @@ namespace nonlinearsigma{
     void Lattice::printTriangles(int i, int j){
         std::cout << "At point (" << i << "," << j << ")," << std::endl;
         for (int n = 0; n < 8; n++){
-            std::cout << "Triangle "<< n + 1 << " = " std::endl;
+            std::cout << "Triangle "<< n + 1 << " = " << std::endl;
             std::cout << "(" << triangles_[i][j][n][0][0] << ","<< triangles_[i][j][n][0][1] << "), (";
             std::cout << triangles_[i][j][n][1][0] << ","<< triangles_[i][j][n][1][1] << "), (";
             std::cout <<triangles_[i][j][n][2][0] << ","<< triangles_[i][j][n][2][1]<< ")" << std::endl;
