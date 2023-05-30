@@ -205,6 +205,10 @@ namespace nonlinearsigma{
         r1 = ((double)std::rand())/((double)RAND_MAX);
         r2 = ((double)std::rand())/((double)RAND_MAX);
 #endif
+        
+#ifdef TESTING_MODE
+        std::cout << "r1 = " << r1 << ", r2 = " << r2 << std::endl;
+#endif
         //generate a random polar and azimuthal angle
         double inclination =   M_PI * r1; //polar angle = inclination
         double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
