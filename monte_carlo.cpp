@@ -6,7 +6,6 @@
 #include <math.h> //exp
 
 #include "lattice.h"
-#include "action_suite.h"
 #include "monte_carlo.h"
 
 /*

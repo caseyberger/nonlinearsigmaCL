@@ -7,7 +7,6 @@
 
 
 #include "lattice.h"
-#include "action_suite.h"
 
 #ifndef MC_H
 #define MC_H
