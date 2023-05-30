@@ -43,10 +43,10 @@ TARGET = nonlinearsigma
 # ****************************************************
 # Targets needed to bring the executable up to date
 
-nonlinearsigma: nonlinearsigma.o lattice.o mathlib.o monte_carlo.o
-	$(CXX) $(CXXFLAGS) -o nonlinearsigma nonlinearsigma.o lattice.o mathlib.o monte_carlo.o
+nonlinearsigma: nonlinearsigma.o lattice.o mathlib.o
+	$(CXX) $(CXXFLAGS) -o nonlinearsigma nonlinearsigma.o lattice.o mathlib.o
 
-nonlinearsigma.o: nonlinearsigma.cpp lattice.h mathlib.h monte_carlo.h
+nonlinearsigma.o: nonlinearsigma.cpp lattice.h mathlib.h 
 	$(CXX) $(CXXFLAGS) -c nonlinearsigma.cpp 
 
 # Dependencies
@@ -55,9 +55,6 @@ lattice.o: lattice.cpp lattice.h mathlib.h
     
 mathlib.o: mathlib.cpp mathlib.h
 	$(CXX) $(CXXFLAGS) -c mathlib.cpp
-   
-monte_carlo.o: monte_carlo.cpp monte_carlo.h
-	$(CXX) $(CXXFLAGS) -c monte_carlo.cpp
 
  
 ##########################################################################
