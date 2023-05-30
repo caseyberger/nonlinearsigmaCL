@@ -38,7 +38,7 @@ namespace nonlinearsigma{
     
         private:
         int length_;
-        double ***grid;
+        double ***grid_;
         int *****triangles_;
         double beta_;
         double itheta_;

@@ -47,15 +47,16 @@ namespace nonlinearsigma{
     }
     
     double Lattice::getPhiMag(int i, int j){
-        double phi[3] = Lattice::getPhi(i,j);
+        static double phi[3];
+        phi = Lattice::getPhi(i,j);
         double phi_mag = dot(phi,phi);
         return phi_mag;
     }
     
     double Lattice::getPhiTot(){
-        double phi_tot = 0.;
+        static double phi_tot = 0.;
         for(int i = 0; i < length_; i++){
-            for(int i = 0; i < length_; i++){
+            for(int j = 0; j < length_; j++){
                 phi_tot += Lattice::getPhiMag(i, j);
             }
         }
@@ -79,8 +80,9 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printPhi(int i, int j){
-        double phi[3] = Lattice::getPhi(i,j);
-        std::cout << "At point (" << i << "," < <j <<"), phi = (";
+        double phi[3];
+        phi = Lattice::getPhi(i,j);
+        std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
     }
     void Lattice::printTriangles(int i, int j){
@@ -117,8 +119,10 @@ namespace nonlinearsigma{
         {
             for (int j = 0; j<length_; j++)
             {
-                double phi[3] = Lattice::getPhi(i,j);
-                double phiNN[4][3] = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                double phi[3];
+                phi = Lattice::getPhi(i,j);
+                double phiNN[4][3];
+                phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
@@ -262,9 +266,10 @@ namespace nonlinearsigma{
         int j2 = triangles_[i][j][n][1][1];
         int i3 = triangles_[i][j][n][2][0];
         int j3 = triangles_[i][j][n][2][1];
-        double phi1[3] = Lattice::getPhi(i1,j1);
-        double phi2[3] = Lattice::getPhi(i2,j2);
-        double phi3[3] = Lattice::getPhi(i3,j3);
+        static double phi1[3], phi2[3], phi3[3];
+        phi1 = Lattice::getPhi(i1,j1);
+        phi2 = Lattice::getPhi(i2,j2);
+        phi3 = Lattice::getPhi(i3,j3);
         rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
         rho = std::sqrt(rho2);
         QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
