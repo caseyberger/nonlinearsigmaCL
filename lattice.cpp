@@ -260,7 +260,7 @@ namespace nonlinearsigma{
     
     double Lattice::locQL_(int i, int j, int n, bool use_arccos){
         //Calculates QL on the nth triangle with central vertex i,j
-        double rho2, QLcos, QLsin;
+        double rho, rho2, QLcos, QLsin;
         int i1 = triangles_[i][j][n][0][0];
         int j1 = triangles_[i][j][n][0][1];
         int i2 = triangles_[i][j][n][1][0];
@@ -300,7 +300,7 @@ namespace nonlinearsigma{
     }
     
     double** Lattice::getNeighborPhis_(int i, int j){
-        static double nnPhis[4][3];
+        double ** nnPhis = new double*[4];
         nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
         nnPhis[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
         nnPhis[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
