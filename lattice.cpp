@@ -331,7 +331,7 @@ namespace nonlinearsigma{
         rho = std::sqrt(rho2);
         QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
         QLsin = dot(phi1,cross(phi2,phi3))/rho;
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
         std:: cout << "QL from sine: "<< std::asin(QLsin)/(2.*M_PI) << std::endl;
         std:: cout << "QL from cosine: "<< std::acos(QLcos)/(2.*M_PI) << std::endl;
 #endif
