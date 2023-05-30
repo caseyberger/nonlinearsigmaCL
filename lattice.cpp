@@ -43,18 +43,20 @@ namespace nonlinearsigma{
     }
     
     double* Lattice::getPhi(int i, int j){
-        return grid_[i][j];
+        static double phi[3];
+        phi = grid_[i][j];
+        return phi;
     }
     
     double Lattice::getPhiMag(int i, int j){
-        static double phi[3];
+        double phi[3];
         phi = Lattice::getPhi(i,j);
         double phi_mag = dot(phi,phi);
         return phi_mag;
     }
     
     double Lattice::getPhiTot(){
-        static double phi_tot = 0.;
+        double phi_tot = 0.;
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
                 phi_tot += Lattice::getPhiMag(i, j);
@@ -190,6 +192,7 @@ namespace nonlinearsigma{
     
     int*** Lattice::trianglesCCW_(int i, int j){
         static int triangles[8][3][2];
+        
         //triangle 1 
         triangles[0][0][0] = i;
         triangles[0][0][1] = j;
@@ -299,7 +302,7 @@ namespace nonlinearsigma{
         return nn;
     }
     
-    int* Lattice::getNeighborPhis_(int i, int j){
+    double* Lattice::getNeighborPhis_(int i, int j){
         static int nnPhis[4][3];
         nnSpins[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
         nnSpins[1] = Lattice::getPhi(i, Lattice::plusOne_(j));

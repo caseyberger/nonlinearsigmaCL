@@ -46,10 +46,10 @@ namespace nonlinearsigma{
         int plusOne_(int i);
         int minusOne_(int i);
         void makeTriangles_();
-        int*** trianglesCCW_(int i, int j);
+        int* trianglesCCW_(int i, int j);
         double locQL_(int i, int j, int n, bool use_arccos);
         int* getNeighbors_(int i, int j);
-        int** getNeighborPhis_(int i, int j);
+        double** getNeighborPhis_(int i, int j);
     };  
 }
 
