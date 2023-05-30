@@ -63,7 +63,7 @@ int main (int argc, char *argv[])
     
     create_logfile(); //generates logfile with header
     
-#ifdef EXTREME_TESTING_MODE
+#ifdef TESTING_MODE
     cout << "Printing lattice" <<endl;
     L.printLattice();
 
