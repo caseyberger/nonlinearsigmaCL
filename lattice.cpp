@@ -184,7 +184,7 @@ namespace nonlinearsigma{
     
     int*** Lattice::trianglesCCW_(int i, int j){
         int *** triangles = new int**[8];
-        for int(n = 0; n < 8; n++){
+        for (int n = 0; n < 8; n++){
             triangles[n] = new int[3][2]
         }
         
