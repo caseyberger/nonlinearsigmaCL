@@ -2,103 +2,274 @@
 // Created: Mar 28, 2023
 // Last edited: May 17, 2023
 
-#include <math.h>
-#include <time.h>
-#include <stdlib.h>
-#include <iostream>
-#include <cstdlib>
-#include "lattice.h"
+#include <iostream> //cout, endl
+#include <cmath> //sqrt, acos, asin
+#include "mathlib.h" //dot, cross
 
 /*
 This file contains all the lattice admin operations, such as 
 initializing, saving, etc.
 */
 
-Lattice::Lattice(int length){//constructor
-    length_ = length;
-}
-void generate_phi(double (&phi)[3]){
-#ifdef TEST_CONSTANT_RN
-    double r1 = 0.5;
-    double r2 = 0.5;
-#else
-    double r1 = ((double)rand())/((double)RAND_MAX);
-    double r2 = ((double)rand())/((double)RAND_MAX);
-#endif
-    //generate a random polar and azimuthal angle
-    double inclination =   M_PI * r1; //polar angle = inclination
-    double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
-    //create unit spin vector components from angles
-    phi[0] = sin(inclination) * cos(azimuth);
-    phi[1] = sin(inclination) * sin(azimuth);
-    phi[2] = cos(inclination);
-}
-
-void Lattice::initialize(double *** Lattice, int len){
-//Dynamically generates a 2D square lattice with two three-component phis at each site (an old and a new)
-
-#ifdef TESTING_MODE
-    std:: cout << "Function: lattice_init in lattice" << std::endl;
-#endif
-    double phi[3];
-    for (int i = 0; i<len; i++)
-    {
-        for (int j = 0; j<len; j++)
+namespace nonlinearsigma{
+    //public functions
+    //constructor
+    Lattice::Lattice(int length, double beta, double itheta){
+        Lattice::setLength(length); //set length
+        Lattice::setBeta(beta); //set beta
+        Lattice::setiTheta(itheta); //set itheta
+    }
+    //other public functions
+    void Lattice::setLength(int length){
+        length_ = length;
+    }
+    
+    void Lattice::setBeta(double beta){
+        beta_ = beta;
+    }
+    
+    void Lattice::setiTheta(double itheta){
+        itheta_ = itheta;
+    }
+    
+    int Lattice::getLength(){
+        return length_;
+    }
+    
+    double Lattice::getBeta(){
+        return beta_;
+    }
+    
+    double Lattice::getiTheta(){
+        return itheta_;
+    }
+    
+    double* Lattice::getPhi(int i, int j){
+        return grid_[i][j];
+    }
+    
+    void Lattice::initialize(){
+        double *** grid = new double**[length_];
+        for(int i = 0; i < length_; i++){
+            grid[i] = new double*[length_];
+        }
+        //allocation - 3 phi components
+        for(int i = 0; i < length_; i++){
+            for (int j = 0; j<length_; j++){
+                grid[i][j] = new double[3];
+                grid[i][j] = Lattice::makePhi_();
+            }
+        }
+        grid_ = grid;
+    }
+    
+    double Lattice::calcQL(){
+        //calculates topological charge  
+        double Q_L = 0.0;
+        bool use_arccos = true;//uses arccos to find QL for each triangle
+        for (int i = 0; i<length_; i++)
         {
-            generate_phi(phi);
-            Lattice[i][j][0] = phi[0]; //holds current phi
-            Lattice[i][j][1] = phi[1]; //holds current phi
-            Lattice[i][j][2] = phi[2]; //holds current phi
-            Lattice[i][j][3] = 0.0; //holds new phi
-            Lattice[i][j][4] = 0.0; //holds new phi
-            Lattice[i][j][5] = 0.0; //holds new phi
+            for (int j = 0; j<length_; j++)
+            {
+                for (int n = 0; n < 8; n++) //loop over 8 triangles
+                {
+                    Q_L += Lattice::locQL_(i, j, n, use_arccos);
+                }
+            }
+        }
+        return Q_L;//This Q_L is not renormalized. You can renormalize it later with Z
+    }
+    
+    double Lattice::calcAL(){
+        //calculates the standard lattice action A_L
+        double A_L = 0.0;
+        for (int i = 0; i<length_; i++)
+        {
+            for (int j = 0; j<length_; j++)
+            {
+                double phi[3] = Lattice::getPhi(i,j);
+                double phiNN[4][3] = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                //nearest neighbors in positive direction:
+                A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
+                //nearest neighbors in negative direction:
+                A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+            }
+        }
+        return -1.*beta_*A_L;
+    }
+    
+    double Lattice::calcSL(){
+        //calculates the full lattice action S_L = A_L - i theta Q_L
+        //not sure yet how to deal with the imaginary part, 
+        //so right now I'm making one variable called itheta that will be real 
+        //and analytically continued to imaginary values 
+        double S_L = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+        return S_L;
+    }
+    
+    //private functions
+    double* Lattice::makePhi_(){
+        static double phi[3];
+        
+#ifdef TEST_CONSTANT_RN
+        double r1 = 0.5;
+        double r2 = 0.5;
+#else
+        double r1 = ((double)std::rand())/((double)RAND_MAX);
+        double r2 = ((double)std::rand())/((double)RAND_MAX);
+#endif
+        //generate a random polar and azimuthal angle
+        double inclination =   M_PI * r1; //polar angle = inclination
+        double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
+        //create unit spin vector components from angles
+        phi[0] = sin(inclination) * cos(azimuth);
+        phi[1] = sin(inclination) * sin(azimuth);
+        phi[2] = cos(inclination);
+        
+        return phi;
+    }
+    
+    int Lattice::plusOne_(int i){
+        //int len = Lattice::getLength();
+        if(i+1 == length_){ return 0;}
+        else{return i+1;}
+    }
+    
+    int Lattice::minusOne_(int i){
+        if(i == 0){ return length_-1;}
+        else{return i-1;}
+    }
+    
+    void Lattice::makeTriangles_(){
+        int ***** triangles = new int****[length_];
+        for(int i = 0; i < length_; i++){
+            triangles[i] = new int***[length_];
+        }
+        for(int i = 0; i < length_; i++){
+            for (int j = 0; j<length_; j++){
+                triangles[i][j] = new int[8][3][2];
+                triangles[i][j] = Lattice::trianglesCCW_(i, j);
+            }
+        }
+        triangles_ = triangles;
+    }
+    
+    int*** Lattice::trianglesCCW_(int i, int j){
+        static int triangles[8][3][2];
+        //triangle 1 
+        triangles[0][0][0] = i;
+        triangles[0][0][1] = j;
+        triangles[0][1][0] = Lattice::plusOne_(i);
+        triangles[0][1][1] = Lattice::minusOne_(j);
+        triangles[0][2][0] = Lattice::plusOne_(i);
+        triangles[0][2][1] = j;
+
+        //triangle 2
+        triangles[1][0][0] = i;
+        triangles[1][0][1] = j;
+        triangles[1][1][0] = i;
+        triangles[1][1][1] = Lattice::minusOne_(j);
+        triangles[1][2][0] = Lattice::plusOne_(i);
+        triangles[1][2][1] = Lattice::minusOne_(j);
+
+        //triangle 3
+        triangles[2][0][0] = i;
+        triangles[2][0][1] = j;
+        triangles[2][1][0] = Lattice::minusOne_(i);
+        triangles[2][1][1] = Lattice::minusOne_(j);
+        triangles[2][2][0] = i;
+        triangles[2][2][1] = Lattice::minusOne_(j);
+
+        //triangle 4
+        triangles[3][0][0] = i;
+        triangles[3][0][1] = j;
+        triangles[3][1][0] = Lattice::minusOne_(i);
+        triangles[3][1][1] = j;
+        triangles[3][2][0] = Lattice::minusOne_(i);
+        triangles[3][2][1] = Lattice::minusOne_(j);
+
+        //triangle 5
+        triangles[4][0][0] = i;
+        triangles[4][0][1] = j;
+        triangles[4][1][0] = Lattice::minusOne_(i);
+        triangles[4][1][1] = Lattice::plusOne_(j);
+        triangles[4][2][0] = Lattice::minusOne_(i);
+        triangles[4][2][1] = j;
+
+        //triangle 6
+        triangles[5][0][0] = i;
+        triangles[5][0][1] = j;
+        triangles[5][1][0] = i;
+        triangles[5][1][1] = Lattice::plusOne_(j);
+        triangles[5][2][0] = Lattice::minusOne_(i);
+        triangles[5][2][1] = Lattice::plusOne_(j);
+
+        //triangle 7
+        triangles[6][0][0] = i;
+        triangles[6][0][1] = j;
+        triangles[6][1][0] = Lattice::plusOne_(i);
+        triangles[6][1][1] = Lattice::plusOne_(j);
+        triangles[6][2][0] = i;
+        triangles[6][2][1] = Lattice::plusOne_(j);
+
+        //triangle 8
+        triangles[7][0][0] = i;
+        triangles[7][0][1] = j;
+        triangles[7][1][0] = Lattice::plusOne_(i);
+        triangles[7][1][1] = j;
+        triangles[7][2][0] = Lattice::plusOne_(i);
+        triangles[7][2][1] = Lattice::plusOne_(j);
+        
+        return triangles;
+    }
+    
+    double Lattice::locQL_(int i, int j, int n, bool use_arccos){
+        //Calculates QL on the nth triangle with central vertex i,j
+        double rho2, QLcos, QLsin;
+        int i1 = triangles_[i][j][n][0][0];
+        int j1 = triangles_[i][j][n][0][1];
+        int i2 = triangles_[i][j][n][1][0];
+        int j2 = triangles_[i][j][n][1][1];
+        int i3 = triangles_[i][j][n][2][0];
+        int j3 = triangles_[i][j][n][2][1];
+        double phi1[3] = Lattice::getPhi(i1,j1);
+        double phi2[3] = Lattice::getPhi(i2,j2);
+        double phi3[3] = Lattice::getPhi(i3,j3);
+        rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
+        rho = std::sqrt(rho2);
+        QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
+        QLsin = dot(phi1,cross(phi2,phi3))/rho;
+#ifdef TESTING_MODE
+        std:: cout << "QL from sine: "<< std::asin(QLsin)/(2.*M_PI) << std::endl;
+        std:: cout << "QL from cosine: "<< std::acos(QLcos)/(2.*M_PI) << std::endl;
+#endif
+        if (use_arccos){ 
+            return std::acos(QLcos)/(2.*M_PI);
+        }
+        else{
+            return std::asin(QLsin)/(2.*M_PI);
         }
     }
-    std::cout << "Lattice initialized" << std::endl;
-}
-
-int plus_one(int i, int len){
-#ifdef EXTREME_TESTING_MODE
-    std:: cout << "Function: plus_one in lattice" << std::endl;
-#endif
-    //returns site plus one, using periodic boundary conditions
-    if (i==len-1){
-        return 0;
+    
+    int* Lattice::getNeighbors_(int i, int j){
+        static int nn[8];
+        nn[0] = Lattice::plusOne_(i);
+        nn[1] = j;
+        nn[2] = i;
+        nn[3] = Lattice::plusOne_(j);
+        nn[4] = Lattice::minusOne_(i);
+        nn[5] = j;
+        nn[6] = i;
+        nn[7] = Lattice::minusOne_(j);
+        return nn;
     }
-    else{
-        return i+1;
+    
+    int* Lattice::getNeighborPhis_(int i, int j){
+        static int nnPhis[4][3];
+        nnSpins[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
+        nnSpins[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
+        nnSpins[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
+        nnSpins[3] = Lattice::getPhi(i, Lattice::minusOne_(j));
+        return nnPhis;
     }
-}
-
-int minus_one(int i, int len){
-#ifdef EXTREME_TESTING_MODE
-    std:: cout << "Function: minus_one in lattice" << std::endl;
-#endif
-    //returns site minus one, using periodic boundary conditions
-    if (i==0){
-        return len-1;
-    }
-    else{
-        return i-1;
-    }
-}
-
-double dot_product(double vec1[3], double vec2[3]){
-#ifdef EXTREME_TESTING_MODE
-    std:: cout << "Function: dot_product in lattice" << std::endl;
-#endif
-    //calculates the dot product of two vectors
-    double dot_prod = 0.0;
-    dot_prod = vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2];
-    return dot_prod;
-}
-
-void cross_product(double vec1[3], double vec2[3],double (&cross_prod)[3]){
-#ifdef EXTREME_TESTING_MODE
-    std:: cout << "Function: cross_product in lattice" << std::endl;
-#endif
-    //calculates the cross product of two vectors
-    cross_prod[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
-    cross_prod[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
-    cross_prod[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
 }

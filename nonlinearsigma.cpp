@@ -24,6 +24,7 @@
 #include "monte_carlo.h"
 
 using namespace std;
+using nonlinearsigma::Lattice;
 
 //function declaration
 double Z_renorm(double beta, int len);
