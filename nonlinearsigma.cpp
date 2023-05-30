@@ -35,10 +35,9 @@ int main (int argc, char *argv[])
     cout << "Testing mode ON." << endl;
     cout << "Starting clock." << endl;
 #endif
-    srand(1723); //seed random number
     time_t begin, end, begin_therm, end_therm, begin_mc, dt_end, dt_start, end_mc;
     double dt;
-    
+    srand(1723); //seed random number
     time(&begin);
     
 #ifdef EXTREME_TESTING_MODE

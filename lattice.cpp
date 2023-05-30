@@ -3,7 +3,7 @@
 // Last edited: May 30, 2023
 
 #include <iostream> //cout, endl
-#include <cmath> //sqrt, acos, asin, exp
+#include <cmath> //sqrt, sin, cos, acos, asin, exp
 #include "mathlib.h" //dot, cross
 
 #include "lattice.h"
@@ -191,21 +191,21 @@ namespace nonlinearsigma{
     //private functions
     double* Lattice::makePhi_(){
         static double phi[3];
-        
+        double r1, r2;
 #ifdef TEST_CONSTANT_RN
-        double r1 = 0.5;
-        double r2 = 0.5;
+        r1 = 0.5;
+        r2 = 0.5;
 #else
-        double r1 = ((double)std::rand())/((double)RAND_MAX);
-        double r2 = ((double)std::rand())/((double)RAND_MAX);
+        r1 = ((double)std::rand())/((double)RAND_MAX);
+        r2 = ((double)std::rand())/((double)RAND_MAX);
 #endif
         //generate a random polar and azimuthal angle
         double inclination =   M_PI * r1; //polar angle = inclination
         double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
         //create unit spin vector components from angles
-        phi[0] = sin(inclination) * cos(azimuth);
-        phi[1] = sin(inclination) * sin(azimuth);
-        phi[2] = cos(inclination);
+        phi[0] = std::sin(inclination) * std::cos(azimuth);
+        phi[1] = std::sin(inclination) * std::sin(azimuth);
+        phi[2] = std::cos(inclination);
         
         return phi;
     }
