@@ -213,7 +213,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
     cout << "Function: read_in_inputs" << endl;
 #endif
     string str, filename;
-    const int n_params = 4;
+    const int n_params = 5;
     string inputs [n_params] = {"L","beta", "itheta", "ntherm","nMC"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
         cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
