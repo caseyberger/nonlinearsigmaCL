@@ -258,7 +258,7 @@ namespace nonlinearsigma{
         triangles[0][2] = v3;
         
         v3 = v2;
-        v2 = {i, Lattice::minusOne_(j)};
+        v2[0] = i;
 
         //triangle 2
         /*
@@ -274,7 +274,7 @@ namespace nonlinearsigma{
         triangles[1][2] = v3;
         
         v3 = v2;
-        v2 = {Lattice::minusOne_(i), Lattice::minusOne_(j)};
+        v2[0] = Lattice::minusOne_(i);
 
         //triangle 3
         /*triangles[2][0][0] = i;
@@ -289,7 +289,7 @@ namespace nonlinearsigma{
         triangles[2][2] = v3;
         
         v3 = v2;
-        v2 = {Lattice::minusOne_(i), j};
+        v2[1] = j;
 
         //triangle 4
         /*triangles[3][0][0] = i;
@@ -304,7 +304,7 @@ namespace nonlinearsigma{
         triangles[3][2] = v3;
         
         v3 = v2;
-        v2 = {Lattice::minusOne_(i), Lattice::plusOne_(j)};
+        v2[1] = Lattice::plusOne_(j);
         
         //triangle 5
         /*triangles[4][0][0] = i;
@@ -319,7 +319,7 @@ namespace nonlinearsigma{
         triangles[4][2] = v3;
         
         v3 = v2;
-        v2 = {i, Lattice::plusOne_(j)};
+        v2[0] = i;
 
         //triangle 6
         /*triangles[5][0][0] = i;
@@ -334,7 +334,7 @@ namespace nonlinearsigma{
         triangles[5][2] = v3;
         
         v3 = v2;
-        v2 = {Lattice::plusOne_(i), Lattice::plusOne_(j)};
+        v2[0] = Lattice::plusOne_(i);
 
         //triangle 7
         /*triangles[6][0][0] = i;
@@ -349,7 +349,7 @@ namespace nonlinearsigma{
         triangles[6][2] = v3;
         
         v3 = v2;
-        v2 = {Lattice::plusOne_(i), j};
+        v2[1] = j;
 
         //triangle 8
         /*triangles[7][0][0] = i;
