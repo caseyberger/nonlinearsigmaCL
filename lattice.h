@@ -27,7 +27,7 @@ namespace nonlinearsigma{
         void initialize();
         
         //print things to the screen
-        void printPhi(int i, int j);
+        void printLattice();
         void printTriangles(int i, int j);
         
         //calculate lattice quantities
@@ -62,6 +62,7 @@ namespace nonlinearsigma{
         double locQL_(int i, int j, int n, bool use_arccos);
         int* getNeighbors_(int i, int j);
         double** getNeighborPhis_(int i, int j);
+        void printPhi_(int i, int j);
     };  
 }
 

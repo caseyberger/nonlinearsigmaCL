@@ -63,14 +63,10 @@ int main (int argc, char *argv[])
     
     create_logfile(); //generates logfile with header
     
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
     cout << "Printing lattice" <<endl;
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            L.printPhi(i,j);
-        }
-    }
-    
+    L.printLattice();
+
     cout << "Printing triangles" <<endl;
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
@@ -107,6 +103,9 @@ int main (int argc, char *argv[])
     for (int n = 0; n<nMC; n++){
         time(&dt_start);
         L.metropolisStep();
+#ifdef TESTING_MODE
+        L.printLattice();
+#endif
         phi = L.getPhiTot();
         A_L = L.calcAL();
         Q_L = L.calcQL();

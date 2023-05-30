@@ -79,10 +79,14 @@ namespace nonlinearsigma{
         Lattice::makeTriangles_();
     }
     
-    void Lattice::printPhi(int i, int j){
-        double *phi = Lattice::getPhi(i,j);
-        std::cout << "At point (" << i << "," << j <<"), phi = (";
-        std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+    void Lattice::printLattice(){
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                double *phi = Lattice::getPhi(i,j);
+                std::cout << "At point (" << i << "," << j <<"), phi = (";
+                std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+            }
+        }
     }
     
     void Lattice::printTriangles(int i, int j){
@@ -361,5 +365,10 @@ namespace nonlinearsigma{
         return nnPhis;
     }
     
+    void Lattice::printPhi_(int i, int j){
+        double *phi = Lattice::getPhi(i,j);
+        std::cout << "At point (" << i << "," << j <<"), phi = (";
+        std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+    }
     
 }//end class definition
