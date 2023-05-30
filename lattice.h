@@ -20,9 +20,15 @@ namespace nonlinearsigma{
         double getBeta();
         double getiTheta();
         double* getPhi(int i, int j);
+        double getPhiMag(int i, int j);
+        double getPhiTot();
         
         //initialize the lattice
         void initialize();
+        
+        //print things to the screen
+        void printPhi(int i, int j);
+        void printTriangles(int i, int j);
         
         //calculating lattice quantities
         double calcQL();

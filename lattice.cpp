@@ -48,6 +48,23 @@ namespace nonlinearsigma{
         return grid_[i][j];
     }
     
+    double Lattice::getPhiMag(int i, int j){
+        double phi[3] = Lattice::getPhi(i,j);
+        double phi_mag = dot(phi,phi);
+        return phi_mag;
+    }
+    
+    double Lattice::getPhiTot(){
+        double phi_tot = 0.;
+        for(int i = 0; i < length_; i++){
+            for(int i = 0; i < length_; i++){
+                phi_tot += Lattice::getPhiMag(i, j);
+            }
+        }
+        return phi_tot;
+    }
+    
+    
     void Lattice::initialize(){
         double *** grid = new double**[length_];
         for(int i = 0; i < length_; i++){
@@ -61,6 +78,21 @@ namespace nonlinearsigma{
             }
         }
         grid_ = grid;
+    }
+    
+    void Lattice::printPhi(int i, int j){
+        double phi[3] = Lattice::getPhi(i,j);
+        std::cout << "At point (" << i << "," < <j <<"), phi = (";
+        std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+    }
+    void Lattice::printTriangles(int i, int j){
+        std::cout << "At point (" << i << "," < <j << ")," << std::endl;
+        for (int n = 0; n < 8; n++){
+            std::cout << "Triangle "<< n+1 << " = (" ;
+            std::cout << triangles_[i][j][n][0][0] << ","<< triangles_[i][j][n][0][1] << "), (";
+            std::cout << triangles_[i][j][n][1][0] << ","<< triangles_[i][j][n][1][1] << "), (";
+            std::cout <<triangles_[i][j][n][2][0] << ","<< triangles_[i][j][n][2][1]<< ")" std::endl;
+        }
     }
     
     double Lattice::calcQL(){

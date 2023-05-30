@@ -48,38 +48,43 @@ int main (int argc, char *argv[])
 
     int len, num, ntherm, nMC;
     double beta = 1.6;
+    double itheta = M_PI;
     
-    read_in_inputs(argc, argv,len, num, ntherm, nMC, beta);
+    read_in_inputs(argc, argv,len, num, ntherm, nMC, beta, itheta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
+    cout << "itheta = " << itheta << endl;
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
 #ifdef TESTING_MODE
     cout << "Allocating memory for lattice" << endl;
 #endif
-    double *** Lattice = new double**[num];
-    for(int i = 0; i < len; i++){
-        Lattice[i] = new double*[len];
-    }
-    //allocation - 3 phi components x 2 (old and new)
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            Lattice[i][j] = new double[6];
-        }
-    }
-    lattice_init(Lattice, len);//initialize phi everywhere
-        
-    double phi_mag[len][len]; //stores size of unit vector at each lattice site
+    
+    Lattice L(len, beta, itheta);//construct lattice
+    L.initialize(); //initialize 3-component phi everywhere
     
     create_logfile(); //generates logfile with header
-    //print_lattice(Lattice, len);
+    
+#ifdef TESTING_MODE
+    cout << "Printing lattice" <<endl;
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            L.printPhi(i,j);
+        }
+    }
+    
+    cout << "Printing triangles" <<endl;
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            L.printTriangles(i,j);
+        }
+    }
+#endif   
     
     double phi = 0.0;
     double A_L = 0.0;
     double Q_L = 0.0;
     double S_L = 0.0;
-    double itheta = M_PI;
-    bool old_lattice = true;
     
     //thermalization loop
 #ifdef TESTING_MODE
@@ -89,7 +94,8 @@ int main (int argc, char *argv[])
     time(&begin_therm);
     for (int n = 0; n<ntherm; n++){
         //some sort of updating function in here
-        Metropolis_loop(beta, itheta, Lattice, len);
+        //Metropolis_loop(beta, itheta, Lattice, len);
+        phi = 0; //dummy placeholder calc for testing -- replace with thermalization function
     }
     time(&end_therm);
     
@@ -104,11 +110,12 @@ int main (int argc, char *argv[])
 
     for (int n = 0; n<nMC; n++){
         //some sort of updating function in here
+        //add in the MC loop here...
         time(&dt_start);
-        phi = phi_tot(Lattice, len, old_lattice);
-        A_L = A_lattice(beta, Lattice, len, old_lattice);
-        Q_L = Q_lattice(Lattice, len, old_lattice);
-        S_L = S_lattice(beta, Lattice, len, itheta, old_lattice);
+        phi = L.getPhiTot();
+        A_L = L.calcAL();
+        Q_L = L.calcQL();
+        S_L = L.calcSL();
         time(&dt_end);
         dt = dt_end-dt_start;
         write_to_file(dt, n, phi, Q_L, A_L, S_L);
@@ -199,15 +206,15 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
     fout.close();
 }
 
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta)
+void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta, double &itheta)
 {
-    //read in parameters
+    //read in parameters -- note itheta is read in as a multiple/fraction of pi
 #ifdef TESTING_MODE
     cout << "Function: read_in_inputs" << endl;
 #endif
     string str, filename;
     const int n_params = 4;
-    string inputs [n_params] = {"L","beta", "ntherm","nMC"};//read in keywords for parameters
+    string inputs [n_params] = {"L","beta", "itheta", "ntherm","nMC"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
         cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
         exit(10);
@@ -247,8 +254,9 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
             len = stod(inputs[0]);
             num = len*len;
             beta = stod(inputs[1]);
-            ntherm = stod(inputs[2]);
-            nMC = stod(inputs[3]);
+            itheta = stod(inputs[2])*M_PI;
+            ntherm = stod(inputs[3]);
+            nMC = stod(inputs[4]);
 #ifdef TESTING_MODE
     cout << "parameters acquired: ";
     for (int n=0; n<n_params; n++){
