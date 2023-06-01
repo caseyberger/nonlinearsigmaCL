@@ -338,6 +338,15 @@ void testing_suite(int len, double beta, double itheta){
     }
     L.setiTheta(M_PI);
     L.setLength(2);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, itheta = pi, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.setiTheta(M_PI);
     L.fixRNG(0.,0.);
     L.initialize();
     L.printLattice();
@@ -345,7 +354,7 @@ void testing_suite(int len, double beta, double itheta){
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and all phi pointing in +z direction:" << endl;
-    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
    
     L.fixRNG(0.5,0.);
     L.initialize();
@@ -354,7 +363,7 @@ void testing_suite(int len, double beta, double itheta){
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and all phi pointing in +x direction:" << endl;
-    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     
     L.fixRNG(0.5,0.5);
     L.initialize();
@@ -363,7 +372,7 @@ void testing_suite(int len, double beta, double itheta){
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and all phi pointing in -x direction:" << endl;
-    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     
     L.fixRNG(0.5,0.25);
     L.initialize();
@@ -372,7 +381,7 @@ void testing_suite(int len, double beta, double itheta){
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and all phi pointing in y direction:" << endl;
-    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     
     L.fixRNG(0.5,0.75);
     L.initialize();
@@ -381,5 +390,5 @@ void testing_suite(int len, double beta, double itheta){
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and all phi pointing in -y direction:" << endl;
-    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
 }
