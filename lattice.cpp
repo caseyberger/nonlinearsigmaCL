@@ -94,27 +94,11 @@ namespace nonlinearsigma{
         Lattice::makeTriangles_();
     }
     
-    void Lattice::testLattice(){
-        std::cout << "Lattice parameters:" << std::endl;
-        std::cout << "length = " << length_ << std::endl;
-        std::cout << "beta = " << beta_ << std::endl;
-        std::cout << "i theta = " << itheta_ << std::endl;
-        for(int i = 0; i < length_; i++){
-            for (int j = 0; j<length_; j++){
-                std::cout << "(i,j) = " << i << "," << j << std::endl;
-                std::cout << "phi = (" << grid_[i][j][0] << "," << grid_[i][j][1] << "," << grid_[i][j][2] << ")" << std::endl;
-            }
-        }
-        
-        std::cout << "Lattice functions:" << std::endl;
-    }
-    
     void Lattice::printLattice(){
+        //tested 5/30/2023
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                double *phi = Lattice::getPhi(i,j);
-                std::cout << "At point (" << i << "," << j <<"), phi = (";
-                std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+                Lattice::printPhi_(int i, int j);
             }
         }
     }
@@ -403,6 +387,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printPhi_(int i, int j){
+        //tested 5/30/2023
         double *phi = Lattice::getPhi(i,j);
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;

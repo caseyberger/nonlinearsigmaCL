@@ -19,17 +19,16 @@ namespace nonlinearsigma{
         int getLength();//tested 6/1/2023
         double getBeta();//tested 6/1/2023
         double getiTheta();//tested 6/1/2023
-        double* getPhi(int i, int j);
-        double* getRandNums();
+        double* getPhi(int i, int j);//tested 5/30/2023
+        double* getRandNums();//tested 6/1/2023
         double getPhiMag(int i, int j);
         double getPhiTot();
         
         //initialize the lattice
         void initialize(); //tested 5/30/2023
-        void testLattice();
         
         //print things to the screen
-        void printLattice();
+        void printLattice();//tested 5/30/2023
         void printTriangles(int i, int j);
         
         //calculate lattice quantities
@@ -58,15 +57,15 @@ namespace nonlinearsigma{
         double accRate_;
         
         //functions
-        double* makePhi_();
-        int plusOne_(int i);
-        int minusOne_(int i);
+        double* makePhi_(); //tested 6/1/2023
+        int plusOne_(int i); //tested 5/30/2023
+        int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_();
         int*** trianglesCCW_(int i, int j);
         double locQL_(int i, int j, int n, bool use_arccos);
         int* getNeighbors_(int i, int j);
         double** getNeighborPhis_(int i, int j);
-        void printPhi_(int i, int j);
+        void printPhi_(int i, int j); //tested 5/30/2023
     };  
 }
 

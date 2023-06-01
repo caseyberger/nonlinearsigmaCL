@@ -28,6 +28,7 @@ void create_logfile();
 void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double acc);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
+void testing_suite(int len, double beta, double itheta);
 
 int main (int argc, char *argv[])
 {
@@ -40,10 +41,6 @@ int main (int argc, char *argv[])
     srand(1723); //seed random number
     time(&begin);
     
-#ifdef EXTREME_TESTING_MODE
-    cout << "Testing mode is EXTREME." << endl;
-#endif
-
     int len, num, ntherm, nMC;
     double beta = 1.6;
     double itheta = M_PI;
@@ -53,30 +50,16 @@ int main (int argc, char *argv[])
     cout << "beta = " << beta << endl;
     cout << "itheta = " << itheta << endl;
     
+#ifdef EXTREME_TESTING_MODE
+    testing_suite(len, beta, itheta);
+#endif
+    
     //Initalize the lattice - dynamically allocate the memory for the lattice
 #ifdef TESTING_MODE
     cout << "Constructing lattice" << endl;
 #endif
     
     Lattice L(len, beta, itheta);//construct lattice
-    
-#ifdef TESTING_MODE
-    cout << "Length = " << L.getLength() << endl;
-    cout << "Resetting length" << endl;
-    L.setLength(10);
-    cout << "New length = " << L.getLength() << endl;
-    
-    cout << "Beta = " << L.getBeta() << endl;
-    cout << "Resetting beta" << endl;
-    L.setBeta(1.0);
-    cout << "New beta = " << L.getBeta() << endl;
-    
-    cout << "itheta = " << L.getiTheta() << endl;
-    cout << "Resetting itheta" << endl;
-    L.setiTheta(0.5*M_PI);
-    cout << "New itheta = " << L.getiTheta() << endl;
-    //note -- you must reinitialize the lattice after changing length
-#endif
     
 #ifdef TESTING_MODE
     cout << "Initializing lattice" << endl;
@@ -87,9 +70,6 @@ int main (int argc, char *argv[])
     
 
 #ifdef TESTING_MODE
-    cout << "Printing lattice" <<endl;
-    L.printLattice();
-
     cout << "Printing triangles" <<endl;
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
@@ -307,4 +287,36 @@ void test_phi_distribution(Lattice L){
         }
     }
     fout.close();
+}
+
+void testing_suite(int len, double beta, double itheta){
+    cout << "Extreme testing mode enabled. Running through tests." << endl;
+    
+    //construct lattice
+    cout << "Constructing lattice" << endl;
+    Lattice L(len, beta, itheta);
+    
+    //test setting and getting parameters
+    cout << "Length = " << L.getLength() << endl;
+    cout << "Resetting length" << endl;
+    L.setLength(len + 1);
+    cout << "New length = " << L.getLength() << endl;
+    
+    cout << "Beta = " << L.getBeta() << endl;
+    cout << "Resetting beta" << endl;
+    L.setBeta(1.0);
+    cout << "New beta = " << L.getBeta() << endl;
+    
+    cout << "itheta = " << L.getiTheta() << endl;
+    cout << "Resetting itheta" << endl;
+    L.setiTheta(0.5*M_PI);
+    cout << "New itheta = " << L.getiTheta() << endl;
+    
+    //initialization tests
+    cout << "Initializing lattice" << endl;
+    L.initialize();
+    
+    //testing distrubution of phi
+    test_phi_distribution(L);
+    
 }
