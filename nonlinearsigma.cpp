@@ -336,6 +336,8 @@ void testing_suite(int len, double beta, double itheta){
             }
         }
     }
+    L.setiTheta(M_PI);
+    L.setLength(2);
     L.fixRNG();
     L.setR(0.,0.);
     L.initialize();
@@ -343,5 +345,22 @@ void testing_suite(int len, double beta, double itheta){
     AL = L.calcAL();
     QL = L.calcQL();
     SL = L.calcSL();
-    cout << "AL = " << AL << ", QL = " << QL << "SL = AL - itheta QL = " << SL << endl;
+    cout << "for L = 2, itheta = pi, and all phi pointing in +z direction, we expect" << endl;
+    cout << "AL = 4, QL = 0, SL = AL - itheta QL = 4" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    
+    
+    
+    L.setiTheta(M_PI);
+    L.setLength(2);
+    L.fixRNG();
+    L.setR(0.5,0.5);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, itheta = pi, and all phi pointing in +z direction, we expect" << endl;
+    cout << "AL = 4, QL = 0, SL = AL - itheta QL = 4" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
 }
