@@ -14,8 +14,7 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
-        void fixRNG();
-        void setR(double r1, double r2);
+        void fixRNG(double r1, double r2);
         
         //retrieve lattice parameters
         int getLength();//tested 6/1/2023

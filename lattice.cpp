@@ -35,13 +35,8 @@ namespace nonlinearsigma{
         itheta_ = itheta;
     }
     
-    void Lattice::fixRNG(){
+    void Lattice::fixRNG(double r1, double r2){
         fixedr_ = true;
-        r1_ = 0.;
-        r2_ = 0.;
-    }
-    
-    void Lattice::setR(double r1, double r2){
         r1_ = r1;
         r2_ = r2;
     }
