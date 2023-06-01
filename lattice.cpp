@@ -19,27 +19,33 @@ namespace nonlinearsigma{
     }
     //other public functions
     void Lattice::setLength(int length){
+        //tested 6/1/2023
         //if you do this after initializing, you must reinitialize!
         length_ = length;
     }
     
     void Lattice::setBeta(double beta){
+        //tested 6/1/2023
         beta_ = beta;
     }
     
     void Lattice::setiTheta(double itheta){
+        //tested 6/1/2023
         itheta_ = itheta;
     }
     
     int Lattice::getLength(){
+        //tested 6/1/2023
         return length_;
     }
     
     double Lattice::getBeta(){
+        //tested 6/1/2023
         return beta_;
     }
     
     double Lattice::getiTheta(){
+        //tested 6/1/2023
         return itheta_;
     }
     
@@ -225,7 +231,7 @@ namespace nonlinearsigma{
         r2 = ((double)std::rand())/((double)RAND_MAX);
 #endif
         
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
         std::cout << "r1 = " << r1 << ", r2 = " << r2 << std::endl;
 #endif
         //generate a random polar and azimuthal angle

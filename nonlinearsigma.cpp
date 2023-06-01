@@ -27,6 +27,7 @@ double Z_renorm(double beta, int len);
 void create_logfile();
 void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double acc);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
+void test_phi_distribution(Lattice L);
 
 int main (int argc, char *argv[])
 {
@@ -127,6 +128,7 @@ int main (int argc, char *argv[])
         L.metropolisStep();
 #ifdef TESTING_MODE
         L.printLattice();
+        test_phi_distribution(L);
 #endif
         phi = L.getPhiTot();
         A_L = L.calcAL();
@@ -276,4 +278,31 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
 #endif  
         }
     }
+}
+
+void test_phi_distribution(Lattice L){
+    //output phi distributions as .csv file
+    
+    //create header of logfile
+    string fname = "phi_test.csv";
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << "i,j,phi_x,phi_y,phi_z" << endl;
+    int len = L.getLength();
+    L.initialize();
+    for (int i = 0; i < len; i++){
+        for (int j = 0; j < len; j++){
+            double *phi = Lattice::getPhi(i,j);
+            fout << i <<","<< j << "," << phi[0]<< "," << phi[1]<< "," << phi[2] << endl;
+        }
+    }
+    fout.close();
 }
