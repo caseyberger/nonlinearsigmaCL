@@ -329,7 +329,7 @@ void testing_suite(int len, double beta, double itheta){
     
     //testing neighbor getting functions
     cout << "Testing ability to get neighboring phis" <<endl;
-    int testlen = 2;
+    int testlen = 4;
     L.setLength(testlen);
     L.printLattice();
     for (int i = 0; i < testlen; i++){
