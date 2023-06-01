@@ -296,11 +296,12 @@ void test_phi_distribution(Lattice L){
     }
     fout.setf(ios::fixed);
     fout << "i,j,phi_x,phi_y,phi_z" << endl;
-    int len = L.getLength();
+    int len = 20; //in order to get a large sample -- maybe make larger?
+    L.setLength(len);
     L.initialize();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
-            double *phi = Lattice::getPhi(i,j);
+            double *phi = L.getPhi(i,j);
             fout << i <<","<< j << "," << phi[0]<< "," << phi[1]<< "," << phi[2] << endl;
         }
     }
