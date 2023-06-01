@@ -53,6 +53,11 @@ namespace nonlinearsigma{
         return grid_[i][j];
     }
     
+    double* Lattice::getRandNums(){
+        double r[2] = {r1_, r_2};
+        return r;
+    }
+    
     double Lattice::getPhiMag(int i, int j){
         double *phi = Lattice::getPhi(i,j);
         double phi_mag = dot(phi,phi);
@@ -242,6 +247,8 @@ namespace nonlinearsigma{
         phi[1] = std::sin(inclination) * std::sin(azimuth);
         phi[2] = std::cos(inclination);
         
+        r1_ = r1;//save for debugging
+        r2_ = r2;//save for debugging
         return phi;
     }
     

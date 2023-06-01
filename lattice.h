@@ -20,6 +20,7 @@ namespace nonlinearsigma{
         double getBeta();//tested 6/1/2023
         double getiTheta();//tested 6/1/2023
         double* getPhi(int i, int j);
+        double* getRandNums();
         double getPhiMag(int i, int j);
         double getPhiTot();
         
@@ -50,6 +51,8 @@ namespace nonlinearsigma{
         int *****triangles_;
         double beta_;
         double itheta_;
+        double r1_;
+        double r2_;
         int acceptCount_;
         int rejectCount_;
         double accRate_;

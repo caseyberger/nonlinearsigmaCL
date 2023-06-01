@@ -282,7 +282,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
 
 void test_phi_distribution(Lattice L){
     //output phi distributions as .csv file
-    
+    cout << "Saving phi distribution to file" <<endl;
     //create header of logfile
     string fname = "phi_test.csv";
     ofstream fout; //output stream
@@ -295,14 +295,15 @@ void test_phi_distribution(Lattice L){
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "i,j,phi_x,phi_y,phi_z" << endl;
+    fout << "i,j,phi_x,phi_y,phi_z,r1,r2" << endl;
     int len = 20; //in order to get a large sample -- maybe make larger?
     L.setLength(len);
     L.initialize();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             double *phi = L.getPhi(i,j);
-            fout << i <<","<< j << "," << phi[0]<< "," << phi[1]<< "," << phi[2] << endl;
+            double *r = L.getRandNum();
+            fout << i <<","<< j << "," << phi[0]<< "," << phi[1]<< "," << phi[2] "," << r[0] << "," << r[1] << endl;
         }
     }
     fout.close();
