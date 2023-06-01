@@ -14,7 +14,8 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
-        void fixRNG(double r1, double r2);
+        void fixRNG(double r1, double r2);//tested 6/1/2023
+        void freeRNG();
         
         //retrieve lattice parameters
         int getLength();//tested 6/1/2023
@@ -33,7 +34,7 @@ namespace nonlinearsigma{
         void printTriangles(int i, int j); //tested 6/1/2023
         
         //calculate and test lattice quantities
-        double calcQL();//tested 6/1/2023
+        double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
         void checkQL(int i, int j);//tested 6/1/2023
         double calcAL();//tested 6/1/2023
         double calcSL();//tested 6/1/2023

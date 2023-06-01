@@ -399,4 +399,13 @@ void testing_suite(int len, double beta, double itheta){
     SL = L.calcSL();
     cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in -y direction:" << endl;
     cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.freeRNG();
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
 }

@@ -36,9 +36,15 @@ namespace nonlinearsigma{
     }
     
     void Lattice::fixRNG(double r1, double r2){
+        //tested 6/1/2023
         fixedr_ = true;
         r1_ = r1;
         r2_ = r2;
+    }
+    
+    void Lattice::freeRNG(){
+        //tested 6/1/2023
+        fixedr_ = false;
     }
     
     int Lattice::getLength(){
@@ -127,7 +133,9 @@ namespace nonlinearsigma{
     
     double Lattice::calcQL(){
         //tested 6/1/2023
-        //calculates topological charge  
+        //calculates topological charge -- note this does not produce integer values!
+        //This Q_L is not renormalized. You can renormalize it later with Z 
+        //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
         for (int i = 0; i<length_; i++)
@@ -140,7 +148,7 @@ namespace nonlinearsigma{
                 }
             }
         }
-        return Q_L;//This Q_L is not renormalized. You can renormalize it later with Z
+        return Q_L;
     }
     
     double Lattice::calcAL(){
