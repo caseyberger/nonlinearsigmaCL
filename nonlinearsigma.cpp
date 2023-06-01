@@ -66,17 +66,7 @@ int main (int argc, char *argv[])
 #endif
     L.initialize(); //initialize 3-component phi everywhere
     
-    create_logfile(); //generates logfile with header
-    
-
-#ifdef TESTING_MODE
-    cout << "Printing triangles" <<endl;
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            L.printTriangles(i,j);
-        }
-    }
-#endif   
+    create_logfile(); //generates logfile with header 
     
     double phi = 0.0;
     double A_L = 0.0;
@@ -318,5 +308,13 @@ void testing_suite(int len, double beta, double itheta){
     
     //testing distrubution of phi
     test_phi_distribution(L);
+    
+    //testing triangles
+    cout << "Testing triangle generation" <<endl;
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            L.printTriangles(i,j);
+        }
+    }
     
 }

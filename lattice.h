@@ -29,7 +29,7 @@ namespace nonlinearsigma{
         
         //print things to the screen
         void printLattice();//tested 5/30/2023
-        void printTriangles(int i, int j);
+        void printTriangles(int i, int j); //tested 6/1/2023
         
         //calculate lattice quantities
         double calcQL();
@@ -60,8 +60,8 @@ namespace nonlinearsigma{
         double* makePhi_(); //tested 6/1/2023
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
-        void makeTriangles_();
-        int*** trianglesCCW_(int i, int j);
+        void makeTriangles_(); //tested 6/1/2023
+        int*** trianglesCCW_(int i, int j); //tested 6/1/2023
         double locQL_(int i, int j, int n, bool use_arccos);
         int* getNeighbors_(int i, int j);
         double** getNeighborPhis_(int i, int j);

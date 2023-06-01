@@ -104,6 +104,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printTriangles(int i, int j){
+        //tested 6/1/2023
         std::cout << "At point (" << i << "," << j << ")," << std::endl;
         for (int n = 0; n < 8; n++){
             std::cout << "Triangle "<< n + 1 << " = (";
@@ -249,6 +250,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::makeTriangles_(){
+        //tested 6/1/2023
         int ***** triangles = new int****[length_];
         for(int i = 0; i < length_; i++){
             triangles[i] = new int***[length_];
@@ -261,6 +263,7 @@ namespace nonlinearsigma{
     }
     
     int*** Lattice::trianglesCCW_(int i, int j){
+        //tested 6/1/2023
         int *** triangles = new int**[8];
         for (int n = 0; n < 8; n++){
             triangles[n] = new int*[3];
