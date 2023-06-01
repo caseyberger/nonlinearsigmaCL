@@ -332,15 +332,9 @@ void testing_suite(int len, double beta, double itheta){
     int testlen = 2;
     L.setLength(testlen);
     L.printLattice();
-    for (int i = 0; i< testlen; i++){
-        for (int i = 0; i< testlen; i++){
-            int *nn = L.getNeighbors_(i,j);
-            double **nnphi = L.getNeighborPhis_(i,j);
-            cout << "At (i,j) = " << i << "," << j << " the neighbors are " << endl;
-            cout << "(" << nn[0] << "," << nn[1] << "), with phi (" nnphi[0][0] << "," << nnphi[0][1] << "," << nnphi[0][2] << ")" << endl;
-            cout << "(" << nn[2] << "," << nn[3] << "), with phi (" nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << endl;
-            cout << "(" << nn[4] << "," << nn[5] << "), with phi (" nnphi[2][0] << "," << nnphi[2][1] << "," << nnphi[2][2] << ")" << endl;
-            cout << "(" << nn[6] << "," << nn[7] << "), with phi (" nnphi[3][0] << "," << nnphi[3][1] << "," << nnphi[3][2] << ")" << endl;
+    for (int i = 0; i < testlen; i++){
+        for (int j = 0; j < testlen; j++){
+            L.printNeighbors(i,j);
         }
     }
     

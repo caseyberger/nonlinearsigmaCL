@@ -131,6 +131,16 @@ namespace nonlinearsigma{
         }
     }
     
+    void Lattice::printNeighbors(int i, int j){
+        int *nn = Lattice::getNeighbors_(i,j);
+        double **nnphi = Lattice::getNeighborPhis_(i,j);
+        std::cout << "At (i,j) = " << i << "," << j << " the neighbors are: " << std::endl;
+        std::cout << "(" << nn[0] << "," << nn[1] << "), with phi (" nnphi[0][0] << "," << nnphi[0][1] << "," << nnphi[0][2] << ")" << std::endl;
+        std::cout << "(" << nn[2] << "," << nn[3] << "), with phi (" nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << std::endl;
+        std::cout << "(" << nn[4] << "," << nn[5] << "), with phi (" nnphi[2][0] << "," << nnphi[2][1] << "," << nnphi[2][2] << ")" << std::endl;
+        std::cout << "(" << nn[6] << "," << nn[7] << "), with phi (" nnphi[3][0] << "," << nnphi[3][1] << "," << nnphi[3][2] << ")" << std::endl;
+    }
+    
     double Lattice::calcQL(){
         //tested 6/1/2023
         //calculates topological charge -- note this does not produce integer values!

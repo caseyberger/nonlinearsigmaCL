@@ -32,6 +32,7 @@ namespace nonlinearsigma{
         //print things to the screen
         void printLattice();//tested 5/30/2023
         void printTriangles(int i, int j); //tested 6/1/2023
+        void printNeighbors(int i, int j);
         
         //calculate and test lattice quantities
         double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
