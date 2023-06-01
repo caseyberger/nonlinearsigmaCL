@@ -328,7 +328,9 @@ void testing_suite(int len, double beta, double itheta){
     //testing lattice quantities
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
-            L.compareQL(int i, int j, int n);
+            for (int n = 0; n < 8; n++){
+                L.compareQL(i, j, int n);
+            }
         }
     }
 }
