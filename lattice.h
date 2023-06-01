@@ -33,7 +33,7 @@ namespace nonlinearsigma{
         
         //calculate and test lattice quantities
         double calcQL();
-        void compareQL(int i, int j, int n)
+        void compareQL(int i, int j, int n);
         double calcAL();
         double calcSL();
         
