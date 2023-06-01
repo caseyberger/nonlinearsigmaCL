@@ -354,15 +354,18 @@ namespace nonlinearsigma{
         double *phi3 = Lattice::getPhi(i3,j3);
         rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
         rho = std::sqrt(rho2);
-        QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
-        QLsin = dot(phi1,cross(phi2,phi3))/rho;
+        QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
+        QLs = dot(phi1,cross(phi2,phi3))/rho;
         
         if (use_arccos){ 
-            //return std::acos(QLcos)/(2.*M_PI);
+            double QLcos = std::acos(QLc)/(2.*M_PI);
+            if (QLcos > 0.5*M_PI){
+                return QLcos - M_PI;
+            }
             return QLcos;
         }
         else{
-            //return std::asin(QLsin)/(2.*M_PI);
+            double QLsin = std::asin(QLs)/(2.*M_PI);
             return QLsin;
         }
     }
