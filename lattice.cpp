@@ -19,6 +19,7 @@ namespace nonlinearsigma{
     }
     //other public functions
     void Lattice::setLength(int length){
+        //if you do this after initializing, you must reinitialize!
         length_ = length;
     }
     

@@ -11,14 +11,14 @@ namespace nonlinearsigma{
         Lattice(int length, double beta, double itheta);
         //other public functions
         //set or update lattice parameters
-        void setLength(int length);
-        void setBeta(double beta);
-        void setiTheta(double itheta);
+        void setLength(int length);//tested 6/1/2023
+        void setBeta(double beta);//tested 6/1/2023
+        void setiTheta(double itheta);//tested 6/1/2023
         
         //retrieve lattice parameters
-        int getLength();
-        double getBeta();
-        double getiTheta();
+        int getLength();//tested 6/1/2023
+        double getBeta();//tested 6/1/2023
+        double getiTheta();//tested 6/1/2023
         double* getPhi(int i, int j);
         double getPhiMag(int i, int j);
         double getPhiTot();

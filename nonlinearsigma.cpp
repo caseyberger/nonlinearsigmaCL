@@ -58,12 +58,6 @@ int main (int argc, char *argv[])
 #endif
     
     Lattice L(len, beta, itheta);//construct lattice
-#ifdef TESTING_MODE
-    cout << "Initializing lattice" << endl;
-#endif
-    L.initialize(); //initialize 3-component phi everywhere
-    
-    create_logfile(); //generates logfile with header
     
 #ifdef TESTING_MODE
     cout << "Length = " << L.getLength() << endl;
@@ -77,11 +71,20 @@ int main (int argc, char *argv[])
     cout << "New beta = " << L.getBeta() << endl;
     
     cout << "itheta = " << L.getiTheta() << endl;
-    cout << "Tesetting itheta" << endl;
+    cout << "Resetting itheta" << endl;
     L.setiTheta(0.5*M_PI);
     cout << "New itheta = " << L.getiTheta() << endl;
+    //note -- you must reinitialize the lattice after changing length
 #endif
     
+#ifdef TESTING_MODE
+    cout << "Initializing lattice" << endl;
+#endif
+    L.initialize(); //initialize 3-component phi everywhere
+    
+    create_logfile(); //generates logfile with header
+    
+
 #ifdef TESTING_MODE
     cout << "Printing lattice" <<endl;
     L.printLattice();
