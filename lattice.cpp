@@ -228,7 +228,7 @@ namespace nonlinearsigma{
         r1 = 0.5;
         r2 = 0.5;
 #else
-        if(fixedr_ = true){
+        if(fixedr_){
             r1 = r1_;
             r2 = r2_;
         }
