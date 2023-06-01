@@ -240,7 +240,8 @@ namespace nonlinearsigma{
         std::cout << "r1 = " << r1 << ", r2 = " << r2 << std::endl;
 #endif
         //generate a random polar and azimuthal angle
-        double inclination =   M_PI * r1; //polar angle = inclination
+        double inclination =   std::acos(1. - 2. * r1); //polar angle = inclination
+        //source: http://corysimon.github.io/articles/uniformdistn-on-sphere/
         double azimuth =  2. * M_PI * r2; //azimuthal angle = azimuth
         //create unit spin vector components from angles
         phi[0] = std::sin(inclination) * std::cos(azimuth);
