@@ -54,7 +54,7 @@ namespace nonlinearsigma{
     }
     
     double* Lattice::getRandNums(){
-        double r[2] = {r1_, r_2};
+        static double r[2] = {r1_, r2_};
         return r;
     }
     
