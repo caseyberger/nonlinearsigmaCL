@@ -335,7 +335,7 @@ void testing_suite(int len, double beta, double itheta){
     for (int i = 0; i< testlen; i++){
         for (int i = 0; i< testlen; i++){
             int *nn = L.getNeighbors_(i,j);
-            double *nnphi = L.getNeighborPhis_(i,j);
+            double **nnphi = L.getNeighborPhis_(i,j);
             cout << "At (i,j) = " << i << "," << j << " the neighbors are " << endl;
             cout << "(" << nn[0] << "," << nn[1] << "), with phi (" nnphi[0][0] << "," << nnphi[0][1] << "," << nnphi[0][2] << ")" << endl;
             cout << "(" << nn[2] << "," << nn[3] << "), with phi (" nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << endl;
