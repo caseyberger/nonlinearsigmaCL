@@ -319,11 +319,13 @@ void testing_suite(int len, double beta, double itheta){
     
     //testing triangles
     cout << "Testing triangle generation" <<endl;
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            L.printTriangles(i,j);
-        }
-    }
+    int i = 0;
+    int j = 0;
+    L.printTriangles(i,j);
+    i = len/2;
+    L.printTriangles(i,j);
+    j = len/2;
+    L.printTriangles(i,j);
     
     //testing lattice quantities
     for(int i = 0; i < len; i++){
