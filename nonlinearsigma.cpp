@@ -328,7 +328,7 @@ void testing_suite(int len, double beta, double itheta){
     L.printTriangles(i,j);
     
     //testing lattice quantities
-    double QL, double AL, double SL;
+    double QL, AL, SL;
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
             for (int n = 0; n < 8; n++){
