@@ -24,7 +24,8 @@ namespace nonlinearsigma{
         double getPhiTot();
         
         //initialize the lattice
-        void initialize();
+        void initialize(); //tested 5/30/2023
+        void testLattice();
         
         //print things to the screen
         void printLattice();

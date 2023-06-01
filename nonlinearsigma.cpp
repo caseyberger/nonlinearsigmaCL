@@ -8,8 +8,7 @@
 // include files
 #include <time.h>//time (used to set random number seed, and to calculate dt)
 #include <iostream> //cout
-#include <cmath> //M_PI, sin, cos, pow
-#include <iomanip> //setw
+#include <cmath> //M_PI
 #include <cstdlib> //rand
 #include <fstream> //fout
 #include <string> //string
@@ -55,13 +54,33 @@ int main (int argc, char *argv[])
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
 #ifdef TESTING_MODE
-    cout << "Allocating memory for lattice" << endl;
+    cout << "Constructing lattice" << endl;
 #endif
     
     Lattice L(len, beta, itheta);//construct lattice
+#ifdef TESTING_MODE
+    cout << "Initializing lattice" << endl;
+#endif
     L.initialize(); //initialize 3-component phi everywhere
     
     create_logfile(); //generates logfile with header
+    
+#ifdef TESTING_MODE
+    cout << "Length = " << L.getLength() << endl;
+    cout << "Resetting length" << endl;
+    L.setLength(10);
+    cout << "New length = " << L.getLength() << endl;
+    
+    cout << "Beta = " << L.getBeta() << endl;
+    cout << "Resetting beta" << endl;
+    L.setBeta(1.0);
+    cout << "New beta = " << L.getBeta() << endl;
+    
+    cout << "itheta = " << L.getiTheta() << endl;
+    cout << "Tesetting itheta" << endl;
+    L.setiTheta(0.5*M_PI);
+    cout << "New itheta = " << L.getiTheta() << endl;
+#endif
     
 #ifdef TESTING_MODE
     cout << "Printing lattice" <<endl;

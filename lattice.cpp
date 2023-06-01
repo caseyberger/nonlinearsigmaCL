@@ -63,6 +63,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::initialize(){
+        //tested 5/30/2023
         double *** grid = new double**[length_];
         for(int i = 0; i < length_; i++){
             grid[i] = new double*[length_];
@@ -75,24 +76,25 @@ namespace nonlinearsigma{
                 grid[i][j][0] = phi[0];
                 grid[i][j][1] = phi[1];
                 grid[i][j][2] = phi[2];
-#ifdef TESTING_MODE
-                std::cout << "(i,j) = " << i << "," << j << std::endl;
-                std::cout << "phi = (" << phi[0] << "," << phi[1] << "," << phi[2] << ")" << std::endl;
-#endif
             }
         }
         grid_ = grid;
-        
-#ifdef TESTING_MODE
+        Lattice::makeTriangles_();
+    }
+    
+    void Lattice::testLattice(){
+        std::cout << "Lattice parameters:" << std::endl;
+        std::cout << "length = " << length_ << std::endl;
+        std::cout << "beta = " << beta_ << std::endl;
+        std::cout << "i theta = " << itheta_ << std::endl;
         for(int i = 0; i < length_; i++){
             for (int j = 0; j<length_; j++){
                 std::cout << "(i,j) = " << i << "," << j << std::endl;
                 std::cout << "phi = (" << grid_[i][j][0] << "," << grid_[i][j][1] << "," << grid_[i][j][2] << ")" << std::endl;
             }
         }
-#endif
         
-        Lattice::makeTriangles_();
+        std::cout << "Lattice functions:" << std::endl;
     }
     
     void Lattice::printLattice(){
