@@ -3,7 +3,7 @@
 // Last edited: May 30, 2023
 
 #include <iostream> //cout, endl
-#include <cmath> //sqrt, sin, cos, acos, asin, exp
+#include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
 #include "mathlib.h" //dot, cross
 
 #include "lattice.h"
@@ -416,7 +416,7 @@ namespace nonlinearsigma{
             QLtot += QLsin;
         }
         std::cout << "QLtot = " << QLtot << std::endl;
-        if (std::abs(QLtot%1) > tol){
+        if (std::abs(std::remainder(QLtot,1)) > tol){
             std::cout << "QL not an integer value: " << QLtot << std::endl;
         }
     }
