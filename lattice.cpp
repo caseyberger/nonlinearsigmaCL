@@ -356,16 +356,15 @@ namespace nonlinearsigma{
         rho = std::sqrt(rho2);
         QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
         QLs = dot(phi1,cross(phi2,phi3))/rho;
-        
+        double QLcos = std::acos(QLc)/(2.*M_PI);
+        double QLsin = std::asin(QLs)/(2.*M_PI);
         if (use_arccos){ 
-            double QLcos = std::acos(QLc)/(2.*M_PI);
             if (QLcos > 0.5*M_PI){
                 return QLcos - 2*M_PI;
             }
             return QLcos;
         }
         else{
-            double QLsin = std::asin(QLs)/(2.*M_PI);
             return QLsin;
         }
     }
@@ -376,7 +375,13 @@ namespace nonlinearsigma{
         bool use_sine = false;
         QLcos = Lattice::locQL_(i,j,n,use_cosine);
         QLsin = Lattice::locQL_(i,j,n,use_sine);
-        std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+        if (QLcos != QLsin){
+            std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+        }
+        else {
+            std::cout << "QLcos = QLsin = " << QLsin << std::endl;
+        }
+        
     }
     
     int* Lattice::getNeighbors_(int i, int j){
