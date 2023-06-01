@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: May 30, 2023
+// Last edited: June 1, 2023
 
 #pragma once
 
@@ -15,7 +15,7 @@ namespace nonlinearsigma{
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
         void fixRNG(double r1, double r2);//tested 6/1/2023
-        void freeRNG();
+        void freeRNG();//tested 6/1/2023
         
         //retrieve lattice parameters
         int getLength();//tested 6/1/2023
