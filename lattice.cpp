@@ -98,7 +98,7 @@ namespace nonlinearsigma{
         //tested 5/30/2023
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                Lattice::printPhi_(int i, int j);
+                Lattice::printPhi_(i, j);
             }
         }
     }
