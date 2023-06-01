@@ -66,6 +66,10 @@ int main (int argc, char *argv[])
 #endif
     L.initialize(); //initialize 3-component phi everywhere
     
+#ifdef TESTING_MODE
+    cout << "Testing phi for " << endl;
+#endif
+    
     create_logfile(); //generates logfile with header 
     
     double phi = 0.0;
@@ -96,10 +100,6 @@ int main (int argc, char *argv[])
     for (int n = 0; n<nMC; n++){
         time(&dt_start);
         L.metropolisStep();
-#ifdef TESTING_MODE
-        L.printLattice();
-        test_phi_distribution(L);
-#endif
         phi = L.getPhiTot();
         A_L = L.calcAL();
         Q_L = L.calcQL();
@@ -252,7 +252,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
 
 void test_phi_distribution(Lattice L){
     //output phi distributions as .csv file
-    cout << "Saving phi distribution to file" <<endl;
+    cout << "Saving phi magnitude and distribution to file" <<endl;
     //create header of logfile
     string fname = "phi_test.csv";
     ofstream fout; //output stream
@@ -265,15 +265,18 @@ void test_phi_distribution(Lattice L){
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "i,j,phi_x,phi_y,phi_z,r1,r2" << endl;
+    fout << "i,j,phi_x,phi_y,phi_z,|phi|,r1,r2" << endl;
     int len = 100; //in order to get a large sample -- maybe make larger?
     L.setLength(len);
     L.initialize();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             double *phi = L.getPhi(i,j);
+            double phimag = L.getPhiMag(imj);
             double *r = L.getRandNums();
-            fout << i <<","<< j << "," << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << r[0] << "," << r[1] << endl;
+            fout << i <<","<< j << ",";
+            fout << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << phimag << ",";
+            fout << r[0] << "," << r[1] << endl;
         }
     }
     fout.close();
@@ -308,6 +311,8 @@ void testing_suite(int len, double beta, double itheta){
     
     //testing distrubution of phi
     test_phi_distribution(L);
+    
+    cout << "Total phi on the lattice is " << L.getPhiTot() << ", and total lattice sites is " << len*len << endl;
     
     //testing triangles
     cout << "Testing triangle generation" <<endl;

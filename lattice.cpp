@@ -50,10 +50,12 @@ namespace nonlinearsigma{
     }
     
     double* Lattice::getPhi(int i, int j){
+        //tested 5/30/2023
         return grid_[i][j];
     }
     
     double* Lattice::getRandNums(){
+        //tested 6/1/2023
         static double r[2] = {r1_, r2_};
         return r;
     }
@@ -219,10 +221,6 @@ namespace nonlinearsigma{
 #else
         r1 = ((double)std::rand())/((double)RAND_MAX);
         r2 = ((double)std::rand())/((double)RAND_MAX);
-#endif
-        
-#ifdef EXTREME_TESTING_MODE
-        std::cout << "r1 = " << r1 << ", r2 = " << r2 << std::endl;
 #endif
         //generate a random polar and azimuthal angle
         double inclination =   std::acos(1. - 2. * r1); //polar angle = inclination
