@@ -294,16 +294,19 @@ void testing_suite(int len, double beta, double itheta){
     cout << "Resetting length" << endl;
     L.setLength(len + 1);
     cout << "New length = " << L.getLength() << endl;
+    len = L.getLength();
     
     cout << "Beta = " << L.getBeta() << endl;
     cout << "Resetting beta" << endl;
     L.setBeta(1.0);
     cout << "New beta = " << L.getBeta() << endl;
+    beta = L.getBeta();
     
     cout << "itheta = " << L.getiTheta() << endl;
     cout << "Resetting itheta" << endl;
     L.setiTheta(0.5*M_PI);
     cout << "New itheta = " << L.getiTheta() << endl;
+    itheta = L.getiTheta();
     
     //initialization tests
     cout << "Initializing lattice" << endl;
@@ -322,4 +325,10 @@ void testing_suite(int len, double beta, double itheta){
         }
     }
     
+    //testing lattice quantities
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            L.compareQL(int i, int j, int n);
+        }
+    }
 }

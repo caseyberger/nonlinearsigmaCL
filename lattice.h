@@ -21,8 +21,8 @@ namespace nonlinearsigma{
         double getiTheta();//tested 6/1/2023
         double* getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
-        double getPhiMag(int i, int j);
-        double getPhiTot();
+        double getPhiMag(int i, int j); //tested 6/1/2023
+        double getPhiTot(); //tested 6/1/2023
         
         //initialize the lattice
         void initialize(); //tested 5/30/2023
@@ -31,8 +31,9 @@ namespace nonlinearsigma{
         void printLattice();//tested 5/30/2023
         void printTriangles(int i, int j); //tested 6/1/2023
         
-        //calculate lattice quantities
+        //calculate and test lattice quantities
         double calcQL();
+        void compareQL(int i, int j, int n)
         double calcAL();
         double calcSL();
         

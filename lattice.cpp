@@ -61,12 +61,14 @@ namespace nonlinearsigma{
     }
     
     double Lattice::getPhiMag(int i, int j){
+        //tested 6/1/2023
         double *phi = Lattice::getPhi(i,j);
         double phi_mag = dot(phi,phi);
         return phi_mag;
     }
     
     double Lattice::getPhiTot(){
+        //tested 6/1/2023
         double phi_tot = 0.;
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
@@ -237,12 +239,13 @@ namespace nonlinearsigma{
     }
     
     int Lattice::plusOne_(int i){
-        //int len = Lattice::getLength();
+        //tested 5/30/2023
         if(i+1 == length_){ return 0;}
         else{return i+1;}
     }
     
     int Lattice::minusOne_(int i){
+        //tested 5/30/2023
         if(i == 0){ return length_-1;}
         else{return i-1;}
     }
@@ -353,16 +356,27 @@ namespace nonlinearsigma{
         rho = std::sqrt(rho2);
         QLcos = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
         QLsin = dot(phi1,cross(phi2,phi3))/rho;
-#ifdef EXTREME_TESTING_MODE
-        std:: cout << "QL from sine: "<< std::asin(QLsin)/(2.*M_PI) << std::endl;
-        std:: cout << "QL from cosine: "<< std::acos(QLcos)/(2.*M_PI) << std::endl;
-#endif
+        
         if (use_arccos){ 
+#ifdef EXTREME_TESTING_MODE
+            std::cout << "using cosine" << std::endl;
+#endif
             return std::acos(QLcos)/(2.*M_PI);
         }
         else{
+#ifdef EXTREME_TESTING_MODE
+            std::cout << "using sine" << std::endl;
+#endif
             return std::asin(QLsin)/(2.*M_PI);
         }
+    }
+    
+    void Lattice::compareQL(int i, int j, int n){
+        double QLcos, QLsin;
+        bool use_cosine = true;
+        bool use_sine = false;
+        QLcos = Lattice::locQL_(i,j,n,use_cosine);
+        QLsin = Lattice::locQL_(i,j,n,use_sine);
     }
     
     int* Lattice::getNeighbors_(int i, int j){
