@@ -353,7 +353,7 @@ void testing_suite(int len, double beta, double itheta){
     L.setiTheta(M_PI);
     L.setLength(2);
     L.fixRNG();
-    L.setR(0.,0.5);
+    L.setR(0.,0.25);
     L.initialize();
     L.printLattice();
     AL = L.calcAL();
