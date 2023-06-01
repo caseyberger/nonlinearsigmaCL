@@ -362,6 +362,24 @@ void testing_suite(int len, double beta, double itheta){
     AL = L.calcAL();
     QL = L.calcQL();
     SL = L.calcSL();
-    cout << "for L = 2, itheta = pi, and all phi pointing in +y direction:" << endl;
+    cout << "for L = 2, itheta = pi, and all phi pointing in -x direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    
+    L.fixRNG(0.5,0.25);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, itheta = pi, and all phi pointing in y direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
+    
+    L.fixRNG(0.5,0.75);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, itheta = pi, and all phi pointing in -y direction:" << endl;
     cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl;
 }
