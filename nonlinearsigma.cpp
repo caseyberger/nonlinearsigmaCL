@@ -331,7 +331,7 @@ void testing_suite(int len, double beta, double itheta){
     double QL, AL, SL;
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
-            L.checkQL(i, j, n);
+            L.checkQL(i, j);
         }
     }
     L.setLength(2);
