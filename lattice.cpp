@@ -358,15 +358,9 @@ namespace nonlinearsigma{
         QLsin = dot(phi1,cross(phi2,phi3))/rho;
         
         if (use_arccos){ 
-#ifdef EXTREME_TESTING_MODE
-            std::cout << "using cosine" << std::endl;
-#endif
             return std::acos(QLcos)/(2.*M_PI);
         }
         else{
-#ifdef EXTREME_TESTING_MODE
-            std::cout << "using sine" << std::endl;
-#endif
             return std::asin(QLsin)/(2.*M_PI);
         }
     }
@@ -377,6 +371,7 @@ namespace nonlinearsigma{
         bool use_sine = false;
         QLcos = Lattice::locQL_(i,j,n,use_cosine);
         QLsin = Lattice::locQL_(i,j,n,use_sine);
+        std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
     }
     
     int* Lattice::getNeighbors_(int i, int j){
