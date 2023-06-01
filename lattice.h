@@ -14,6 +14,8 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
+        void fixRNG();
+        void setR(double r1, double r2);
         
         //retrieve lattice parameters
         int getLength();//tested 6/1/2023
@@ -33,7 +35,7 @@ namespace nonlinearsigma{
         
         //calculate and test lattice quantities
         double calcQL();
-        void compareQL(int i, int j, int n);
+        void compareQL(int i, int j, int n);//tested 6/1/2023
         double calcAL();
         double calcSL();
         
@@ -53,6 +55,7 @@ namespace nonlinearsigma{
         double itheta_;
         double r1_;
         double r2_;
+        bool fixedr_;
         int acceptCount_;
         int rejectCount_;
         double accRate_;
@@ -63,7 +66,7 @@ namespace nonlinearsigma{
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_(); //tested 6/1/2023
         int*** trianglesCCW_(int i, int j); //tested 6/1/2023
-        double locQL_(int i, int j, int n, bool use_arccos);
+        double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
         int* getNeighbors_(int i, int j);
         double** getNeighborPhis_(int i, int j);
         void printPhi_(int i, int j); //tested 5/30/2023

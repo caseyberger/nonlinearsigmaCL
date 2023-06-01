@@ -16,6 +16,7 @@ namespace nonlinearsigma{
         Lattice::setLength(length); //set length
         Lattice::setBeta(beta); //set beta
         Lattice::setiTheta(itheta); //set itheta
+        fixedr_ = false; //leave rng untouched (this should only be true when testing)
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -32,6 +33,17 @@ namespace nonlinearsigma{
     void Lattice::setiTheta(double itheta){
         //tested 6/1/2023
         itheta_ = itheta;
+    }
+    
+    void Lattice::fixRNG(){
+        fixedr_ = true;
+        r1_ = 0.;
+        r2_ = 0.;
+    }
+    
+    void Lattice::setR(double r1, double r2){
+        r1_ = r1;
+        r2_ = r2;
     }
     
     int Lattice::getLength(){
@@ -221,8 +233,14 @@ namespace nonlinearsigma{
         r1 = 0.5;
         r2 = 0.5;
 #else
-        r1 = ((double)std::rand())/((double)RAND_MAX);
-        r2 = ((double)std::rand())/((double)RAND_MAX);
+        if(fixedr_ = true){
+            r1 = r1_;
+            r2 = r2_;
+        }
+        else{
+            r1 = ((double)std::rand())/((double)RAND_MAX);
+            r2 = ((double)std::rand())/((double)RAND_MAX);
+        }
 #endif
         //generate a random polar and azimuthal angle
         double inclination =   std::acos(1. - 2. * r1); //polar angle = inclination
@@ -341,6 +359,7 @@ namespace nonlinearsigma{
     }
     
     double Lattice::locQL_(int i, int j, int n, bool use_arccos){
+        //tested 6/1/2023
         //Calculates QL on the nth triangle with central vertex i,j
         double rho, rho2, QLc, QLs;
         int i1 = triangles_[i][j][n][0][0];
@@ -359,6 +378,7 @@ namespace nonlinearsigma{
         double QLcos = std::acos(QLc)/(2.*M_PI);
         double QLsin = std::asin(QLs)/(2.*M_PI);
         if (use_arccos){ 
+            //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
             if (QLcos > 0.5*M_PI){
                 return QLcos - 2*M_PI;
             }
@@ -375,6 +395,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::compareQL(int i, int j, int n){
+        //tested 6/1/2023
         double QLcos, QLsin;
         bool use_cosine = true;
         bool use_sine = false;
@@ -383,10 +404,6 @@ namespace nonlinearsigma{
         if (QLcos != QLsin){
             std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
         }
-        else {
-            std::cout << "QLcos = QLsin = " << QLsin << std::endl;
-        }
-        
     }
     
     int* Lattice::getNeighbors_(int i, int j){
