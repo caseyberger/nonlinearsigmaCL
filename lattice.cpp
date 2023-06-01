@@ -358,10 +358,12 @@ namespace nonlinearsigma{
         QLsin = dot(phi1,cross(phi2,phi3))/rho;
         
         if (use_arccos){ 
-            return std::acos(QLcos)/(2.*M_PI);
+            //return std::acos(QLcos)/(2.*M_PI);
+            return QLcos;
         }
         else{
-            return std::asin(QLsin)/(2.*M_PI);
+            //return std::asin(QLsin)/(2.*M_PI);
+            return QLsin;
         }
     }
     
