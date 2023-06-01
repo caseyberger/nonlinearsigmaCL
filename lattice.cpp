@@ -394,18 +394,30 @@ namespace nonlinearsigma{
         }
     }
     
-    void Lattice::checkQL(int i, int j, int n){
+    void Lattice::checkQL(int i, int j){
         //tested 6/1/2023
-        double QLcos, QLsin;
-        bool use_cosine = true;
-        bool use_sine = false;
-        QLcos = Lattice::locQL_(i,j,n,use_cosine);
-        QLsin = Lattice::locQL_(i,j,n,use_sine);
-        if (QLcos != QLsin){
-            std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+        //ensures we get the same QLtri with either cosine or sine
+        //also ensures that QLtri is in the correct range of [-pi/2, pi/2]
+        //also ensures that QL over all triangles is an integer (w/in e-15)
+        double QLtot = 0;
+        double tol = 1.0e-15;
+        for (int n = 0; n < 8; n++){
+            double QLcos, QLsin;
+            bool use_cosine = true;
+            bool use_sine = false;
+            QLcos = Lattice::locQL_(i,j,n,use_cosine);
+            QLsin = Lattice::locQL_(i,j,n,use_sine);
+            if (QLcos != QLsin){
+                std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+            }
+            if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
+                std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
+            }
+            QLtot += QLsin;
         }
-        if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
-            std::cout << "QL outside range [-pi/2,pi/2]: " << QLsin << std::endl;
+        std::cout << "QLtot = " << QLtot << std::endl;
+        if (std::abs(QLtot%1) > tol){
+            std::cout << "QL not an integer value: " << QLtot << std::endl;
         }
     }
     
