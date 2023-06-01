@@ -336,14 +336,23 @@ void testing_suite(int len, double beta, double itheta){
             }
         }
     }
-    L.setiTheta(M_PI);
     L.setLength(2);
+    L.setiTheta(M_PI);
     L.initialize();
     L.printLattice();
     AL = L.calcAL();
     QL = L.calcQL();
     SL = L.calcSL();
     cout << "for L = 2, itheta = pi, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.setiTheta(0.);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, itheta = 0, and phi pointing in random direction:" << endl;
     cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     
     L.setiTheta(M_PI);
