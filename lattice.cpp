@@ -126,6 +126,7 @@ namespace nonlinearsigma{
     }
     
     double Lattice::calcQL(){
+        //tested 6/1/2023
         //calculates topological charge  
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
@@ -143,7 +144,10 @@ namespace nonlinearsigma{
     }
     
     double Lattice::calcAL(){
+        //tested 6/1/2023
         //calculates the standard lattice action A_L
+        //you may be double counting things or you may be half counting. 
+        //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
         for (int i = 0; i<length_; i++)
         {
@@ -161,6 +165,7 @@ namespace nonlinearsigma{
     }
     
     double Lattice::calcSL(){
+        //tested 6/1/2023
         //calculates the full lattice action S_L = A_L - i theta Q_L
         //not sure yet how to deal with the imaginary part, 
         //so right now I'm making one variable called itheta that will be real 
@@ -389,7 +394,7 @@ namespace nonlinearsigma{
         }
     }
     
-    void Lattice::compareQL(int i, int j, int n){
+    void Lattice::checkQL(int i, int j, int n){
         //tested 6/1/2023
         double QLcos, QLsin;
         bool use_cosine = true;
@@ -398,6 +403,9 @@ namespace nonlinearsigma{
         QLsin = Lattice::locQL_(i,j,n,use_sine);
         if (QLcos != QLsin){
             std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+        }
+        if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
+            std::cout << "QL outside range [-pi/2,pi/2]: " << QLsin << std::endl;
         }
     }
     

@@ -33,10 +33,10 @@ namespace nonlinearsigma{
         void printTriangles(int i, int j); //tested 6/1/2023
         
         //calculate and test lattice quantities
-        double calcQL();
-        void compareQL(int i, int j, int n);//tested 6/1/2023
-        double calcAL();
-        double calcSL();
+        double calcQL();//tested 6/1/2023
+        void checkQL(int i, int j, int n);//tested 6/1/2023
+        double calcAL();//tested 6/1/2023
+        double calcSL();//tested 6/1/2023
         
         //monte carlo tools
         void metropolisStep();
