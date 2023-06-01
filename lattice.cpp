@@ -360,7 +360,7 @@ namespace nonlinearsigma{
         if (use_arccos){ 
             double QLcos = std::acos(QLc)/(2.*M_PI);
             if (QLcos > 0.5*M_PI){
-                return QLcos - M_PI;
+                return QLcos - 2*M_PI;
             }
             return QLcos;
         }
