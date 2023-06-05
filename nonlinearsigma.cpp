@@ -441,5 +441,6 @@ void testing_suite(int len, double beta, double itheta){
     L.printLattice();
     cout << "Acceptance rate = " << L.acceptanceRate() << endl;
     L.zeroCount();
-    L.thermalize();
+    L.thermalize(10);
+    cout << "Acceptance rate = " << L.acceptanceRate() << endl;
 }
