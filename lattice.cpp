@@ -218,7 +218,7 @@ namespace nonlinearsigma{
 #else
                 r = ((double)std::rand())/((double)RAND_MAX);
 #endif
-                if(dS < 0 || std::exp(dS) > r){
+                if(dS < 0 || r < std::exp(-1.*dS)){
                     acceptCount_++;//increment accept counter
 #ifdef EXTREME_TESTING_MODE
                     std::cout << "Accept" << std::endl;
