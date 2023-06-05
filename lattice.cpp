@@ -203,14 +203,14 @@ namespace nonlinearsigma{
 #ifdef EXTREME_TESTING_MODE
                 std::cout << "phi_old" << std::endl;
                 Lattice::printPhi_(i, j);
-                Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
 #endif
                 //update lattice
                 double *phi_new = Lattice::makePhi_();
                 grid_[i][j] = phi_new;
                 std::cout << "phi_new" << std::endl;
                 Lattice::printPhi_(i, j);
-                Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
+                std::cout << "whole_lattice" << std::endl;
+                Lattice::printLattice();
                 Sf = Lattice::calcSL();
                 dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
