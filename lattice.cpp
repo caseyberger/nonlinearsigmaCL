@@ -36,6 +36,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::setPhi(int i, int j, double phi[3]){
+        //tested 6/5/2023
         grid_[i][j][0] = phi[0];
         grid_[i][j][1] = phi[1];
         grid_[i][j][2] = phi[2];
@@ -206,17 +207,10 @@ namespace nonlinearsigma{
             for (int j = 0; j < length_; j++){
                 Si = Lattice::calcSL();
                 double *phi_old = Lattice::getPhi(i, j);
-#ifdef EXTREME_TESTING_MODE
-                std::cout << "phi_old" << std::endl;
-                Lattice::printPhi_(i, j);
-#endif
+                
                 //update lattice
                 double *phi_new = Lattice::makePhi_();
                 Lattice::setPhi(i, j, phi_new);
-                std::cout << "phi_new" << std::endl;
-                Lattice::printPhi_(i, j);
-                std::cout << "whole_lattice" << std::endl;
-                Lattice::printLattice();
                 Sf = Lattice::calcSL();
                 dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
@@ -233,7 +227,7 @@ namespace nonlinearsigma{
 #endif
                 }
                 else{
-                    grid_[i][j] = phi_old;//change the value back to the old phi
+                    Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
                     rejectCount_++;//increment reject counter
 #ifdef EXTREME_TESTING_MODE
                     std::cout << "Reject" << std::endl;
