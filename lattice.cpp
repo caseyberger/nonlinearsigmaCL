@@ -35,6 +35,12 @@ namespace nonlinearsigma{
         itheta_ = itheta;
     }
     
+    void Lattice::setPhi(int i, int j, double phi[3]){
+        grid_[i][j][0] = phi[0];
+        grid_[i][j][1] = phi[1];
+        grid_[i][j][2] = phi[2];
+    }
+    
     void Lattice::fixRNG(double r1, double r2){
         //tested 6/1/2023
         fixedr_ = true;
@@ -206,7 +212,7 @@ namespace nonlinearsigma{
 #endif
                 //update lattice
                 double *phi_new = Lattice::makePhi_();
-                grid_[i][j] = phi_new;
+                Lattice::setPhi(i, j, phi_new);
                 std::cout << "phi_new" << std::endl;
                 Lattice::printPhi_(i, j);
                 std::cout << "whole_lattice" << std::endl;
