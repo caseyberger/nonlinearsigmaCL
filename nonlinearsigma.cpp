@@ -311,11 +311,12 @@ void testing_suite(int len, double beta, double itheta){
     //initialization tests
     cout << "Initializing lattice" << endl;
     L.initialize();
+    cout << endl;
     
     //testing distrubution of phi
     test_phi_distribution(L);
     
-    cout << "Total phi on the lattice is " << L.getPhiTot() << ", and total lattice sites is " << len*len << endl;
+    cout << "Total phi on the lattice is " << L.getPhiTot() << ", and total lattice sites is " << len*len << endl << endl;
     
     //testing triangles
     cout << "Testing triangle generation" <<endl;
@@ -326,9 +327,10 @@ void testing_suite(int len, double beta, double itheta){
     L.printTriangles(i,j);
     j = len/2;
     L.printTriangles(i,j);
+    cout << endl;
     
     //testing neighbor getting functions
-    cout << "Testing ability to get neighboring phis" <<endl;
+    cout << "Testing ability to get neighboring phis" << endl;
     int testlen = 3;
     L.setLength(testlen);
     L.printLattice();
@@ -337,8 +339,9 @@ void testing_suite(int len, double beta, double itheta){
             L.printNeighbors(i,j);
         }
     }
-    
+    cout << endl;
     //testing lattice quantities
+    cout << "Testing lattice calculations. " << endl;
     double QL, AL, SL;
     for(int i = 0; i < len; i++){
         for (int j = 0; j<len; j++){
