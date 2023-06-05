@@ -201,12 +201,14 @@ namespace nonlinearsigma{
                 Si = Lattice::calcSL();
                 double *phi_old = Lattice::getPhi(i, j);
 #ifdef EXTREME_TESTING_MODE
+                std::cout << "phi_old" << std::endl;
                 Lattice::printPhi_(i, j);
                 Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
 #endif
                 //update lattice
                 double *phi_new = Lattice::makePhi_();
                 grid_[i][j] = phi_new;
+                std::cout << "phi_new" << std::endl;
                 Lattice::printPhi_(i, j);
                 Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
                 Sf = Lattice::calcSL();
@@ -219,14 +221,16 @@ namespace nonlinearsigma{
                 if(dS < 0 || std::exp(dS) > r){
                     acceptCount_++;//increment accept counter
 #ifdef EXTREME_TESTING_MODE
-                    std:: cout << "Accept" << std::endl;
+                    std::cout << "Accept" << std::endl;
+                    Lattice::printPhi_(i, j);
+                    Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
 #endif
                 }
                 else{
                     grid_[i][j] = phi_old;//change the value back to the old phi
                     rejectCount_++;//increment reject counter
 #ifdef EXTREME_TESTING_MODE
-                    std:: cout << "Reject" << std::endl;
+                    std::cout << "Reject" << std::endl;
 #endif
                 }
             }//loop over j
