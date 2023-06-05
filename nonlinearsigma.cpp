@@ -329,7 +329,7 @@ void testing_suite(int len, double beta, double itheta){
     
     //testing neighbor getting functions
     cout << "Testing ability to get neighboring phis" <<endl;
-    int testlen = 4;
+    int testlen = 3;
     L.setLength(testlen);
     L.printLattice();
     for (int i = 0; i < testlen; i++){
@@ -422,10 +422,24 @@ void testing_suite(int len, double beta, double itheta){
     
     
     //MC testing
-    /*
-    void metropolisStep();
-    void thermalize(int ntherm);
-    void zeroCount();
-    double acceptanceRate();
-    */
+    L.setLength(4);
+    L.setBeta(1.6);
+    L.setiTheta(0.);
+    L.initialize();
+    L.printLattice();
+    cout << "Metropolis testing, step 1" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 2" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 3" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 4" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Acceptance rate = " << L.acceptanceRate() << endl;
+    L.zeroCount();
+    L.thermalize();
 }

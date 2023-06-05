@@ -32,7 +32,7 @@ namespace nonlinearsigma{
         //print things to the screen
         void printLattice();//tested 5/30/2023
         void printTriangles(int i, int j); //tested 6/1/2023
-        void printNeighbors(int i, int j);
+        void printNeighbors(int i, int j);//tested 6/1/2023
         
         //calculate and test lattice quantities
         double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
@@ -68,8 +68,8 @@ namespace nonlinearsigma{
         void makeTriangles_(); //tested 6/1/2023
         int*** trianglesCCW_(int i, int j); //tested 6/1/2023
         double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
-        int* getNeighbors_(int i, int j);
-        double** getNeighborPhis_(int i, int j);
+        int* getNeighbors_(int i, int j);//tested 6/1/2023
+        double** getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
     };  
 }

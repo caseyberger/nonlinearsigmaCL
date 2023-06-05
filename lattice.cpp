@@ -109,6 +109,7 @@ namespace nonlinearsigma{
         }
         grid_ = grid;
         Lattice::makeTriangles_();
+        Lattice::zeroCount();
     }
     
     void Lattice::printLattice(){
@@ -132,6 +133,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printNeighbors(int i, int j){
+        //tested 6/1/2023
         int *nn = Lattice::getNeighbors_(i,j);
         double **nnphi = Lattice::getNeighborPhis_(i,j);
         std::cout << "At (i,j) = " << i << "," << j << " the neighbors are: " << std::endl;
@@ -225,10 +227,17 @@ namespace nonlinearsigma{
         }//loop over i
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
         accRate_ = acc_rate;
+#ifdef TESTING_MODE
+        std:: cout << "Acceptance rate: " << acc_rate << std::endl;
+#endif
     }
     
     void Lattice::thermalize(int ntherm){
+
         for (int n = 0; n < ntherm; n++){
+#ifdef TESTING_MODE
+            std::cout << "Thermalization step " << n << std::endl;
+#endif
             Lattice::metropolisStep();
         }
         //should you zero the count at the end of this?
@@ -237,6 +246,7 @@ namespace nonlinearsigma{
     void Lattice::zeroCount(){
         acceptCount_ = 0;
         rejectCount_ = 0;
+        accRate_ = 0.;
     }
     
     double Lattice::acceptanceRate(){
@@ -440,6 +450,7 @@ namespace nonlinearsigma{
     }
     
     int* Lattice::getNeighbors_(int i, int j){
+        //tested 6/1/2023
         static int nn[8];
         nn[0] = Lattice::plusOne_(i);
         nn[1] = j;
@@ -453,6 +464,7 @@ namespace nonlinearsigma{
     }
     
     double** Lattice::getNeighborPhis_(int i, int j){
+        //tested 6/1/2023
         double ** nnPhis = new double*[4];
         nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
         nnPhis[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
