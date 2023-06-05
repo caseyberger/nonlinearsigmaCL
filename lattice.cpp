@@ -224,8 +224,8 @@ namespace nonlinearsigma{
         double F_Im = 0.;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                F_Re += 0.5*twoPointG(i, j)*std::cos(2.*M_PI*i/length_);
-                F_Im += 0.5*twoPointG(i, j)*std::sin(2.*M_PI*i/length_);
+                F_Re += 0.5*twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
+                F_Im += 0.5*twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
             }
         }
         static double F[2] = {F_Re, F_Im};
