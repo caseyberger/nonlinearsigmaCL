@@ -219,6 +219,19 @@ namespace nonlinearsigma{
         return Xi;
     }
     
+    double* Lattice::calcF(){
+        double F_Re = 0.;
+        double F_Im = 0.;
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                F_Re += 0.5*twoPointG(i, j)*std::cos(2.*M_PI*i/length_);
+                F_Im += 0.5*twoPointG(i, j)*std::cos(2.*M_PI*i/length_);
+            }
+        }
+        static double F[2] = {F_Re, F_Im};
+        return F;
+    }
+    
     
     void Lattice::metropolisStep(){
         //tested 6/5/2023

@@ -25,7 +25,7 @@ using nonlinearsigma::Lattice;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile();
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double acc);
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
 void testing_suite(int len, double beta, double itheta);
@@ -79,6 +79,7 @@ int main (int argc, char *argv[])
     double Q_L = 0.0;
     double S_L = 0.0;
     double Xi_L = 0.0;
+    double* F_L[2] = {0.0,0.0};
     double acc = 0.0;
     
     //thermalization loop
@@ -108,10 +109,11 @@ int main (int argc, char *argv[])
         Q_L  = L.calcQL();
         S_L  = L.calcSL();
         Xi_L = L.calcXi();
+        F_L  = L.calcF();
         acc  = L.acceptanceRate();
         time(&dt_end);
         dt = dt_end-dt_start;
-        write_to_file(dt, n, phi, Q_L, A_L, S_L, Xi_L, acc);
+        write_to_file(dt, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
     }
     time(&end_mc);
     
@@ -167,11 +169,11 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "dt,step,|phi|,Q_L,A_L,S_L,Xi_L,acc" << endl;
+    fout << "dt,step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe, F_LIm, acc" << endl;
     fout.close();
 }
 
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double acc)
+void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc)
 {
     //output calculations .csv file
     string fname = "nonlinearsigma_data.csv";
@@ -188,7 +190,8 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L << "," << S_L << ","<< Xi_L << "," << acc << endl;
+    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L << ",";
+    fout << S_L << ","<< Xi_L << "," << F_L[0] << "," << F_L[1] << "," << acc << endl;
     fout.close();
 }
 
