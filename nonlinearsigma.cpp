@@ -52,6 +52,8 @@ int main (int argc, char *argv[])
     
 #ifdef EXTREME_TESTING_MODE
     testing_suite(len, beta, itheta);
+    cout << "Testing concluded" << endl;
+    exit(0);
 #endif
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
