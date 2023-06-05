@@ -40,12 +40,14 @@ namespace nonlinearsigma{
         void checkQL(int i, int j);//tested 6/1/2023
         double calcAL();//tested 6/1/2023
         double calcSL();//tested 6/1/2023
+        double twoPointG(int i, int j);
+        double calcXi();
         
         //monte carlo tools
-        void metropolisStep();
-        void thermalize(int ntherm);
-        void zeroCount();
-        double acceptanceRate();
+        void metropolisStep();//tested 6/5/2023
+        void thermalize(int ntherm);//tested 6/5/2023
+        void zeroCount();//tested 6/5/2023
+        double acceptanceRate();//tested 6/5/2023
     
         //private members -- only accessible within the class functions
         private:

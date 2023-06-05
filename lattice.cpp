@@ -201,7 +201,27 @@ namespace nonlinearsigma{
         return S_L;
     }
     
+    double Lattice::twoPointG(int i, int j){
+        double *phi_00 = Lattice::getPhi(0,0);
+        double *phi_ij = Lattice::getPhi(i,j);
+        double G = 0;
+        G = dot(phi_00, phi_ij);
+        return G;
+    }
+    
+    double Lattice::calcXi(){
+        double Xi = 0.;
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                Xi += twoPointG(i, j);
+            }
+        }
+        return Xi;
+    }
+    
+    
     void Lattice::metropolisStep(){
+        //tested 6/5/2023
         double Si, Sf, dS, r;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
@@ -220,16 +240,10 @@ namespace nonlinearsigma{
 #endif
                 if(dS < 0 || r < std::exp(-1.*dS)){
                     acceptCount_++;//increment accept counter
-#ifdef EXTREME_TESTING_MODE
-                    std::cout << "Accept" << std::endl;
-#endif
                 }
                 else{
                     Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
                     rejectCount_++;//increment reject counter
-#ifdef EXTREME_TESTING_MODE
-                    std::cout << "Reject" << std::endl;
-#endif
                 }
             }//loop over j
         }//loop over i
@@ -241,7 +255,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::thermalize(int ntherm){
-
+        //tested 6/5/2023
         for (int n = 0; n < ntherm; n++){
 #ifdef EXTREME_TESTING_MODE
             std::cout << "Thermalization step " << n << std::endl;
@@ -252,17 +266,20 @@ namespace nonlinearsigma{
     }
     
     void Lattice::zeroCount(){
+        //tested 6/5/2023
         acceptCount_ = 0;
         rejectCount_ = 0;
         accRate_ = 0.;
     }
     
     double Lattice::acceptanceRate(){
+        //tested 6/5/2023
         return accRate_;
     }
     
     //private functions
     double* Lattice::makePhi_(){
+        //tested 6/1/2023
         static double phi[3];
         double r1, r2;
 #ifdef TEST_CONSTANT_RN
