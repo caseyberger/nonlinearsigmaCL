@@ -212,14 +212,14 @@ namespace nonlinearsigma{
 #endif
                 if(dS < 0 || std::exp(dS) > r){
                     acceptCount_++;//increment accept counter
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
                     std:: cout << "Accept" << std::endl;
 #endif
                 }
                 else{
                     grid_[i][j] = phi_old;//change the value back to the old phi
                     rejectCount_++;//increment reject counter
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
                     std:: cout << "Reject" << std::endl;
 #endif
                 }
@@ -227,7 +227,7 @@ namespace nonlinearsigma{
         }//loop over i
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
         accRate_ = acc_rate;
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
         std:: cout << "Acceptance rate: " << acc_rate << std::endl;
 #endif
     }
@@ -235,7 +235,7 @@ namespace nonlinearsigma{
     void Lattice::thermalize(int ntherm){
 
         for (int n = 0; n < ntherm; n++){
-#ifdef TESTING_MODE
+#ifdef EXTREME_TESTING_MODE
             std::cout << "Thermalization step " << n << std::endl;
 #endif
             Lattice::metropolisStep();
