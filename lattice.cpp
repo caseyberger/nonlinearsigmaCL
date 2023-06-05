@@ -200,9 +200,15 @@ namespace nonlinearsigma{
             for (int j = 0; j < length_; j++){
                 Si = Lattice::calcSL();
                 double *phi_old = Lattice::getPhi(i, j);
+#ifdef EXTREME_TESTING_MODE
+                Lattice::printPhi_(i, j);
+                std:: cout << "Phi old = (" << phi_old[0] << "," << phi_old[1] << "," phi_old[2] << ")"  std::endl;
+#endif
                 //update lattice
                 double *phi_new = Lattice::makePhi_();
                 grid_[i][j] = phi_new;
+                Lattice::printPhi_(i, j);
+                std:: cout << "Phi old = (" << phi_new[0] << "," << phi_new[1] << "," phi_new[2] << ")"  std::endl;
                 Sf = Lattice::calcSL();
                 dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
