@@ -222,8 +222,6 @@ namespace nonlinearsigma{
                     acceptCount_++;//increment accept counter
 #ifdef EXTREME_TESTING_MODE
                     std::cout << "Accept" << std::endl;
-                    Lattice::printPhi_(i, j);
-                    Lattice::printPhi_(Lattice::plusOne_(i), Lattice::plusOne_(j));
 #endif
                 }
                 else{
