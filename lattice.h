@@ -42,7 +42,7 @@ namespace nonlinearsigma{
         double calcSL();//tested 6/1/2023
         double twoPointG(int i, int j);
         double calcXi();
-        double* calcF()
+        double* calcF();
         
         //monte carlo tools
         void metropolisStep();//tested 6/5/2023
