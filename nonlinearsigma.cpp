@@ -79,7 +79,7 @@ int main (int argc, char *argv[])
     double Q_L = 0.0;
     double S_L = 0.0;
     double Xi_L = 0.0;
-    double* F_L[2] = {0.0,0.0};
+    double* F_L;
     double acc = 0.0;
     
     //thermalization loop
