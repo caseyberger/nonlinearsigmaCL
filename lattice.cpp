@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 1, 2023
+// Last edited: June 5, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -40,6 +40,10 @@ namespace nonlinearsigma{
         grid_[i][j][0] = phi[0];
         grid_[i][j][1] = phi[1];
         grid_[i][j][2] = phi[2];
+    }
+    
+    void Lattice::setAvgG(int i, int j, double Gij){
+        Gij_[i][j]= Gij;
     }
     
     void Lattice::fixRNG(double r1, double r2){
@@ -98,11 +102,18 @@ namespace nonlinearsigma{
         return phi_tot;
     }
     
+    double Lattice::getAvgG(int i, int j){
+        double Gij = Gij_[i][j];
+        return Gij;
+    }
+    
     void Lattice::initialize(){
         //tested 5/30/2023
         double *** grid = new double**[length_];
+        double ** Gij = new double*[length_];
         for(int i = 0; i < length_; i++){
             grid[i] = new double*[length_];
+            Gij = new double[length_]
         }
         //allocation - 3 phi components
         for(int i = 0; i < length_; i++){
@@ -112,9 +123,11 @@ namespace nonlinearsigma{
                 grid[i][j][0] = phi[0];
                 grid[i][j][1] = phi[1];
                 grid[i][j][2] = phi[2];
+                Gij[i][j] = 0.;
             }
         }
         grid_ = grid;
+        Gij_ = Gij;
         Lattice::makeTriangles_();
         Lattice::zeroCount();
     }
@@ -206,6 +219,10 @@ namespace nonlinearsigma{
         double *phi_ij = Lattice::getPhi(i,j);
         double G = 0;
         G = dot(phi_00, phi_ij);
+        double oldAvgG = Lattice::getAvgG(i, j);
+        int n = acceptCount_+rejectCount_;
+        double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
+        Lattice::setAvgG(i,j,newAvgG);
         return G;
     }
     
@@ -274,6 +291,7 @@ namespace nonlinearsigma{
             std::cout << "Thermalization step " << n << std::endl;
 #endif
             Lattice::metropolisStep();
+            Lattice::zeroCount();
         }
         //should you zero the count at the end of this?
     }

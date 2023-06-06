@@ -28,6 +28,7 @@ void create_logfile();
 void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc);
 void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
+void save_correlation_function(Lattice L);
 void testing_suite(int len, double beta, double itheta);
 
 int main (int argc, char *argv[])
@@ -67,11 +68,6 @@ int main (int argc, char *argv[])
     cout << "Initializing lattice" << endl;
 #endif
     L.initialize(); //initialize 3-component phi everywhere
-    
-#ifdef TESTING_MODE
-    cout << "Testing phi for " << endl;
-#endif
-    
     create_logfile(); //generates logfile with header 
     
     double phi = 0.0;
@@ -115,6 +111,7 @@ int main (int argc, char *argv[])
         dt = dt_end-dt_start;
         write_to_file(dt, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
     }
+    save_correlation_function(L);
     time(&end_mc);
     
     dt = end_mc - begin_mc;
@@ -289,6 +286,33 @@ void test_phi_distribution(Lattice L){
     fout.close();
 }
 
+void save_correlation_function(Lattice L){
+    //output phi distributions as .csv file
+    cout << "Saving average correlation function to file" <<endl;
+    //create header of logfile
+    string fname = "G_test.csv";
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << "i,j,G_avg" << endl;
+    int len = L.getLength(); 
+    for (int i = 0; i < len; i++){
+        for (int j = 0; j < len; j++){
+            double G = L.getAvgG(i,j);
+            fout << i <<","<< j << ",";
+            fout << G << endl;
+        }
+    }
+    fout.close();
+}
+    
 void testing_suite(int len, double beta, double itheta){
     cout << "Extreme testing mode enabled. Running through tests." << endl;
     

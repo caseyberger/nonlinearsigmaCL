@@ -15,6 +15,7 @@ namespace nonlinearsigma{
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
         void setPhi(int i, int j, double phi[3]);//tested 6/5/2023
+        void setAvgG(int i, int j, double Gij);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
         
@@ -26,6 +27,7 @@ namespace nonlinearsigma{
         double* getRandNums();//tested 6/1/2023
         double getPhiMag(int i, int j); //tested 6/1/2023
         double getPhiTot(); //tested 6/1/2023
+        double getAvgG(int i, int j);
         
         //initialize the lattice
         void initialize(); //tested 5/30/2023
@@ -64,6 +66,7 @@ namespace nonlinearsigma{
         int acceptCount_;
         int rejectCount_;
         double accRate_;
+        double **Gij_;
         
         //functions
         double* makePhi_(); //tested 6/1/2023
