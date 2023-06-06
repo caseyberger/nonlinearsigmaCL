@@ -113,7 +113,7 @@ namespace nonlinearsigma{
         double ** Gij = new double*[length_];
         for(int i = 0; i < length_; i++){
             grid[i] = new double*[length_];
-            Gij = new double[length_]
+            Gij = new double[length_];
         }
         //allocation - 3 phi components
         for(int i = 0; i < length_; i++){
