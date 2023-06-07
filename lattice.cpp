@@ -218,7 +218,8 @@ namespace nonlinearsigma{
         double *phi_00 = Lattice::getPhi(0,0);
         double *phi_ij = Lattice::getPhi(i,j);
         double G = 0;
-        G = dot(phi_00, phi_ij);
+        double wBoltzmann = Lattice::calcSL();
+        G = dot(phi_00, phi_ij)*wBoltzmann;
         double oldAvgG = Lattice::getAvgG(i, j);
         int n = acceptCount_+rejectCount_;
         double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
