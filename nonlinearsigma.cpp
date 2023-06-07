@@ -287,7 +287,7 @@ void save_correlation_function(Lattice L){
     //output phi distributions as .csv file
     cout << "Saving average correlation function to file" <<endl;
     //create header of logfile
-    string fname = "G_test.csv";
+    string fname = "Gij_avg_"+L.getFilename();
     ofstream fout; //output stream
     fout.open(fname.c_str(),ios::out);
     
