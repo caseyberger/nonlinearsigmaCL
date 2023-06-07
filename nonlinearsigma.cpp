@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
     double acc = 0.0;
     
     //thermalization loop
-    cout << "Starting thermalization loop of length " << ntherm << endl;
+    cout << "Starting thermalization loop of length " << L.getnTherm() << endl;
     
     time(&begin_therm);
     L.thermalize();
@@ -86,11 +86,11 @@ int main (int argc, char *argv[])
     
     //MC loop
     cout << "Thermalization loop duration: " << dt/60. << " minutes."<< endl;
-    cout << "Starting Monte Carlo loop of length " << nMC << endl;
+    cout << "Starting Monte Carlo loop of length " << L.getnMC() << endl;
     
     time(&begin_mc);
 
-    for (int n = 0; n<nMC; n++){
+    for (int n = 0; n<L.getnMC(); n++){
         L.metropolisStep();
         phi  = L.getPhiTot();
         A_L  = L.calcAL();

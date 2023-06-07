@@ -322,6 +322,7 @@ namespace nonlinearsigma{
 #ifdef EXTREME_TESTING_MODE
         std:: cout << "Acceptance rate: " << acc_rate << std::endl;
 #endif
+        site_arr.clear();
     }
     
     void Lattice::thermalize(){
