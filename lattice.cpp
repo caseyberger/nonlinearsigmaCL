@@ -7,6 +7,8 @@
 #include <string> //string
 #include <vector> //vector
 #include <numeric> // iota
+#include <algorithm>  // shuffle
+#include <random> //default_random_engine
 
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
