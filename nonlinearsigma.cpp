@@ -33,8 +33,8 @@ int main (int argc, char *argv[])
 {
 #ifdef TESTING_MODE
     cout << "Testing mode ON." << endl;
-    cout << "Starting clock." << endl;
 #endif
+    cout << "Starting clock." << endl;
     time_t begin, end, begin_therm, end_therm, begin_mc, dt_end, dt_start, end_mc;
     double dt;
     srand(1723); //seed random number
@@ -60,15 +60,10 @@ int main (int argc, char *argv[])
 #endif
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
-#ifdef TESTING_MODE
-    cout << "Constructing lattice" << endl;
-#endif
-    
+    cout << "Constructing lattice" << endl;    
     Lattice L(len, beta, itheta);//construct lattice
-    
-#ifdef TESTING_MODE
+
     cout << "Initializing lattice" << endl;
-#endif
     L.initialize(); //initialize 3-component phi everywhere
     create_logfile(L); //generates logfile with header 
     
@@ -81,20 +76,17 @@ int main (int argc, char *argv[])
     double acc = 0.0;
     
     //thermalization loop
-#ifdef TESTING_MODE
     cout << "Starting thermalization loop of length " << ntherm << endl;
-#endif
     
     time(&begin_therm);
     L.thermalize();
     time(&end_therm);
     
     dt = end_therm - begin_therm;
+    
     //MC loop
-#ifdef TESTING_MODE
     cout << "Thermalization loop duration: " << dt/60. << " minutes."<< endl;
     cout << "Starting Monte Carlo loop of length " << nMC << endl;
-#endif
     
     time(&begin_mc);
 
@@ -113,14 +105,12 @@ int main (int argc, char *argv[])
     time(&end_mc);
     
     dt = end_mc - begin_mc;
-#ifdef TESTING_MODE
-     cout << "MC loop duration: " << dt/60. << " minutes." << endl;
-#endif
+    cout << "MC loop duration: " << dt/60. << " minutes." << endl;
+
     time(&end);
     dt = end - begin;
-#ifdef TESTING_MODE
-     cout << "Total time elapsed: " << dt/60. << " minutes." << endl;
-#endif
+    cout << "Total time elapsed: " << dt/60. << " minutes." << endl;
+
     return 0;
 }
 
