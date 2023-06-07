@@ -5,6 +5,8 @@
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
 #include <string> //string
+#include <vector> //vector
+#include <numeric> // iota
 
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
@@ -283,30 +285,36 @@ namespace nonlinearsigma{
     void Lattice::metropolisStep(){
         //tested 6/5/2023
         double Si, Sf, dS, r;
-        for (int i = 0; i < length_; i++){
-            for (int j = 0; j < length_; j++){
-                Si = Lattice::calcSL();
-                double *phi_old = Lattice::getPhi(i, j);
-                
-                //update lattice
-                double *phi_new = Lattice::makePhi_();
-                Lattice::setPhi(i, j, phi_new);
-                Sf = Lattice::calcSL();
-                dS = Sf - Si;
+        
+        int nsites = length_*length_;
+        std::vector<int> site_arr(nsites);
+        std::iota(site_arr.begin(), site_arr.end(), 0);     
+        shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
+
+        for(unsigned int n = 0; n < site_arr.size(); n++){
+            int i = site_arr[n]/length_;
+            int j = site_arr[n]%length_;
+            Si = Lattice::calcSL();
+            double *phi_old = Lattice::getPhi(i, j);
+
+            //update lattice
+            double *phi_new = Lattice::makePhi_();
+            Lattice::setPhi(i, j, phi_new);
+            Sf = Lattice::calcSL();
+            dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
-                r = 0.5;
+            r = 0.5;
 #else
-                r = ((double)std::rand())/((double)RAND_MAX);
+            r = ((double)std::rand())/((double)RAND_MAX);
 #endif
-                if(dS < 0 || r < std::exp(-1.*dS)){
-                    acceptCount_++;//increment accept counter
-                }
-                else{
-                    Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
-                    rejectCount_++;//increment reject counter
-                }
-            }//loop over j
-        }//loop over i
+            if(dS < 0 || r < std::exp(-1.*dS)){
+                acceptCount_++;//increment accept counter
+            }
+            else{
+                Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
+                rejectCount_++;//increment reject counter
+            }
+        }//loop over sites
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
         accRate_ = acc_rate;
 #ifdef EXTREME_TESTING_MODE
