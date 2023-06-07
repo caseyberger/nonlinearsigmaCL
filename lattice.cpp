@@ -19,6 +19,8 @@ namespace nonlinearsigma{
         Lattice::setiTheta(itheta); //set itheta
         Lattice::setnTherm(1000); //set therm steps to default number
         Lattice::setnMC(1000); //set Monte Carlo steps to default number
+        
+        Lattice::generateFilename_();
         fixedr_ = false; //leave rng untouched (this should only be true when testing)
     }
     //other public functions
@@ -26,16 +28,19 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         //if you do this after initializing, you must reinitialize!
         length_ = length;
+        Lattice::generateFilename_();
     }
     
     void Lattice::setBeta(double beta){
         //tested 6/1/2023
         beta_ = beta;
+        Lattice::generateFilename_();
     }
     
     void Lattice::setiTheta(double itheta){
         //tested 6/1/2023
         itheta_ = itheta;
+        Lattice::generateFilename_();
     }
     
     void Lattice::setPhi(int i, int j, double phi[3]){
@@ -51,10 +56,12 @@ namespace nonlinearsigma{
     
     void Lattice::setnTherm(int ntherm){
         nTherm_ = ntherm;
+        Lattice::generateFilename_();
     }
     
     void Lattice::setnMC(int nMC){
         nMC_ = nMC;
+        Lattice::generateFilename_();
     }
     
     void Lattice::fixRNG(double r1, double r2){
@@ -67,16 +74,6 @@ namespace nonlinearsigma{
     void Lattice::freeRNG(){
         //tested 6/1/2023
         fixedr_ = false;
-    }
-    
-    void Lattice::generateFilename(){
-        string l_str   = to_string(length_);
-        string b_str   = to_string(beta_);
-        string th_str  = to_string(itheta_);
-        string nt_str  = to_string(nTherm_);
-        string nmc_str = to_string(nMC_);
-        string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
-        filename_ = fname;
     }
     
     int Lattice::getLength(){
@@ -566,6 +563,16 @@ namespace nonlinearsigma{
         double *phi = Lattice::getPhi(i,j);
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
+    }
+    
+    void Lattice::generateFilename_(){
+        string l_str   = to_string(length_);
+        string b_str   = to_string(beta_);
+        string th_str  = to_string(itheta_);
+        string nt_str  = to_string(nTherm_);
+        string nmc_str = to_string(nMC_);
+        string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
+        filename_ = fname;
     }
     
 }//end class definition

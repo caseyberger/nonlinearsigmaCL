@@ -20,7 +20,6 @@ namespace nonlinearsigma{
         void setnMC(int nMC);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
-        void generateFilename();
         
         //retrieve lattice parameters
         int getLength();//tested 6/1/2023
@@ -87,6 +86,7 @@ namespace nonlinearsigma{
         int* getNeighbors_(int i, int j);//tested 6/1/2023
         double** getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
+        void generateFilename_();
     };  
 }
 
