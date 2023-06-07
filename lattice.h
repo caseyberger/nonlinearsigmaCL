@@ -27,7 +27,7 @@ namespace nonlinearsigma{
         double getiTheta();//tested 6/1/2023
         int getnTherm();
         int getnMC();
-        string getFilename();
+        std::string getFilename();
         double* getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
         double getPhiMag(int i, int j); //tested 6/1/2023
@@ -74,7 +74,7 @@ namespace nonlinearsigma{
         int rejectCount_;
         double accRate_;
         double **Gij_;
-        string filename_;
+        std::string filename_;
         
         //functions
         double* makePhi_(); //tested 6/1/2023

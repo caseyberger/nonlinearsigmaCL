@@ -99,7 +99,7 @@ namespace nonlinearsigma{
         return nMC_;
     }
     
-    string Lattice::getFilename(){
+    std::string Lattice::getFilename(){
         return filename_;
     }
     
@@ -566,12 +566,12 @@ namespace nonlinearsigma{
     }
     
     void Lattice::generateFilename_(){
-        string l_str   = to_string(length_);
-        string b_str   = to_string(beta_);
-        string th_str  = to_string(itheta_);
-        string nt_str  = to_string(nTherm_);
-        string nmc_str = to_string(nMC_);
-        string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
+        std::string l_str   = std::to_string(length_);
+        std::string b_str   = std::to_string(beta_);
+        std::string th_str  = std::to_string(itheta_);
+        std::string nt_str  = std::to_string(nTherm_);
+        std::string nmc_str = std::to_string(nMC_);
+        std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
         filename_ = fname;
     }
     
