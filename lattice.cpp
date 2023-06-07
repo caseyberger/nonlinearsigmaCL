@@ -571,7 +571,7 @@ namespace nonlinearsigma{
         std::string th_str  = std::to_string(itheta_);
         std::string nt_str  = std::to_string(nTherm_);
         std::string nmc_str = std::to_string(nMC_);
-        std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
+        std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + nt_str + "_nMC_" + nmc_str + ".csv";
         filename_ = fname;
     }
     
