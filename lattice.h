@@ -16,8 +16,8 @@ namespace nonlinearsigma{
         void setiTheta(double itheta);//tested 6/1/2023
         void setPhi(int i, int j, double phi[3]);//tested 6/5/2023
         void setAvgG(int i, int j, double Gij);
-        void setNTherm(int ntherm);
-        void setNMC(int nMC);
+        void setnTherm(int ntherm);
+        void setnMC(int nMC);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
         void generateFilename();
@@ -26,8 +26,8 @@ namespace nonlinearsigma{
         int getLength();//tested 6/1/2023
         double getBeta();//tested 6/1/2023
         double getiTheta();//tested 6/1/2023
-        int getNTherm();
-        int getNMC();
+        int getnTherm();
+        int getnMC();
         string getFilename();
         double* getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
