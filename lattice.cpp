@@ -1,11 +1,12 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 5, 2023
+// Last edited: June 7, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
-#include "mathlib.h" //dot, cross
+#include <string> //string
 
+#include "mathlib.h" //dot, cross
 #include "lattice.h"
 
 
@@ -16,6 +17,8 @@ namespace nonlinearsigma{
         Lattice::setLength(length); //set length
         Lattice::setBeta(beta); //set beta
         Lattice::setiTheta(itheta); //set itheta
+        Lattice::setnTherm(1000); //set therm steps to default number
+        Lattice::setnMC(1000); //set Monte Carlo steps to default number
         fixedr_ = false; //leave rng untouched (this should only be true when testing)
     }
     //other public functions
@@ -46,6 +49,14 @@ namespace nonlinearsigma{
         Gij_[i][j]= Gij;
     }
     
+    void Lattice::setnTherm(int ntherm){
+        nTherm_ = ntherm;
+    }
+    
+    void Lattice::setnMC(int nMC){
+        nMC_ = nMC;
+    }
+    
     void Lattice::fixRNG(double r1, double r2){
         //tested 6/1/2023
         fixedr_ = true;
@@ -56,6 +67,16 @@ namespace nonlinearsigma{
     void Lattice::freeRNG(){
         //tested 6/1/2023
         fixedr_ = false;
+    }
+    
+    void Lattice::generateFilename(){
+        string l_str   = to_string(length_);
+        string b_str   = to_string(beta_);
+        string th_str  = to_string(itheta_);
+        string nt_str  = to_string(nTherm_);
+        string nmc_str = to_string(nMC_);
+        string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + th_str + "_nMC_" + nmc_str + ".csv";
+        filename_ = fname;
     }
     
     int Lattice::getLength(){
@@ -71,6 +92,18 @@ namespace nonlinearsigma{
     double Lattice::getiTheta(){
         //tested 6/1/2023
         return itheta_;
+    }
+    
+    int Lattice::getnTherm(){
+       return nTherm_; 
+    }
+    
+    int Lattice::getnMC(){
+        return nMC_;
+    }
+    
+    string Lattice::getFilename(){
+        return filename_;
     }
     
     double* Lattice::getPhi(int i, int j){
@@ -115,7 +148,6 @@ namespace nonlinearsigma{
             grid[i] = new double*[length_];
             Gij[i] = new double[length_];
         }
-        //allocation - 3 phi components
         for(int i = 0; i < length_; i++){
             for (int j = 0; j<length_; j++){
                 grid[i][j] = new double[3];
@@ -285,16 +317,15 @@ namespace nonlinearsigma{
 #endif
     }
     
-    void Lattice::thermalize(int ntherm){
+    void Lattice::thermalize(){
         //tested 6/5/2023
-        for (int n = 0; n < ntherm; n++){
+        for (int n = 0; n < nTherm_; n++){
 #ifdef EXTREME_TESTING_MODE
             std::cout << "Thermalization step " << n << std::endl;
 #endif
             Lattice::metropolisStep();
-            Lattice::zeroCount();
         }
-        //should you zero the count at the end of this?
+        Lattice::zeroCount();
     }
     
     void Lattice::zeroCount(){

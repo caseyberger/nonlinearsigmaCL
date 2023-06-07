@@ -12,9 +12,7 @@
 #include <cstdlib> //rand
 #include <fstream> //fout
 #include <string> //string
-//#include <vector>
-//#include <stdio.h>
-//#include <sstream>
+#include <sstream> //stringstream for logfile
 
 //custom header files
 #include "lattice.h"
@@ -24,9 +22,9 @@ using nonlinearsigma::Lattice;
 
 //function declaration
 double Z_renorm(double beta, int len);
-void create_logfile();
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc);
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta,double &itheta);
+void create_logfile(Lattice L);
+void write_to_file(Lattice L, double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc);
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
 void testing_suite(int len, double beta, double itheta);
@@ -42,15 +40,19 @@ int main (int argc, char *argv[])
     srand(1723); //seed random number
     time(&begin);
     
-    int len, num, ntherm, nMC;
+    int len = 180;
+    int ntherm = 1000;
+    int nMC = 100;
     double beta = 1.6;
     double itheta = M_PI;
     
-    read_in_inputs(argc, argv,len, num, ntherm, nMC, beta, itheta);
+    read_in_inputs(argc, argv,len, ntherm, nMC, beta, itheta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
     cout << "itheta = " << itheta << endl;
-    
+    cout << "ntherm = " << ntherm << endl;
+    cout << "nMC = " << nMC << endl;
+     
 #ifdef EXTREME_TESTING_MODE
     testing_suite(len, beta, itheta);
     cout << "Testing concluded" << endl;
@@ -68,7 +70,7 @@ int main (int argc, char *argv[])
     cout << "Initializing lattice" << endl;
 #endif
     L.initialize(); //initialize 3-component phi everywhere
-    create_logfile(); //generates logfile with header 
+    create_logfile(L); //generates logfile with header 
     
     double phi = 0.0;
     double A_L = 0.0;
@@ -84,14 +86,13 @@ int main (int argc, char *argv[])
 #endif
     
     time(&begin_therm);
-    L.zeroCount();
-    L.thermalize(ntherm);
+    L.thermalize();
     time(&end_therm);
     
     dt = end_therm - begin_therm;
     //MC loop
 #ifdef TESTING_MODE
-    cout << "Thermalization loop duration: " << dt << " seconds."<< endl;
+    cout << "Thermalization loop duration: " << dt/60. << " minutes."<< endl;
     cout << "Starting Monte Carlo loop of length " << nMC << endl;
 #endif
     
@@ -108,20 +109,20 @@ int main (int argc, char *argv[])
         F_L  = L.calcF();
         acc  = L.acceptanceRate();
         time(&dt_end);
-        dt = dt_end-dt_start;
-        write_to_file(dt, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
+        dt = 1000.*(dt_end-dt_start);
+        write_to_file(L, dt, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
     }
     save_correlation_function(L);
     time(&end_mc);
     
     dt = end_mc - begin_mc;
 #ifdef TESTING_MODE
-     cout << "MC loop duration: " << dt << " seconds." << endl;
+     cout << "MC loop duration: " << dt/60. << " minutes." << endl;
 #endif
     time(&end);
     dt = end - begin;
 #ifdef TESTING_MODE
-     cout << "Total time elapsed: " << dt << " seconds." << endl;
+     cout << "Total time elapsed: " << dt/60. << " minutes." << endl;
 #endif
     return 0;
 }
@@ -149,10 +150,10 @@ double Z_renorm(double beta, int len){
     }
 }
 
-void create_logfile()
+
+void create_logfile(Lattice L)
 {
-    //create header of logfile
-    string fname = "nonlinearsigma_data.csv";
+    string fname = L.getFilename();
 #ifdef TESTING_MODE
     cout << "logfile name: " << fname << endl;
 #endif
@@ -166,14 +167,14 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "dt,step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe, F_LIm, acc" << endl;
+    fout << "dt(ms),step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe, F_LIm, acc" << endl;
     fout.close();
 }
 
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc)
+void write_to_file(Lattice L, double dt, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc)
 {
     //output calculations .csv file
-    string fname = "nonlinearsigma_data.csv";
+    string fname = L.getFilename();
 #ifdef TESTING_MODE
     cout << "Filename: " << fname << endl;
 #endif
@@ -192,7 +193,7 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
     fout.close();
 }
 
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta, double &itheta)
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, double &beta, double &itheta)
 {
     //read in parameters -- note itheta is read in as a multiple/fraction of pi
 #ifdef TESTING_MODE
@@ -238,7 +239,6 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
                 }
             }
             len = stod(inputs[0]);
-            num = len*len;
             beta = stod(inputs[1]);
             itheta = stod(inputs[2])*M_PI;
             ntherm = stod(inputs[3]);
@@ -338,6 +338,18 @@ void testing_suite(int len, double beta, double itheta){
     L.setiTheta(0.5*M_PI);
     cout << "New itheta = " << L.getiTheta() << endl;
     itheta = L.getiTheta();
+    
+    cout << "nTherm = " << L.getnTherm() << endl;
+    cout << "Resetting nTherm" << endl;
+    L.setnTherm(10);
+    cout << "New nTherm = " << L.getnTherm() << endl;
+    int ntherm = L.getnTherm();
+    
+    cout << "nMC = " << L.getnMC() << endl;
+    cout << "Resetting nMC" << endl;
+    L.setnMC(100);
+    cout << "New nMC = " << L.getnMC() << endl;
+    int nMC = L.getnMC();
     
     //initialization tests
     cout << "Initializing lattice" << endl;
@@ -459,6 +471,7 @@ void testing_suite(int len, double beta, double itheta){
     L.setLength(4);
     L.setBeta(1.6);
     L.setiTheta(0.);
+    L.setnTherm(10);
     L.initialize();
     L.printLattice();
     cout << "Metropolis testing, step 1" << endl;
@@ -475,6 +488,6 @@ void testing_suite(int len, double beta, double itheta){
     L.printLattice();
     cout << "Acceptance rate = " << L.acceptanceRate() << endl;
     L.zeroCount();
-    L.thermalize(10);
+    L.thermalize();
     cout << "Acceptance rate = " << L.acceptanceRate() << endl;
 }
