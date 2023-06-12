@@ -25,7 +25,7 @@ namespace nonlinearsigma{
         Lattice::setnMC(1000); //set Monte Carlo steps to default number
         
         Lattice::generateFilename_();
-        fixedr_ = false; //leave rng untouched (this should only be true when testing)
+        fixedr_ = false; //this should only be set to true when testing
     }
     //other public functions
     void Lattice::setLength(int length){

@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
     cout << "Testing mode ON." << endl;
 #endif
     cout << "Starting clock." << endl;
-    time_t begin, end, begin_therm, end_therm, begin_mc, dt_end, dt_start, end_mc;
+    time_t begin, end, begin_therm, end_therm, begin_mc, time_now, end_mc;
     double dt;
     srand(1723); //seed random number
     time(&begin);
@@ -102,6 +102,12 @@ int main (int argc, char *argv[])
         F_L  = L.calcF();
         acc  = L.acceptanceRate();
         write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
+#ifdef TESTING_MODE
+        time(&time_now);
+        if (n%100 == 0){
+            cout << "On MC step " << n << ", total time elapsed = " << time_now - begin << " seconds." << endl;
+        }
+#endif
     }
     save_correlation_function(L);
     time(&end_mc);
