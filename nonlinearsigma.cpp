@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: June 1, 2023
+// Last edited: June 12, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -62,6 +62,8 @@ int main (int argc, char *argv[])
     //Initalize the lattice - dynamically allocate the memory for the lattice
     cout << "Constructing lattice" << endl;    
     Lattice L(len, beta, itheta);//construct lattice
+    L.setnTherm(ntherm);
+    L.setnMC(nMC);
 
     cout << "Initializing lattice" << endl;
     L.initialize(); //initialize 3-component phi everywhere
