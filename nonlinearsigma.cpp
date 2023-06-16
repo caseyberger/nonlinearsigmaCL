@@ -351,6 +351,10 @@ void testing_suite(int len, double beta, double itheta){
     L.initialize();
     cout << endl;
     
+    //print lattice
+    cout << "Printing lattice" << endl;
+    L.printLattice();
+    
     //testing distrubution of phi
     test_phi_distribution(L);
     
