@@ -89,7 +89,7 @@ namespace nonlinearsigma{
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_(); //tested 6/1/2023
-        site_triangles trianglesCCW_(int i, int j); //tested 6/1/2023
+        //site_triangles trianglesCCW_(int i, int j); //tested 6/1/2023
         double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
         int* getNeighbors_(int i, int j);//tested 6/1/2023
         double** getNeighborPhis_(int i, int j);//tested 6/1/2023
