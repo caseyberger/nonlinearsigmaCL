@@ -527,7 +527,7 @@ namespace nonlinearsigma{
         std::array < vertex, 4> nn;
         nn[0][0] = Lattice::plusOne_(i);
         nn[0][1] = j;
-        nn[1][0]] = i;
+        nn[1][0] = i;
         nn[1][1] = Lattice::plusOne_(j);
         nn[2][0] = Lattice::minusOne_(i);
         nn[2][1] = j;
