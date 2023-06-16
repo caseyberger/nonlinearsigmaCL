@@ -522,7 +522,7 @@ namespace nonlinearsigma{
         }
     }
     
-    std::array < vertex, 4> Lattice::getNeighbors_(int i, int j){
+    std::array < Lattice::vertex, 4> Lattice::getNeighbors_(int i, int j){
         //tested 6/1/2023
         static int nn[8];
         nn[0] = Lattice::plusOne_(i);
