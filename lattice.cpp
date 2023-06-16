@@ -350,7 +350,7 @@ namespace nonlinearsigma{
     //private functions
     Lattice::field Lattice::makePhi_(){
         //tested 6/1/2023
-        static double phi[3];
+        Lattice::field phi;
         double r1, r2;
 #ifdef TEST_CONSTANT_RN
         r1 = 0.5;

@@ -89,8 +89,8 @@ namespace nonlinearsigma{
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_(); //tested 6/16/2023
         double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
-        std::array < vertex, 4> getNeighbors_(int i, int j);//tested 6/1/2023
-        std::array < field, 4> getNeighborPhis_(int i, int j);//tested 6/1/2023
+        std::array < vertex, 4 > getNeighbors_(int i, int j);//tested 6/1/2023
+        std::array < field, 4 > getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
         void generateFilename_();
     };  
