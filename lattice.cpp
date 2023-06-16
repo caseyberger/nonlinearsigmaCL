@@ -163,15 +163,12 @@ namespace nonlinearsigma{
         Gij_ = Gij;
         Lattice::makeTriangles_();
         Lattice::zeroCount();
-        delete grid;
-        delete Gij;
     }
     
     void Lattice::printLattice(){
         //tested 5/30/2023
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                std::cout << i << "," << j << std::endl;
                 Lattice::printPhi_(i, j);
             }
         }
