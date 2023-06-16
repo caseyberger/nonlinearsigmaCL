@@ -360,6 +360,11 @@ void testing_suite(int len, double beta, double itheta){
     
     cout << "Total phi on the lattice is " << L.getPhiTot() << ", and total lattice sites is " << len*len << endl << endl;
     
+    cout << "Resetting length" << endl;
+    L.setLength(6);
+    cout << "New length = " << L.getLength() << endl;
+    len = L.getLength();
+    
     //testing triangles
     cout << "Testing triangle generation" <<endl;
     int i = 0;
