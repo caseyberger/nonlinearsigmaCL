@@ -536,7 +536,7 @@ namespace nonlinearsigma{
         return nn;
     }
     
-    std::array < Lattice::field >, 4 > Lattice::getNeighborPhis_(int i, int j){
+    std::array < Lattice::field, 4 > Lattice::getNeighborPhis_(int i, int j){
         //tested 6/1/2023
         std::array < Lattice::field, 4> nnPhis;
         nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
