@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: June 12, 2023
+// Last edited: June 16, 2023
 #include <array>
 #include <vector>
 #pragma once
@@ -12,7 +12,7 @@ namespace nonlinearsigma{
         using vertex = std::array<int,2>;
         using triangle = std::array<vertex,3>;
         using site_triangles = std::array<triangle,8>;
-        //using phi = std::array<double, 3>;
+        using field = std::array<double, 3>;
         
         //constructor
         Lattice(int length, double beta, double itheta);
@@ -21,7 +21,7 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
-        void setPhi(int i, int j, double phi[3]);//tested 6/5/2023
+        void setPhi(int i, int j, field phi);//tested 6/5/2023
         void setAvgG(int i, int j, double Gij);
         void setnTherm(int ntherm);
         void setnMC(int nMC);
@@ -35,7 +35,7 @@ namespace nonlinearsigma{
         int getnTherm();
         int getnMC();
         std::string getFilename();
-        double* getPhi(int i, int j);//tested 5/30/2023
+        field getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
         double getPhiMag(int i, int j); //tested 6/1/2023
         double getPhiTot(); //tested 6/1/2023
@@ -68,9 +68,8 @@ namespace nonlinearsigma{
         private:
         //variables
         int length_;
-        double ***grid_;
+        std::vector < std::vector < field > > grid_;
         std::vector < std::vector < site_triangles > > triangles_;
-        //int *****triangles_;
         double beta_;
         double itheta_;
         double r1_;
@@ -81,18 +80,17 @@ namespace nonlinearsigma{
         int acceptCount_;
         int rejectCount_;
         double accRate_;
-        double **Gij_;
+        std::vector < std::vector < double > > Gij_;
         std::string filename_;
         
         //functions
-        double* makePhi_(); //tested 6/1/2023
+        field makePhi_(); //tested 6/1/2023
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
-        void makeTriangles_(); //tested 6/1/2023
-        //site_triangles trianglesCCW_(int i, int j); //tested 6/1/2023
+        void makeTriangles_(); //tested 6/16/2023
         double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
-        int* getNeighbors_(int i, int j);//tested 6/1/2023
-        double** getNeighborPhis_(int i, int j);//tested 6/1/2023
+        std::array < vertex, 4> getNeighbors_(int i, int j);//tested 6/1/2023
+        std::array < field, 4> getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
         void generateFilename_();
     };  
