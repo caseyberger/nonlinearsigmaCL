@@ -164,9 +164,7 @@ namespace nonlinearsigma{
         Lattice::makeTriangles_();
         Lattice::zeroCount();
         delete grid;
-        grid = NULL;
         delete Gij;
-        Gij = NULL;
     }
     
     void Lattice::printLattice(){
