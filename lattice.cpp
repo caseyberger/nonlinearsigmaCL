@@ -47,7 +47,7 @@ namespace nonlinearsigma{
         Lattice::generateFilename_();
     }
     
-    void Lattice::setPhi(int i, int j, field phi){
+    void Lattice::setPhi(int i, int j, Lattice::field phi){
         //tested 6/5/2023
         grid_[i][j][0] = phi[0];
         grid_[i][j][1] = phi[1];
@@ -187,8 +187,8 @@ namespace nonlinearsigma{
     
     void Lattice::printNeighbors(int i, int j){
         //tested 6/1/2023
-        std::array < vertex, 4 > nn = Lattice::getNeighbors_(i,j);
-        std::array < field, 4 > nnphi = Lattice::getNeighborPhis_(i,j);
+        std::array < Lattice::vertex, 4 > nn = Lattice::getNeighbors_(i,j);
+        std::array < Lattice::field, 4 > nnphi = Lattice::getNeighborPhis_(i,j);
         std::cout << "At (i,j) = " << i << "," << j << " the neighbors are: " << std::endl;
         std::cout << "(" << nn[0][0] << "," << nn[0][1] << "), with phi (" << nnphi[0][0] << "," << nnphi[0][1] << "," << nnphi[0][2] << ")" << std::endl;
         std::cout << "(" << nn[1][0] << "," << nn[1][1] << "), with phi (" << nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << std::endl;
@@ -226,8 +226,8 @@ namespace nonlinearsigma{
         {
             for (int j = 0; j<length_; j++)
             {
-                field phi = Lattice::getPhi(i,j);
-                std::array < field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                Lattice::field phi = Lattice::getPhi(i,j);
+                std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
@@ -248,8 +248,8 @@ namespace nonlinearsigma{
     }
     
     double Lattice::twoPointG(int i, int j){
-        field phi_00 = Lattice::getPhi(0,0);
-        field phi_ij = Lattice::getPhi(i,j);
+        Lattice::field phi_00 = Lattice::getPhi(0,0);
+        Lattice::field phi_ij = Lattice::getPhi(i,j);
         double G = 0;
         G = dot(phi_00, phi_ij);
         double oldAvgG = Lattice::getAvgG(i, j);
@@ -296,10 +296,10 @@ namespace nonlinearsigma{
             int i = site_arr[n]/length_;
             int j = site_arr[n]%length_;
             Si = Lattice::calcSL();
-            field phi_old = Lattice::getPhi(i, j);
+            Lattice::field phi_old = Lattice::getPhi(i, j);
 
             //update lattice
-            field phi_new = Lattice::makePhi_();
+            Lattice::field phi_new = Lattice::makePhi_();
             Lattice::setPhi(i, j, phi_new);
             Sf = Lattice::calcSL();
             dS = Sf - Si;
@@ -348,7 +348,7 @@ namespace nonlinearsigma{
     }
     
     //private functions
-    field Lattice::makePhi_(){
+    Lattice::field Lattice::makePhi_(){
         //tested 6/1/2023
         static double phi[3];
         double r1, r2;
@@ -410,9 +410,9 @@ namespace nonlinearsigma{
             for (int j = 0; j<length_; j++){
                 site_triangles local_triangles;
                 //triangle 1
-                vertex v1 = {i,j};
-                vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
-                vertex v3 = {Lattice::plusOne_(i),j};
+                Lattice::vertex v1 = {i,j};
+                Lattice::vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
+                Lattice::vertex v3 = {Lattice::plusOne_(i),j};
                 local_triangles[0] = {v1, v2, v3};
                 
                 //triangle 2
@@ -469,9 +469,9 @@ namespace nonlinearsigma{
         int j2 = triangles_[i][j][n][1][1];
         int i3 = triangles_[i][j][n][2][0];
         int j3 = triangles_[i][j][n][2][1];
-        field phi1 = Lattice::getPhi(i1,j1);
-        field phi2 = Lattice::getPhi(i2,j2);
-        field phi3 = Lattice::getPhi(i3,j3);
+        Lattice::field phi1 = Lattice::getPhi(i1,j1);
+        Lattice::field phi2 = Lattice::getPhi(i2,j2);
+        Lattice::field phi3 = Lattice::getPhi(i3,j3);
         rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
         rho = std::sqrt(rho2);
         QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
@@ -524,7 +524,7 @@ namespace nonlinearsigma{
     
     std::array < Lattice::vertex, 4> Lattice::getNeighbors_(int i, int j){
         //tested 6/1/2023
-        std::array < vertex, 4> nn;
+        std::array < Lattice::vertex, 4> nn;
         nn[0][0] = Lattice::plusOne_(i);
         nn[0][1] = j;
         nn[1][0] = i;
@@ -536,9 +536,9 @@ namespace nonlinearsigma{
         return nn;
     }
     
-    std::array < std::array< double, 3 >, 4 > Lattice::getNeighborPhis_(int i, int j){
+    std::array < Lattice::field >, 4 > Lattice::getNeighborPhis_(int i, int j){
         //tested 6/1/2023
-        std::array < field, 4> nnPhis;
+        std::array < Lattice::field, 4> nnPhis;
         nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
         nnPhis[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
         nnPhis[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
@@ -548,7 +548,7 @@ namespace nonlinearsigma{
     
     void Lattice::printPhi_(int i, int j){
         //tested 5/30/2023
-        field phi = Lattice::getPhi(i,j);
+        Lattice::field phi = Lattice::getPhi(i,j);
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
     }
