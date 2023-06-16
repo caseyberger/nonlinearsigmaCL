@@ -1,12 +1,18 @@
 // Casey Berger
 // Created: May 24, 2023
 // Last edited: June 12, 2023
-
+#include <array>
 #pragma once
 
 namespace nonlinearsigma{
     class Lattice {
         public:
+        
+        using vertex = std::array<int,2>;
+        using triangle = std::array<vertex,3>;
+        using site_triangles = std::array<triangle,8>;
+        //using phi = std::array<double, 3>;
+        
         //constructor
         Lattice(int length, double beta, double itheta);
         //other public functions
@@ -62,7 +68,8 @@ namespace nonlinearsigma{
         //variables
         int length_;
         double ***grid_;
-        int *****triangles_;
+        std::vector < std::vector < site_triangles > > triangles_;
+        //int *****triangles_;
         double beta_;
         double itheta_;
         double r1_;
@@ -81,7 +88,7 @@ namespace nonlinearsigma{
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_(); //tested 6/1/2023
-        int*** trianglesCCW_(int i, int j); //tested 6/1/2023
+        site_triangles trianglesCCW_(int i, int j); //tested 6/1/2023
         double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
         int* getNeighbors_(int i, int j);//tested 6/1/2023
         double** getNeighborPhis_(int i, int j);//tested 6/1/2023
