@@ -270,7 +270,7 @@ void test_phi_distribution(Lattice L){
     L.initialize();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
-            double *phi = L.getPhi(i,j);
+            field phi = L.getPhi(i,j);
             double phimag = L.getPhiMag(i,j);
             double *r = L.getRandNums();
             fout << i <<","<< j << ",";
