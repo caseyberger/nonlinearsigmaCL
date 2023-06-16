@@ -143,21 +143,18 @@ namespace nonlinearsigma{
     
     void Lattice::initialize(){
         //tested 5/30/2023
-        double *** grid = new double**[length_];
-        double ** Gij = new double*[length_];
+        std::vector < std::vector < Lattice::field > > grid;
+        std::vector < std::vector < double > > Gij;
         for(int i = 0; i < length_; i++){
-            grid[i] = new double*[length_];
-            Gij[i] = new double[length_];
-        }
-        for(int i = 0; i < length_; i++){
+            std::vector <double> Gj;
+            std::vector < Lattice::field > gridj;
             for (int j = 0; j<length_; j++){
-                grid[i][j] = new double[3];
                 field phi = Lattice::makePhi_();
-                grid[i][j][0] = phi[0];
-                grid[i][j][1] = phi[1];
-                grid[i][j][2] = phi[2];
-                Gij[i][j] = 0.;
+                gridj.push_back(phi);
+                Gj.push_back(0.);
             }
+            Gij.push_back(Gj);
+            grid.push_back(gridj);
         }
         grid_ = grid;
         Gij_ = Gij;
@@ -393,16 +390,6 @@ namespace nonlinearsigma{
     
     void Lattice::makeTriangles_(){
         //tested 6/16/2023
-        /*
-        int ***** triangles = new int****[length_];
-        for(int i = 0; i < length_; i++){
-            triangles[i] = new int***[length_];
-            for (int j = 0; j<length_; j++){
-                //triangles[i][j] = new int[8][3][2];
-                triangles[i][j] = Lattice::trianglesCCW_(i, j);
-            }
-        }
-        triangles_ = triangles;*/
         
         std::vector < std::vector < site_triangles > > all_triangles;
         for(int i = 0; i < length_; i++){
