@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 12, 2023
+// Last edited: June 16, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -163,6 +163,10 @@ namespace nonlinearsigma{
         Gij_ = Gij;
         Lattice::makeTriangles_();
         Lattice::zeroCount();
+        delete grid;
+        grid = NULL;
+        delete Gij;
+        Gij = NULL;
     }
     
     void Lattice::printLattice(){
