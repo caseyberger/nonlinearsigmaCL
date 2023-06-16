@@ -416,35 +416,35 @@ namespace nonlinearsigma{
                 vertex v1 = {i,j};
                 vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
                 vertex v3 = {Lattice::plusOne_(i),j};
-                triangles[0] = {v1, v2, v3};
+                local_triangles[0] = {v1, v2, v3};
                 //triangle 2
                 v3 = v2;
                 v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
-                triangles[1] = {v1, v2, v3};
+                local_triangles[1] = {v1, v2, v3};
                 //triangle 3
                 v3 = v2;
                 v2 = {i,Lattice::minusOne_(j)};
-                triangles[2] = {v1, v2, v3};
+                local_triangles[2] = {v1, v2, v3};
                 //triangle 4
                 v3 = v2;
                 v2 = {Lattice::minusOne_(i),Lattice::minusOne_(j)};
-                triangles[3] = {v1, v2, v3};
+                local_triangles[3] = {v1, v2, v3};
                 //triangle 5
                 v3 = v2;
                 v2 = {Lattice::minusOne_(i),j};
-                triangles[4] = {v1, v2, v3};
+                local_triangles[4] = {v1, v2, v3};
                 //triangle 6
                 v3 = v2;
                 v2 = {Lattice::minusOne_(i),Lattice::plusOne_(j)};
-                triangles[5] = {v1, v2, v3};
+                local_triangles[5] = {v1, v2, v3};
                 //triangle 7
                 v3 = v2;
                 v2 = {i,Lattice::plusOne_(j)};
-                triangles[6] = {v1, v2, v3};
+                local_triangles[6] = {v1, v2, v3};
                 //triangle 8
                 v3 = v2; 
                 v2 = {Lattice::plusOne_(i),Lattice::plusOne_(j)};
-                triangles[7] = {v1, v2, v3};
+                local_triangles[7] = {v1, v2, v3};
                 
                 tri_y.push_back(local_triangles);
             }
