@@ -187,8 +187,8 @@ namespace nonlinearsigma{
     
     void Lattice::printNeighbors(int i, int j){
         //tested 6/1/2023
-        std::array < vertex, 4> nn = Lattice::getNeighbors_(i,j);
-        std::array < field, 4> nnphi = Lattice::getNeighborPhis_(i,j);
+        std::array < vertex, 4 > nn = Lattice::getNeighbors_(i,j);
+        std::array < field, 4 > nnphi = Lattice::getNeighborPhis_(i,j);
         std::cout << "At (i,j) = " << i << "," << j << " the neighbors are: " << std::endl;
         std::cout << "(" << nn[0][0] << "," << nn[0][1] << "), with phi (" << nnphi[0][0] << "," << nnphi[0][1] << "," << nnphi[0][2] << ")" << std::endl;
         std::cout << "(" << nn[1][0] << "," << nn[1][1] << "), with phi (" << nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << std::endl;
@@ -536,7 +536,7 @@ namespace nonlinearsigma{
         return nn;
     }
     
-    std::array < field, 4> Lattice::getNeighborPhis_(int i, int j){
+    std::array < std::array< double, 3 >, 4 > Lattice::getNeighborPhis_(int i, int j){
         //tested 6/1/2023
         std::array < field, 4> nnPhis;
         nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
