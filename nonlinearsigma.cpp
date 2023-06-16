@@ -250,6 +250,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, doub
 }
 
 void test_phi_distribution(Lattice L){
+    //make this an internal function in L!
     //output phi distributions as .csv file
     cout << "Saving phi magnitude and distribution to file" <<endl;
     //create header of logfile
@@ -268,7 +269,7 @@ void test_phi_distribution(Lattice L){
     int len = 100; //in order to get a large sample -- maybe make larger?
     L.setLength(len);
     L.initialize();
-    for (int i = 0; i < len; i++){
+    /*for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             field phi = L.getPhi(i,j);
             double phimag = L.getPhiMag(i,j);
@@ -277,7 +278,7 @@ void test_phi_distribution(Lattice L){
             fout << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << phimag << ",";
             fout << r[0] << "," << r[1] << endl;
         }
-    }
+    }*/
     fout.close();
 }
 
