@@ -2,6 +2,7 @@
 // Created: May 24, 2023
 // Last edited: June 12, 2023
 #include <array>
+#include <vector>
 #pragma once
 
 namespace nonlinearsigma{
