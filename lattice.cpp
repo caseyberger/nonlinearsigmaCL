@@ -107,7 +107,7 @@ namespace nonlinearsigma{
         return filename_;
     }
     
-    field Lattice::getPhi(int i, int j){
+    Lattice::field Lattice::getPhi(int i, int j){
         //tested 5/30/2023
         return grid_[i][j];
     }
