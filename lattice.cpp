@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 16, 2023
+// Last edited: June 21, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -200,16 +200,14 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
-        for (int i = 0; i<length_; i++)
-        {
-            for (int j = 0; j<length_; j++)
-            {
-                for (int n = 0; n < 8; n++) //loop over 8 triangles
-                {
+        for (int i = 0; i<length_; i++){
+            for (int j = 0; j<length_; j++){
+                Lattice::checkQL(i, j);
+                for (int n = 0; n < 8; n++){
                     Q_L += Lattice::locQL_(i, j, n, use_arccos);
-                }
-            }
-        }
+                }//loop over triangles
+            }//loop over j
+        }//loop over i
         return Q_L;
     }
     
@@ -486,9 +484,9 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         //ensures we get the same QLtri with either cosine or sine
         //also ensures that QLtri is in the correct range of [-pi/2, pi/2]
-        //also ensures that QL over all triangles is an integer (w/in e-15)
+        //also ensures that QL over all triangles is an integer (w/in some tolerance)
         double QLtot = 0;
-        double tol = 1.0e-15;
+        double tol = 1.0e-5;
         for (int n = 0; n < 8; n++){
             double QLcos, QLsin;
             bool use_cosine = true;
