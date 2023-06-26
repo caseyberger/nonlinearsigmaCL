@@ -202,7 +202,7 @@ namespace nonlinearsigma{
         bool use_arccos = true;//uses arccos to find QL for each triangle
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
-                Lattice::checkQL(i, j);
+                //Lattice::checkQL(i, j);
                 for (int n = 0; n < 8; n++){
                     Q_L += Lattice::locQL_(i, j, n, use_arccos);
                 }//loop over triangles
