@@ -23,7 +23,7 @@ using nonlinearsigma::Lattice;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile(Lattice L);
-void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc);
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt);
 void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
@@ -103,8 +103,10 @@ int main (int argc, char *argv[])
         Xi_L = L.calcXi();
         F_L  = L.calcF();
         acc  = L.acceptanceRate();
+        time(&time_now);
+        dt = time_now - begin_mc;
         if (n%step_freq == 0){
-            write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc);
+            write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
         }
 #ifdef TESTING_MODE
         time(&time_now);
@@ -166,11 +168,11 @@ void create_logfile(Lattice L)
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe, F_LIm, acc" << endl;
+    fout << "step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe,F_LIm,acc,dt" << endl;
     fout.close();
 }
 
-void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc)
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt)
 {
     //output calculations .csv file
     string fname = L.getFilename();
@@ -188,7 +190,8 @@ void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double 
     }
     fout.setf(ios::fixed);
     fout << n << "," << phi<< "," << Q_L<< "," << A_L << ",";
-    fout << S_L << ","<< Xi_L << "," << F_L[0] << "," << F_L[1] << "," << acc << endl;
+    fout << S_L << ","<< Xi_L << "," << F_L[0] << "," << F_L[1] << ",";
+    fout << acc << "," << dt << endl;
     fout.close();
 }
 
