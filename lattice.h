@@ -1,21 +1,99 @@
 // Casey Berger
-// Created: Mar 28, 2023
-// Last edited: Apr 18, 2023
+// Created: May 24, 2023
+// Last edited: June 16, 2023
+#include <array>
+#include <vector>
+#pragma once
 
-#include <time.h>
-#include <stdlib.h>
-#include <iostream>
-#include <cstdlib>
+namespace nonlinearsigma{
+    class Lattice {
+        public:
+        
+        using vertex = std::array<int,2>;
+        using triangle = std::array<vertex,3>;
+        using site_triangles = std::array<triangle,8>;
+        using field = std::array<double, 3>;
+        
+        //constructor
+        Lattice(int length, double beta, double itheta);
+        //other public functions
+        //set or update lattice parameters
+        void setLength(int length);//tested 6/1/2023
+        void setBeta(double beta);//tested 6/1/2023
+        void setiTheta(double itheta);//tested 6/1/2023
+        void setPhi(int i, int j, field phi);//tested 6/5/2023
+        void setAvgG(int i, int j, double Gij);
+        void setnTherm(int ntherm);
+        void setnMC(int nMC);
+        void fixRNG(double r1, double r2);//tested 6/1/2023
+        void freeRNG();//tested 6/1/2023
+        
+        //retrieve lattice parameters
+        int getLength();//tested 6/1/2023
+        double getBeta();//tested 6/1/2023
+        double getiTheta();//tested 6/1/2023
+        int getnTherm();
+        int getnMC();
+        std::string getFilename();
+        field getPhi(int i, int j);//tested 5/30/2023
+        double* getRandNums();//tested 6/1/2023
+        double getPhiMag(int i, int j); //tested 6/1/2023
+        double getPhiTot(); //tested 6/1/2023
+        double getAvgG(int i, int j);
+        
+        //initialize the lattice
+        void initialize(); //tested 5/30/2023
+        
+        //print things to the screen
+        void printLattice();//tested 5/30/2023
+        void printTriangles(int i, int j); //tested 6/1/2023
+        void printNeighbors(int i, int j);//tested 6/1/2023
+        
+        //calculate and test lattice quantities
+        double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
+        void checkQL(int i, int j);//tested 6/1/2023
+        double calcAL();//tested 6/1/2023
+        double calcSL();//tested 6/1/2023
+        double twoPointG(int i, int j);
+        double calcXi();
+        double* calcF();
+        
+        //monte carlo tools
+        void metropolisStep();//tested 6/5/2023
+        void thermalize();//tested 6/5/2023
+        void zeroCount();//tested 6/5/2023
+        double acceptanceRate();//tested 6/5/2023
+    
+        //private members -- only accessible within the class functions
+        private:
+        //variables
+        int length_;
+        std::vector < std::vector < field > > grid_;
+        std::vector < std::vector < site_triangles > > triangles_;
+        double beta_;
+        double itheta_;
+        double r1_;
+        double r2_;
+        bool fixedr_;
+        int nTherm_;
+        int nMC_;
+        int acceptCount_;
+        int rejectCount_;
+        double accRate_;
+        std::vector < std::vector < double > > Gij_;
+        std::string filename_;
+        
+        //functions
+        field makePhi_(); //tested 6/1/2023
+        int plusOne_(int i); //tested 5/30/2023
+        int minusOne_(int i);//tested 5/30/2023
+        void makeTriangles_(); //tested 6/16/2023
+        double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
+        std::array < vertex, 4 > getNeighbors_(int i, int j);//tested 6/1/2023
+        std::array < field, 4 > getNeighborPhis_(int i, int j);//tested 6/1/2023
+        void printPhi_(int i, int j); //tested 5/30/2023
+        void generateFilename_();
+    };  
+}
 
 
-#ifndef LATTICE_H
-#define LATTICE_H
-
-void generate_phi(double (&phi)[3]);
-void lattice_init(double *** Lattice, int len);
-void lattice_flush(double *** Lattice, int len);//may not even need this??
-int plus_one(int i, int len);
-int minus_one(int i, int len);
-double dot_product(double vec1[3], double vec2[3]);
-void cross_product(double vec1[3], double vec2[3], double (&cross_prod)[3]);
-#endif

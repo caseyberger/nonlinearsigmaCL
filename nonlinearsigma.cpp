@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: May 17, 2023
+// Last edited: June 21, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -8,124 +8,123 @@
 // include files
 #include <time.h>//time (used to set random number seed, and to calculate dt)
 #include <iostream> //cout
-#include <cmath> //M_PI, sin, cos, pow
-#include <iomanip> //setw
+#include <cmath> //M_PI
 #include <cstdlib> //rand
 #include <fstream> //fout
 #include <string> //string
-//#include <vector>
-//#include <stdio.h>
-//#include <sstream>
+#include <sstream> //stringstream for logfile
 
 //custom header files
-#include "test_suite.h"
 #include "lattice.h"
-#include "action_suite.h"
-#include "monte_carlo.h"
 
 using namespace std;
+using nonlinearsigma::Lattice;
 
 //function declaration
 double Z_renorm(double beta, int len);
-void create_logfile();
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L);
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta);
+void create_logfile(Lattice L);
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt);
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, double &beta,double &itheta);
+void test_phi_distribution(Lattice L);
+void save_correlation_function(Lattice L);
+void testing_suite(int len, double beta, double itheta);
 
 int main (int argc, char *argv[])
 {
 #ifdef TESTING_MODE
     cout << "Testing mode ON." << endl;
-    cout << "Starting clock." << endl;
 #endif
-    srand(1723); //seed random number
-    time_t begin, end, begin_therm, end_therm, begin_mc, dt_end, dt_start, end_mc;
+    cout << "Starting clock." << endl;
+    time_t begin, end, begin_therm, end_therm, begin_mc, time_now, end_mc;
     double dt;
-    
+    srand(1723); //seed random number
     time(&begin);
     
-#ifdef EXTREME_TESTING_MODE
-    cout << "Testing mode is EXTREME." << endl;
-#endif
-
-    int len, num, ntherm, nMC;
+    int len = 180;
+    int ntherm = 1000;
+    int nMC = 1000;
+    int step_freq = 10;
     double beta = 1.6;
+    double itheta = M_PI;
     
-    read_in_inputs(argc, argv,len, num, ntherm, nMC, beta);
+    read_in_inputs(argc, argv,len, ntherm, nMC, step_freq, beta, itheta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
+    cout << "itheta = " << itheta << endl;
+    cout << "ntherm = " << ntherm << endl;
+    cout << "nMC = " << nMC << endl;
+    cout << "step frequency = " << step_freq << endl;
+     
+#ifdef EXTREME_TESTING_MODE
+    testing_suite(len, beta, itheta);
+    cout << "Testing concluded" << endl;
+    exit(0);
+#endif
     
     //Initalize the lattice - dynamically allocate the memory for the lattice
-#ifdef TESTING_MODE
-    cout << "Allocating memory for lattice" << endl;
-#endif
-    double *** Lattice = new double**[num];
-    for(int i = 0; i < len; i++){
-        Lattice[i] = new double*[len];
-    }
-    //allocation - 3 phi components x 2 (old and new)
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            Lattice[i][j] = new double[6];
-        }
-    }
-    lattice_init(Lattice, len);//initialize phi everywhere
-        
-    double phi_mag[len][len]; //stores size of unit vector at each lattice site
-    
-    create_logfile(); //generates logfile with header
-    //print_lattice(Lattice, len);
+    cout << "Constructing lattice" << endl;    
+    Lattice L(len, beta, itheta);//construct lattice
+    L.setnTherm(ntherm);
+    L.setnMC(nMC);
+
+    cout << "Initializing lattice" << endl;
+    L.initialize(); //initialize 3-component phi everywhere
+    create_logfile(L); //generates logfile with header 
     
     double phi = 0.0;
     double A_L = 0.0;
     double Q_L = 0.0;
     double S_L = 0.0;
-    double itheta = M_PI;
-    bool old_lattice = true;
+    double Xi_L = 0.0;
+    double* F_L;
+    double acc = 0.0;
     
     //thermalization loop
-#ifdef TESTING_MODE
-    cout << "Starting thermalization loop of length " << ntherm << endl;
-#endif
+    cout << "Starting thermalization loop of length " << L.getnTherm() << endl;
     
     time(&begin_therm);
-    for (int n = 0; n<ntherm; n++){
-        //some sort of updating function in here
-        Metropolis_loop(beta, itheta, Lattice, len);
-    }
+    L.thermalize();
     time(&end_therm);
     
     dt = end_therm - begin_therm;
+    
     //MC loop
-#ifdef TESTING_MODE
-    cout << "Thermalization loop duration: " << dt << " seconds."<< endl;
-    cout << "Starting Monte Carlo loop of length " << nMC << endl;
-#endif
+    cout << "Thermalization loop duration: " << dt/60. << " minutes."<< endl;
+    cout << "Starting Monte Carlo loop of length " << L.getnMC() << endl;
     
     time(&begin_mc);
 
-    for (int n = 0; n<nMC; n++){
-        //some sort of updating function in here
-        time(&dt_start);
-        phi = phi_tot(Lattice, len, old_lattice);
-        A_L = A_lattice(beta, Lattice, len, old_lattice);
-        Q_L = Q_lattice(Lattice, len, old_lattice);
-        S_L = S_lattice(beta, Lattice, len, itheta, old_lattice);
-        time(&dt_end);
-        dt = dt_end-dt_start;
-        write_to_file(dt, n, phi, Q_L, A_L, S_L);
-        lattice_init(Lattice, len);
+    for (int n = 0; n<L.getnMC(); n++){
+        L.metropolisStep();
+        phi  = L.getPhiTot();
+        A_L  = L.calcAL();
+        Q_L  = L.calcQL();
+        S_L  = L.calcSL();
+        Xi_L = L.calcXi();
+        F_L  = L.calcF();
+        acc  = L.acceptanceRate();
+        time(&time_now);
+        dt = time_now - begin_mc;
+        if (n%step_freq == 0){
+            write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
+        }
+#ifdef TESTING_MODE
+        time(&time_now);
+        if (n%100 == 0){
+            cout << "On MC step " << n << ", total time elapsed = " << time_now - begin << " seconds." << endl;
+        }
+#endif
     }
+    save_correlation_function(L);
     time(&end_mc);
     
     dt = end_mc - begin_mc;
-#ifdef TESTING_MODE
-     cout << "MC loop duration: " << dt << " seconds." << endl;
-#endif
+    cout << "MC loop duration: " << dt/60. << " minutes." << endl;
+
     time(&end);
     dt = end - begin;
-#ifdef TESTING_MODE
-     cout << "Total time elapsed: " << dt << " seconds." << endl;
-#endif
+    cout << "Total time elapsed: " << dt/60. << " minutes." << endl;
+
     return 0;
 }
 
@@ -152,13 +151,10 @@ double Z_renorm(double beta, int len){
     }
 }
 
-void create_logfile()
+
+void create_logfile(Lattice L)
 {
-#ifdef TESTING_MODE
-    cout << "Function: create_logfile" << endl;
-#endif
-    //create header of logfile
-    string fname = "nonlinearsigma_data.csv";
+    string fname = L.getFilename();
 #ifdef TESTING_MODE
     cout << "logfile name: " << fname << endl;
 #endif
@@ -172,17 +168,14 @@ void create_logfile()
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << "dt"<< "," << "step" << "," << "|phi|" << "," << "Q_L"<< "," << "A_L"<< "," << "S_L"<< endl;
+    fout << "step,|phi|,Q_L,A_L,S_L,Xi_L,F_LRe,F_LIm,acc,dt" << endl;
     fout.close();
 }
 
-void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double S_L)
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt)
 {
-#ifdef TESTING_MODE
-    cout << "Function: write_to_file" << endl;
-#endif
     //output calculations .csv file
-    string fname = "nonlinearsigma_data.csv";
+    string fname = L.getFilename();
 #ifdef TESTING_MODE
     cout << "Filename: " << fname << endl;
 #endif
@@ -196,19 +189,21 @@ void write_to_file(double dt, int n, double phi, double Q_L, double A_L, double 
         exit(10);
     }
     fout.setf(ios::fixed);
-    fout << dt <<","<< n << "," << phi<< "," << Q_L<< "," << A_L <<"," << S_L << endl;
+    fout << n << "," << phi<< "," << Q_L<< "," << A_L << ",";
+    fout << S_L << ","<< Xi_L << "," << F_L[0] << "," << F_L[1] << ",";
+    fout << acc << "," << dt << endl;
     fout.close();
 }
 
-void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int &nMC, double &beta)
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, double &beta, double &itheta)
 {
-    //read in parameters
+    //read in parameters -- note itheta is read in as a multiple/fraction of pi
 #ifdef TESTING_MODE
     cout << "Function: read_in_inputs" << endl;
 #endif
     string str, filename;
-    int n_params = 2;
-    string inputs [4] = {"L","beta", "ntherm","nMC"};//read in keywords for parameters
+    const int n_params = 6;
+    string inputs [n_params] = {"L","beta", "itheta", "ntherm","nMC", "freq"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
         cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
         exit(10);
@@ -246,10 +241,11 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
                 }
             }
             len = stod(inputs[0]);
-            num = len*len;
             beta = stod(inputs[1]);
-            ntherm = stod(inputs[2]);
-            nMC = stod(inputs[3]);
+            itheta = stod(inputs[2])*M_PI;
+            ntherm = stod(inputs[3]);
+            nMC = stod(inputs[4]);
+            step_freq = stod(inputs[5]);
 #ifdef TESTING_MODE
     cout << "parameters acquired: ";
     for (int n=0; n<n_params; n++){
@@ -259,4 +255,252 @@ void read_in_inputs(int argc, char *argv[],int &len, int &num, int &ntherm, int 
 #endif  
         }
     }
+}
+
+void test_phi_distribution(Lattice L){
+    //make this an internal function in L!
+    //output phi distributions as .csv file
+    cout << "Saving phi magnitude and distribution to file" <<endl;
+    //create header of logfile
+    string fname = "phi_test.csv";
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << "i,j,phi_x,phi_y,phi_z,|phi|,r1,r2" << endl;
+    int len = 100; //in order to get a large sample -- maybe make larger?
+    L.setLength(len);
+    L.initialize();
+    /*for (int i = 0; i < len; i++){
+        for (int j = 0; j < len; j++){
+            field phi = L.getPhi(i,j);
+            double phimag = L.getPhiMag(i,j);
+            double *r = L.getRandNums();
+            fout << i <<","<< j << ",";
+            fout << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << phimag << ",";
+            fout << r[0] << "," << r[1] << endl;
+        }
+    }*/
+    fout.close();
+}
+
+void save_correlation_function(Lattice L){
+    //output phi distributions as .csv file
+    cout << "Saving average correlation function to file" <<endl;
+    //create header of logfile
+    string fname = "Gij_avg_"+L.getFilename();
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << "i,j,G_avg" << endl;
+    int len = L.getLength(); 
+    for (int i = 0; i < len; i++){
+        for (int j = 0; j < len; j++){
+            double G = L.getAvgG(i,j);
+            fout << i <<","<< j << ",";
+            fout << G << endl;
+        }
+    }
+    fout.close();
+}
+    
+void testing_suite(int len, double beta, double itheta){
+    cout << "Extreme testing mode enabled. Running through tests." << endl;
+    
+    //construct lattice
+    cout << "Constructing lattice" << endl;
+    Lattice L(len, beta, itheta);
+    
+    //test setting and getting parameters
+    cout << "Length = " << L.getLength() << endl;
+    cout << "Resetting length" << endl;
+    L.setLength(len + 1);
+    cout << "New length = " << L.getLength() << endl;
+    len = L.getLength();
+    
+    cout << "Beta = " << L.getBeta() << endl;
+    cout << "Resetting beta" << endl;
+    L.setBeta(1.0);
+    cout << "New beta = " << L.getBeta() << endl;
+    beta = L.getBeta();
+    
+    cout << "itheta = " << L.getiTheta() << endl;
+    cout << "Resetting itheta" << endl;
+    L.setiTheta(0.5*M_PI);
+    cout << "New itheta = " << L.getiTheta() << endl;
+    itheta = L.getiTheta();
+    
+    cout << "nTherm = " << L.getnTherm() << endl;
+    cout << "Resetting nTherm" << endl;
+    L.setnTherm(10);
+    cout << "New nTherm = " << L.getnTherm() << endl;
+    int ntherm = L.getnTherm();
+    
+    cout << "nMC = " << L.getnMC() << endl;
+    cout << "Resetting nMC" << endl;
+    L.setnMC(100);
+    cout << "New nMC = " << L.getnMC() << endl;
+    int nMC = L.getnMC();
+    
+    //initialization tests
+    cout << "Initializing lattice" << endl;
+    L.initialize();
+    cout << endl;
+    
+    //print lattice
+    cout << "Printing lattice" << endl;
+    L.printLattice();
+    
+    //testing distrubution of phi
+    test_phi_distribution(L);
+    
+    cout << "Total phi on the lattice is " << L.getPhiTot() << ", and total lattice sites is " << len*len << endl << endl;
+    
+    cout << "Resetting length" << endl;
+    L.setLength(6);
+    cout << "New length = " << L.getLength() << endl;
+    len = L.getLength();
+    
+    //testing triangles
+    cout << "Testing triangle generation" <<endl;
+    int i = 0;
+    int j = 0;
+    L.printTriangles(i,j);
+    i = len/2;
+    L.printTriangles(i,j);
+    j = len/2;
+    L.printTriangles(i,j);
+    cout << endl;
+    
+    //testing neighbor getting functions
+    cout << "Testing ability to get neighboring phis" << endl;
+    int testlen = 3;
+    L.setLength(testlen);
+    L.printLattice();
+    for (int i = 0; i < testlen; i++){
+        for (int j = 0; j < testlen; j++){
+            L.printNeighbors(i,j);
+        }
+    }
+    cout << endl;
+    //testing lattice quantities
+    cout << "Testing lattice calculations. " << endl;
+    double QL, AL, SL;
+    for(int i = 0; i < len; i++){
+        for (int j = 0; j<len; j++){
+            L.checkQL(i, j);
+        }
+    }
+    L.setLength(2);
+    L.setBeta(1.);
+    L.setiTheta(M_PI);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.setiTheta(0.);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = 0, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.setiTheta(M_PI);
+    L.fixRNG(0.,0.);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in +z direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+   
+    L.fixRNG(0.5,0.);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in +x direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.fixRNG(0.5,0.5);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in -x direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.fixRNG(0.5,0.25);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in y direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.fixRNG(0.5,0.75);
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and all phi pointing in -y direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    L.freeRNG();
+    L.initialize();
+    L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "for L = 2, beta = 1, itheta = pi, and phi pointing in random direction:" << endl;
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
+    
+    
+    //MC testing
+    L.setLength(4);
+    L.setBeta(1.6);
+    L.setiTheta(0.);
+    L.setnTherm(10);
+    L.initialize();
+    L.printLattice();
+    cout << "Metropolis testing, step 1" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 2" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 3" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Metropolis testing, step 4" << endl;
+    L.metropolisStep();
+    L.printLattice();
+    cout << "Acceptance rate = " << L.acceptanceRate() << endl;
+    L.zeroCount();
+    L.thermalize();
+    cout << "Acceptance rate = " << L.acceptanceRate() << endl;
 }
