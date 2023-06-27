@@ -3,3 +3,4 @@ beta = 1.6
 itheta = 1.
 ntherm = 10
 nMC = 10
+freq = 1
