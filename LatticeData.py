@@ -24,7 +24,7 @@ class LatticeData:
                 data_files.append(self.path+file)
         return data_files
 
-    def get_params(self, file):
+    def get_file_params(self, file):
         file = file[:-4]
         temp = file.split("_")
         pdict = dict()
@@ -39,55 +39,62 @@ class LatticeData:
         param_df = pd.DataFrame()
         files = self.get_data_files()
         for file in files:
-            pdict = self.get_params(file)
+            pdict = self.get_file_params(file)
             param_df = param_df.append(pdict,ignore_index=True)
         return param_df
     
-    def get_data(self,filtered = False, **kwargs):
-        files = self.get_data_files()
+    def in_list(self,pdict,**kwargs):
+        count = 0
+        for key, value in kwargs.items():
+            if (pdict[key] > value+self.tol) or (pdict[key] <  value-self.tol):
+                break
+            count += 1
+        if count == len(kwargs.keys()):
+            return True
+        else:
+            return False
+    
+    def get_data(self,single_run = False, corr = False, suppress_output = True, **kwargs):
+        if single_run:
+            missing_params = []
+            for p in self.parameters:
+                if p not in kwargs.keys():
+                    missing_params.append(p)
+            if len(missing_params) > 0:
+                print("Missing parameters in input: ")
+                print(missing_params)
+                return None
+        else:
+            #print("Returning multiple runs")
+            pass
+        files = self.get_data_files(corr = corr)
         df = pd.DataFrame()
         for file in files:
             temp = pd.read_csv(file, skipinitialspace = True)
-            pdict = self.get_params(file)
-            for key, value in pdict.items():
-                temp[key] = float(value)
-            for observable in self.observables:
-                temp[observable+"_ta"]= self.ta(temp[observable])
-            df = pd.concat([df,temp])
-        if filtered:
-            for key, value in kwargs.items():
-                print(key,value)
-                df = df[(df[key] < value+self.tol) &((df[key] >= value-self.tol))]
+            pdict = self.get_file_params(file)
+            if self.in_list(pdict, **kwargs):
+                for key, value in pdict.items():
+                    temp[key] = float(value)
+                if not corr:
+                    for observable in self.observables:
+                        temp[observable+"_ta"]= self.ta(temp[observable])
+                    F_py = self.calc_F(**pdict)
+                    corr_length = self.calc_corr_length(temp["Xi_L"],temp["length"],F_py)
+                    mass_gap = 1./corr_length
+                    temp["corr_length_Re"] = corr_length.real
+                    temp["corr_length_Im"] = corr_length.imag
+                    temp["F_Re_py"] = F_py.real
+                    temp["F_Im_py"] = F_py.imag
+                    temp["mass_gap_Re"] = mass_gap.real
+                    temp["mass_gap_Im"] = mass_gap.imag
+                df = pd.concat([df,temp])
+                if not suppress_output:
+                    for key, value in pdict.items():
+                        print(key, value)
         return df
     
-    def get_single_run(self, corr = False, suppress_output = False, **kwargs):
-        missing_params = []
-        for p in self.parameters:
-            if p not in kwargs.keys():
-                missing_params.append(p)
-        if len(missing_params) > 0:
-            print("Missing parameters in input: ")
-            print(missing_params)
-            return None        
-        else:
-            files = self.get_data_files(corr = corr)
-            for file in files:
-                pdict = self.get_params(file)
-                df = pd.DataFrame()
-                count = 0
-                for key, value in kwargs.items():
-                    if (pdict[key] > value+self.tol) or (pdict[key] <  value-self.tol):
-                        break
-                    count += 1
-                if count == len(kwargs.keys()):
-                    if not suppress_output:
-                        for key, value in pdict.items():
-                            print(key, value)
-                    df = pd.read_csv(file, skipinitialspace = True)
-                    return df
-    
-    def do_stats(self, therm = 0.,filtered = False, **kwargs):
-        df = self.get_data(filtered = filtered, **kwargs)
+    def do_stats(self, therm = 0., **kwargs):
+        df = self.get_data(**kwargs)
         therm_condition = df["step"].astype(float) >= therm*df["nMC"].astype(float)
         df = df[therm_condition]
         df.drop(columns = ["step"], inplace = True)
@@ -104,7 +111,7 @@ class LatticeData:
         return df_all
     
     def get_corr_func(self,suppress_output = False,**kwargs):
-        df = self.get_single_run(corr = True, suppress_output = suppress_output, **kwargs)
+        df = self.get_data(single_run = True, corr = True, suppress_output = suppress_output, **kwargs)
         length = kwargs["length"]
         df["i,j"] = df["i"]+df["j"]
         G_avg = df["G_avg"].to_numpy()
@@ -112,9 +119,8 @@ class LatticeData:
         return G_avg
     
     def calc_F(self, **kwargs):
-        G_avg = self.get_corr_func(**kwargs)
+        G_avg = self.get_corr_func(suppress_output = True, **kwargs)
         L = kwargs["length"]
-        print("L = "+str(L))
         F = complex(0,0)
         i = complex(0,1)
         for x1 in range(0,L):
@@ -122,11 +128,10 @@ class LatticeData:
                 F += (np.exp(2.*np.pi*i*x1/L)+ np.exp(2.*np.pi*i*x2/L))*G_avg[x1,x2]
         return 0.5*F
     
-    def calc_corr_length(self, Xi, **kwargs):
-        F = self.calc_F(**kwargs)
-        #add an internal calculation of Xi
-        L = kwargs["length"]
-        return np.sqrt(Xi/F - 1.)/(2.*np.sin(np.pi/L))
+    def calc_corr_length(self,Xi,L,F_py):
+        Xi = Xi.to_numpy()
+        L = L.to_numpy()
+        return np.sqrt(Xi/F_py)/(2.*np.sin(np.pi/L))
         
     def next_pow_two(self,n):
         i = 1
