@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: June 21, 2023
+// Last edited: July 5, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -13,6 +13,7 @@
 #include <fstream> //fout
 #include <string> //string
 #include <sstream> //stringstream for logfile
+#include <omp.h> //openMP
 
 //custom header files
 #include "lattice.h"

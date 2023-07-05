@@ -1,8 +1,10 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: June 16, 2023
+// Last edited: July 5, 2023
 #include <array>
 #include <vector>
+#include <omp.h> //openMP
+
 #pragma once
 
 namespace nonlinearsigma{

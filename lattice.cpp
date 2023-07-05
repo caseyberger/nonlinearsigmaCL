@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 21, 2023
+// Last edited: July 5, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -10,6 +10,8 @@
 #include <algorithm>  // shuffle
 #include <random> //default_random_engine
 #include <array> 
+#include <omp.h> //openMP
+
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
@@ -128,6 +130,7 @@ namespace nonlinearsigma{
     double Lattice::getPhiTot(){
         //tested 6/1/2023
         double phi_tot = 0.;
+        //#pragma omp parallel for reduction (+:phi_tot)
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
                 phi_tot += Lattice::getPhiMag(i, j);
@@ -200,6 +203,7 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
+        #pragma omp parallel for reduction (+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 //Lattice::checkQL(i, j);
@@ -217,6 +221,7 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
+        #pragma omp parallel for reduction (+:A_L)
         for (int i = 0; i<length_; i++)
         {
             for (int j = 0; j<length_; j++)
