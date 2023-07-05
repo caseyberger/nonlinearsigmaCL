@@ -205,8 +205,8 @@ namespace nonlinearsigma{
         bool use_arccos = true;//uses arccos to find QL for each triangle
         #pragma omp parallel
         {
-            #pragma omp for collapse (3)
             double Qtemp = 0.0;
+            #pragma omp for collapse (3) private (Qtemp)
             for (int i = 0; i<length_; i++){
                 for (int j = 0; j<length_; j++){
                     //Lattice::checkQL(i, j);
@@ -232,8 +232,8 @@ namespace nonlinearsigma{
         double A_L = 0.0;
         #pragma omp parallel
         {
-            #pragma omp for collapse (2)
             double Atemp = 0.0;
+            #pragma omp for collapse (2) private (Atemp)
             for (int i = 0; i<length_; i++)
             {
                 for (int j = 0; j<length_; j++)
