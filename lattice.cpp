@@ -202,7 +202,6 @@ namespace nonlinearsigma{
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
-        double Q_loc = 0.0
         bool use_arccos = true;//uses arccos to find QL for each triangle
         #pragma omp parallel reduction(+:Q_L)
         {
