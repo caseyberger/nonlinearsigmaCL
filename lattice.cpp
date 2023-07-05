@@ -203,16 +203,23 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
-        int i,j,n;
-        #pragma omp parallel for private(j,n) reduction(+:Q_L) collapse(3)
-        for (i = 0; i<length_; i++){
-            for (j = 0; j<length_; j++){
-                //Lattice::checkQL(i, j);
-                for (n = 0; n < 8; n++){
-                    Q_L += Lattice::locQL_(i, j, n, use_arccos);
-                }//loop over triangles
-            }//loop over j
-        }//loop over i
+        #pragma omp parallel
+        {
+            double Qtemp = 0.0;
+            #pragma omp for collapse (3)
+            for (int i = 0; i<length_; i++){
+                for (int j = 0; j<length_; j++){
+                    //Lattice::checkQL(i, j);
+                    for (int n = 0; n < 8; n++){
+                        Qtemp += Lattice::locQL_(i, j, n, use_arccos);
+                    }//loop over triangles
+                }//loop over j
+            }//loop over i
+            #pragma omp critical
+            {
+                Q_L += Qtemp;
+            }
+        }
         
         return Q_L;
     }
