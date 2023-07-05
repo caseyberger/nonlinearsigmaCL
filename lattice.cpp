@@ -202,16 +202,22 @@ namespace nonlinearsigma{
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
+        double Q_loc = 0.0
         bool use_arccos = true;//uses arccos to find QL for each triangle
-        #pragma omp parallel for reduction (+:Q_L)
-        for (int i = 0; i<length_; i++){
-            for (int j = 0; j<length_; j++){
-                //Lattice::checkQL(i, j);
-                for (int n = 0; n < 8; n++){
-                    Q_L += Lattice::locQL_(i, j, n, use_arccos);
-                }//loop over triangles
-            }//loop over j
-        }//loop over i
+        #pragma omp parallel reduction(+:Q_L)
+        {
+            int i,j,n;
+            #pragma omp for
+            for (i = 0; i<length_; i++){
+                for (j = 0; j<length_; j++){
+                    //Lattice::checkQL(i, j);
+                    for (n = 0; n < 8; n++){
+                        Q_L += Lattice::locQL_(i, j, n, use_arccos);
+                    }//loop over triangles
+                }//loop over j
+            }//loop over i
+        }
+        
         return Q_L;
     }
     
@@ -221,17 +227,21 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
-        #pragma omp parallel for reduction (+:A_L)
-        for (int i = 0; i<length_; i++)
+        #pragma omp parallel reduction(+:A_L)
         {
-            for (int j = 0; j<length_; j++)
+            int i,j;
+            #pragma omp for
+            for (i = 0; i<length_; i++)
             {
-                Lattice::field phi = Lattice::getPhi(i,j);
-                std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
-                //nearest neighbors in positive direction:
-                A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
-                //nearest neighbors in negative direction:
-                A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+                for (j = 0; j<length_; j++)
+                {
+                    Lattice::field phi = Lattice::getPhi(i,j);
+                    std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j);
+                    //nearest neighbors in positive direction:
+                    A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
+                    //nearest neighbors in negative direction:
+                    A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+                }
             }
         }
         return -1.*beta_*A_L;
