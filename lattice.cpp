@@ -225,9 +225,9 @@ namespace nonlinearsigma{
         double A_L = 0.0;
         int i,j;
         #pragma omp parallel for private(j) reduction(+:A_L) collapse(2)
-        for (int i = 0; i<length_; i++)
+        for (i = 0; i<length_; i++)
         {
-            for (int j = 0; j<length_; j++)
+            for (j = 0; j<length_; j++)
             {
                 Lattice::field phi = Lattice::getPhi(i,j);
                 std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j);
