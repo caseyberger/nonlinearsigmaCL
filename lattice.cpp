@@ -204,8 +204,8 @@ namespace nonlinearsigma{
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
         #pragma omp parallel
-        #pragma omp for collapse (3)
         {
+            #pragma omp for collapse (3)
             double Qtemp = 0.0;
             for (int i = 0; i<length_; i++){
                 for (int j = 0; j<length_; j++){
@@ -231,8 +231,8 @@ namespace nonlinearsigma{
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
         #pragma omp parallel
-        #pragma omp for collapse (2)
         {
+            #pragma omp for collapse (2)
             double Atemp = 0.0;
             for (int i = 0; i<length_; i++)
             {
