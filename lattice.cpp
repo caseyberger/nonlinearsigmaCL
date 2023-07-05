@@ -203,14 +203,12 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
-        #pragma omp parallel reduction(+:Q_L) collapse(3)
+        #pragma omp parallel for reduction(+:Q_L) collapse(3)
         {
-            int i,j,n;
-            #pragma omp for
-            for (i = 0; i<length_; i++){
-                for (j = 0; j<length_; j++){
+            for (int i = 0; i<length_; i++){
+                for (int j = 0; j<length_; j++){
                     //Lattice::checkQL(i, j);
-                    for (n = 0; n < 8; n++){
+                    for (int n = 0; n < 8; n++){
                         Q_L += Lattice::locQL_(i, j, n, use_arccos);
                     }//loop over triangles
                 }//loop over j
@@ -226,13 +224,11 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
-        #pragma omp parallel reduction(+:A_L) collapse(2)
+        #pragma omp parallel for reduction(+:A_L) collapse(2)
         {
-            int i,j;
-            #pragma omp for
-            for (i = 0; i<length_; i++)
+            for (int i = 0; i<length_; i++)
             {
-                for (j = 0; j<length_; j++)
+                for (int j = 0; j<length_; j++)
                 {
                     Lattice::field phi = Lattice::getPhi(i,j);
                     std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j);
