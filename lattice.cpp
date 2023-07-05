@@ -473,7 +473,7 @@ namespace nonlinearsigma{
             if (QLcos > 0.5*M_PI){
                 return QLcos - 2*M_PI;
             }
-            else if (QLcos = - QLsin){
+            else if (QLcos == - QLsin){
                 return -QLcos;
             }
             else{
