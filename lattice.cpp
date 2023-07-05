@@ -206,7 +206,7 @@ namespace nonlinearsigma{
         #pragma omp parallel
         {
             double Qtemp = 0.0;
-            #pragma omp for collapse (3) private (Qtemp)
+            #pragma omp for collapse (2)
             for (int i = 0; i<length_; i++){
                 for (int j = 0; j<length_; j++){
                     //Lattice::checkQL(i, j);
@@ -233,7 +233,7 @@ namespace nonlinearsigma{
         #pragma omp parallel
         {
             double Atemp = 0.0;
-            #pragma omp for collapse (2) private (Atemp)
+            #pragma omp for collapse (2)
             for (int i = 0; i<length_; i++)
             {
                 for (int j = 0; j<length_; j++)
