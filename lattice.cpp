@@ -203,7 +203,7 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
-        #pragma omp parallel reduction(+:Q_L)
+        #pragma omp parallel reduction(+:Q_L) collapse(3)
         {
             int i,j,n;
             #pragma omp for
@@ -226,7 +226,7 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
-        #pragma omp parallel reduction(+:A_L)
+        #pragma omp parallel reduction(+:A_L) collapse(2)
         {
             int i,j;
             #pragma omp for
