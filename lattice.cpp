@@ -204,9 +204,9 @@ namespace nonlinearsigma{
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
         #pragma omp parallel
+        #pragma omp for collapse (3)
         {
             double Qtemp = 0.0;
-            #pragma omp for collapse (3)
             for (int i = 0; i<length_; i++){
                 for (int j = 0; j<length_; j++){
                     //Lattice::checkQL(i, j);
@@ -230,20 +230,29 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
-        int i,j;
-        #pragma omp parallel for private(j) reduction(+:A_L) collapse(2)
-        for (i = 0; i<length_; i++)
+        #pragma omp parallel
+        #pragma omp for collapse (2)
         {
-            for (j = 0; j<length_; j++)
+            double Atemp = 0.0;
+            for (int i = 0; i<length_; i++)
             {
-                Lattice::field phi = Lattice::getPhi(i,j);
-                std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j);
-                //nearest neighbors in positive direction:
-                A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
-                //nearest neighbors in negative direction:
-                A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+                for (int j = 0; j<length_; j++)
+                {
+                    Lattice::field phi = Lattice::getPhi(i,j);
+                    std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j);
+                    //nearest neighbors in positive direction:
+                    Atemp += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
+                    //nearest neighbors in negative direction:
+                    Atemp += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+                }//loop over j
+            }//loop over i
+            #pragma omp critical
+            {
+                A_L += Atemp;
             }
         }
+
+        
         return -1.*beta_*A_L;
     }
     
