@@ -203,11 +203,12 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arccos = true;//uses arccos to find QL for each triangle
+        int i,j,n;
         #pragma omp parallel for private(j,n) reduction(+:Q_L) collapse(3)
-        for (int i = 0; i<length_; i++){
-            for (int j = 0; j<length_; j++){
+        for (i = 0; i<length_; i++){
+            for (j = 0; j<length_; j++){
                 //Lattice::checkQL(i, j);
-                for (int n = 0; n < 8; n++){
+                for (n = 0; n < 8; n++){
                     Q_L += Lattice::locQL_(i, j, n, use_arccos);
                 }//loop over triangles
             }//loop over j
@@ -222,6 +223,7 @@ namespace nonlinearsigma{
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
         double A_L = 0.0;
+        int i,j;
         #pragma omp parallel for private(j) reduction(+:A_L) collapse(2)
         for (int i = 0; i<length_; i++)
         {
