@@ -225,10 +225,11 @@ namespace nonlinearsigma{
                         if (QLcos > 0.5*M_PI){QLcos -= 2.*M_PI;}
                         else if (QLcos == - QLsin){QLcos *= -1.;}
                         Q_L += QLcos;
-                    }//choose arcsin or arccos version of QL  
+                    }//choose arcsin or arccos version of QL and add to Q_L 
+                    
 #ifdef EXTREME_TESTING_MODE
                     if (QLcos != QLsin){
-                       std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+                       std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
                         std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
