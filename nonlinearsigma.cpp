@@ -374,6 +374,7 @@ void testing_suite(int len, double beta, double itheta){
     L.setLength(6);
     cout << "New length = " << L.getLength() << endl;
     len = L.getLength();
+    L.initialize();
     
     //testing triangles
     cout << "Testing triangle generation" <<endl;
