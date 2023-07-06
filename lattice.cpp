@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: July 6 - reverted back to July 4 version
+// Last edited: July 6 - reverted back to July 4 version then added openmp
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -10,6 +10,7 @@
 #include <algorithm>  // shuffle
 #include <random> //default_random_engine
 #include <array> 
+#include <omp.h>
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
@@ -207,6 +208,7 @@ namespace nonlinearsigma{
         double Q_L(0.);//optimization 7/4/23
         //bool use_arccos = true;//uses arccos to find QL for each triangle
         bool use_arccos(true);//optimization 7/4/23
+        #pragma omp parallel for collapse(3) default(none) shared(length_,use_arccos) reduction(+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 //Lattice::checkQL(i, j);
