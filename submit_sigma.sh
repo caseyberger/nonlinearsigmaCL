@@ -16,6 +16,6 @@ export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 echo "Running nonlinear sigma on single CPU core"
 
-./nonlinearsigma inputs.txt
+/usr/bin/time -v ./nonlinearsigma inputs.txt
 
 date
