@@ -235,11 +235,11 @@ namespace nonlinearsigma{
                         //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
                         if (QLcos > 0.5*M_PI){
                             QLcos += -2.*M_PI;
-                            std::cout << "QLcos = " << QLcos << std::endl;
+                            std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
                         }
-                        if (std::abs(QLcos + QLsin) > 1e-15){
+                        if (std::abs(QLcos + QLsin) < 1e-15){
                             QLcos = -1.*QLcos;
-                            std::cout << "QLcos = " << QLcos << std::endl;
+                            std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
                         }
                         std::cout << "QLcos = " << QLcos << std::endl;
                         Q_L += QLcos;
