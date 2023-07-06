@@ -201,7 +201,10 @@ namespace nonlinearsigma{
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
-        bool use_arcsin = false;//uses arcsine to find QL for each triangle
+        bool use_arcsin = true;//uses arcsine to find QL for each triangle
+#ifdef EXTREME_TESTING_MODE
+        use_arcsin = false; //set to use arccos when testing to check they are the same (modifying domain of arccos)
+#endif  
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 for (int n = 0; n < 8; n++){ 
