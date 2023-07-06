@@ -400,11 +400,7 @@ void testing_suite(int len, double beta, double itheta){
     //testing lattice quantities
     cout << "Testing lattice calculations. " << endl;
     double QL, AL, SL;
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            L.checkQL(i, j);
-        }
-    }
+    
     L.setLength(2);
     L.setBeta(1.);
     L.setiTheta(M_PI);

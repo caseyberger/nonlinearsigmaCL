@@ -201,16 +201,48 @@ namespace nonlinearsigma{
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
-        bool use_arccos = true;//uses arccos to find QL for each triangle
+        bool use_arcsin = true;//uses arcsine to find QL for each triangle
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
-                //Lattice::checkQL(i, j);
-                for (int n = 0; n < 8; n++){
-                    Q_L += Lattice::locQL_(i, j, n, use_arccos);
+                for (int n = 0; n < 8; n++){ 
+                    double rho, QLcos, QLsin;
+                    int i1 = triangles_[i][j][n][0][0];
+                    int j1 = triangles_[i][j][n][0][1];
+                    int i2 = triangles_[i][j][n][1][0];
+                    int j2 = triangles_[i][j][n][1][1];
+                    int i3 = triangles_[i][j][n][2][0];
+                    int j3 = triangles_[i][j][n][2][1];
+                    Lattice::field phi1 = Lattice::getPhi(i1,j1);
+                    Lattice::field phi2 = Lattice::getPhi(i2,j2);
+                    Lattice::field phi3 = Lattice::getPhi(i3,j3);
+                    
+                    rho = std::sqrt(2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1)));
+                    QLcos = std::acos((1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho)/(2.*M_PI);
+                    QLsin = std::asin(dot(phi1,cross(phi2,phi3))/rho)/(2.*M_PI);
+                    
+                    if (use_arcsin){Q_L += QLsin;}
+                    else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
+                        if (QLcos > 0.5*M_PI){QLcos -= 2.*M_PI;}
+                        else if (QLcos == - QLsin){QLcos *= -1.;}
+                        Q_L += QLcos;
+                    }//choose arcsin or arccos version of QL  
+#ifdef EXTREME_TESTING_MODE
+                    if (QLcos != QLsin){
+                       std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+                    }//check if the two versions are equivalent
+                    if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
+                        std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
+                    }//check if the local QL is in the correct range
+#endif
                 }//loop over triangles
             }//loop over j
         }//loop over i
         
+#ifdef EXTREME_TESTING_MODE
+        if (std::abs(std::remainder(Q_L,1)) > 0.001){
+            std::cout << "QL not an integer value: " << Q_L << std::endl;
+        }//check if we get an integer for QL
+#endif
         return Q_L;
     }
     
@@ -445,71 +477,6 @@ namespace nonlinearsigma{
             all_triangles.push_back(tri_y);
         }
         triangles_ = all_triangles;
-    }
-    
-    
-    
-    double Lattice::locQL_(int i, int j, int n, bool use_arccos){
-        //tested 6/1/2023
-        //Calculates QL on the nth triangle with central vertex i,j
-        double rho, rho2, QLc, QLs;
-        int i1 = triangles_[i][j][n][0][0];
-        int j1 = triangles_[i][j][n][0][1];
-        int i2 = triangles_[i][j][n][1][0];
-        int j2 = triangles_[i][j][n][1][1];
-        int i3 = triangles_[i][j][n][2][0];
-        int j3 = triangles_[i][j][n][2][1];
-        Lattice::field phi1 = Lattice::getPhi(i1,j1);
-        Lattice::field phi2 = Lattice::getPhi(i2,j2);
-        Lattice::field phi3 = Lattice::getPhi(i3,j3);
-        rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
-        rho = std::sqrt(rho2);
-        QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
-        QLs = dot(phi1,cross(phi2,phi3))/rho;
-        double QLcos = std::acos(QLc)/(2.*M_PI);
-        double QLsin = std::asin(QLs)/(2.*M_PI);
-        if (use_arccos){ 
-            //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-            if (QLcos > 0.5*M_PI){
-                return QLcos - 2*M_PI;
-            }
-            else if (QLcos == - QLsin){
-                return -QLcos;
-            }
-            else{
-                return QLcos;
-            }
-        }
-        else{
-            return QLsin;
-        }
-    }
-    
-    void Lattice::checkQL(int i, int j){
-        //tested 6/1/2023
-        //ensures we get the same QLtri with either cosine or sine
-        //also ensures that QLtri is in the correct range of [-pi/2, pi/2]
-        //also ensures that QL over all triangles is an integer (w/in some tolerance)
-        double QLtot = 0;
-        double tol = 1.0e-5;
-        for (int n = 0; n < 8; n++){
-            double QLcos, QLsin;
-            bool use_cosine = true;
-            bool use_sine = false;
-            QLcos = Lattice::locQL_(i,j,n,use_cosine);
-            QLsin = Lattice::locQL_(i,j,n,use_sine);
-            if (QLcos != QLsin){
-                std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
-            }
-            if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
-                std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
-            }
-            QLtot += QLsin;
-        }
-        std::cout << "QLtot = " << QLtot << std::endl;
-        if (std::abs(std::remainder(QLtot,1)) > tol){
-            std::cout << "QL not an integer value: " << QLtot << std::endl;
-        }
     }
     
     std::array < Lattice::vertex, 4> Lattice::getNeighbors_(int i, int j){

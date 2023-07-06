@@ -53,7 +53,6 @@ namespace nonlinearsigma{
         
         //calculate and test lattice quantities
         double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
-        void checkQL(int i, int j);//tested 6/1/2023
         double calcAL();//tested 6/1/2023
         double calcSL();//tested 6/1/2023
         double twoPointG(int i, int j);
@@ -90,7 +89,6 @@ namespace nonlinearsigma{
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_(); //tested 6/16/2023
-        double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
         std::array < vertex, 4 > getNeighbors_(int i, int j);//tested 6/1/2023
         std::array < field, 4 > getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
