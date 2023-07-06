@@ -208,7 +208,7 @@ namespace nonlinearsigma{
         //double Q_L = 0.0;
         double Q_L(0.);//optimization 7/4/23
         //bool use_arccos = true;//uses arccos to find QL for each triangle
-        bool use_arccos(true);//optimization 7/4/23
+        bool use_arccos(false);//optimization 7/4/23
         #pragma omp parallel for collapse(3) default(none) shared(length_,use_arccos) reduction(+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){

@@ -18,7 +18,7 @@ COMMAND =  nonlinearsigma
 
 # special definitions for testing, etc
 
-USE_OMP ?= FALSE
+USE_OMP ?= TRUE
 USE_GPROF ?= FALSE
 USE_TEST_PRINT_STATEMENTS ?= FALSE
 USE_EXTREME_TEST_CONDITION ?= FALSE
