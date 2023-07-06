@@ -247,6 +247,7 @@ namespace nonlinearsigma{
                     
 #ifdef EXTREME_TESTING_MODE
                     if (std::abs(QLcos - QLsin) > 1e-15){
+                        std::cout << "QLcos - QLsin = " << (QLcos - QLsin) << std::endl;
                         std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
