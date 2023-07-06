@@ -237,7 +237,7 @@ namespace nonlinearsigma{
                             QLcos += -2.*M_PI;
                             std::cout << "QLcos = " << QLcos << std::endl;
                         }
-                        if (QLcos == -1.*QLsin){
+                        if (std::abs(QLcos + QLsin) > 1e-15){
                             QLcos = -1.*QLcos;
                             std::cout << "QLcos = " << QLcos << std::endl;
                         }
