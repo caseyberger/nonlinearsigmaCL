@@ -133,6 +133,7 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         //double phi_tot = 0.;
         double phi_tot(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:phi_tot)
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
                 phi_tot += Lattice::getPhiMag(i, j);
@@ -227,6 +228,7 @@ namespace nonlinearsigma{
         //If you are off by 1/2 or 2, check here first
         //double A_L = 0.0;
         double A_L(0.);
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:A_L)
         for (int i = 0; i<length_; i++)
         {
             for (int j = 0; j<length_; j++)
@@ -274,9 +276,10 @@ namespace nonlinearsigma{
     double Lattice::calcXi(){
         //double Xi = 0.;
         double Xi(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:Xi)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                Xi += twoPointG(i, j);
+                Xi += Lattice::twoPointG(i, j);
             }
         }
         return Xi;
@@ -286,10 +289,11 @@ namespace nonlinearsigma{
         //double F_Re = 0.;
         //double F_Im = 0.;
         double F_Re(0.),F_Im(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:F_Re,F_Im)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                F_Re += 0.5*twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
-                F_Im += 0.5*twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
+                F_Re += 0.5*Lattice::twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
+                F_Im += 0.5*Lattice::twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
             }
         }
         static double F[2] = {F_Re, F_Im};
