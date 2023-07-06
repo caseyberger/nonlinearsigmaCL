@@ -235,7 +235,7 @@ namespace nonlinearsigma{
                     }//choose arccos version and add to Q_L 
                     
 #ifdef EXTREME_TESTING_MODE
-                    if not (QLcos == QLsin){
+                    if (QLcos != QLsin){
                        std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
