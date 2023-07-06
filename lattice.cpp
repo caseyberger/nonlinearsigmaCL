@@ -209,7 +209,7 @@ namespace nonlinearsigma{
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 for (int n = 0; n < 8; n++){ 
-                    double rho, QLcos, QLsin;
+                    double rho, rho2, QLc, QLs, QLcos, QLsin;
                     int i1 = triangles_[i][j][n][0][0];
                     int j1 = triangles_[i][j][n][0][1];
                     int i2 = triangles_[i][j][n][1][0];
@@ -220,13 +220,16 @@ namespace nonlinearsigma{
                     Lattice::field phi2 = Lattice::getPhi(i2,j2);
                     Lattice::field phi3 = Lattice::getPhi(i3,j3);
                     
-                    rho = std::sqrt(2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1)));
-                    QLcos = std::acos((1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho)/(2.*M_PI);
-                    QLsin = std::asin(dot(phi1,cross(phi2,phi3))/rho)/(2.*M_PI);
+                    rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
+                    rho = std::sqrt(rho2);
+                    QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
+                    QLcos = std::acos(QLc)/(2.*M_PI);
+                    QLs = dot(phi1,cross(phi2,phi3))/rho;
+                    QLsin = std::asin(QLs)/(2.*M_PI);
                     
-                    std::cout << "Before changing QLcos:"<< std::endl;
-                    std::cout << "QLcos = " << QLcos << std::endl;
-                    std::cout << "QLsin = " << QLsin << std::endl;
+                    //std::cout << "Before changing QLcos:"<< std::endl;
+                    //std::cout << "QLcos = " << QLcos << std::endl;
+                    //std::cout << "QLsin = " << QLsin << std::endl;
                     
                     if (use_arcsin){ 
                         Q_L += QLsin;
@@ -235,13 +238,13 @@ namespace nonlinearsigma{
                         //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
                         if (QLcos > 0.5*M_PI){
                             QLcos += -2.*M_PI;
-                            std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
+                            //std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
                         }
                         if (std::abs(QLcos + QLsin) < 1e-15){
                             QLcos = -1.*QLcos;
-                            std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
+                            //std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
                         }
-                        std::cout << "QLcos = " << QLcos << std::endl;
+                        //std::cout << "QLcos = " << QLcos << std::endl;
                         Q_L += QLcos;
                     }//choose arccos version and add to Q_L 
                     
