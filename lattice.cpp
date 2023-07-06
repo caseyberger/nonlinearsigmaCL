@@ -30,9 +30,9 @@ namespace nonlinearsigma{
     //other public functions
     void Lattice::setLength(int length){
         //tested 6/1/2023
-        //if you do this after initializing, you must reinitialize!
         length_ = length;
         Lattice::generateFilename_();
+        Lattice::initialize();
     }
     
     void Lattice::setBeta(double beta){
