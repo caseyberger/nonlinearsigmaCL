@@ -240,7 +240,7 @@ namespace nonlinearsigma{
                             QLcos += -2.*M_PI;
                             //std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
                         }
-                        if (std::abs(QLcos + QLsin) < 1e-15){
+                        if (std::abs(QLcos + QLsin) < 1e-13){
                             QLcos = -1.*QLcos;
                             //std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
                         }
@@ -249,7 +249,7 @@ namespace nonlinearsigma{
                     }//choose arccos version and add to Q_L 
                     
 #ifdef EXTREME_TESTING_MODE
-                    if (std::abs(QLcos - QLsin) > 1e-15){
+                    if (std::abs(QLcos - QLsin) > 1e-13){
                         std::cout << "QLcos - QLsin = " << (QLcos - QLsin) << std::endl;
                         std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
