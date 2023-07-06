@@ -202,7 +202,7 @@ namespace nonlinearsigma{
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
         bool use_arcsin = true;//uses arcsine to find QL for each triangle
-#ifdef EXTREME_TESTING_MODE
+#ifdef CHECK_QL_COS
         use_arcsin = false; //set to use arccos when testing to check they are the same (modifying domain of arccos)
         std::cout << "using arccosine to calculate QL for triangles" << std::endl;
 #endif  
@@ -226,10 +226,11 @@ namespace nonlinearsigma{
                     QLcos = std::acos(QLc)/(2.*M_PI);
                     QLs = dot(phi1,cross(phi2,phi3))/rho;
                     QLsin = std::asin(QLs)/(2.*M_PI);
-                    
-                    //std::cout << "Before changing QLcos:"<< std::endl;
-                    //std::cout << "QLcos = " << QLcos << std::endl;
-                    //std::cout << "QLsin = " << QLsin << std::endl;
+#ifdef CHECK_QL_COS
+                    std::cout << "Before changing QLcos:"<< std::endl;
+                    std::cout << "QLcos = " << QLcos << std::endl;
+                    std::cout << "QLsin = " << QLsin << std::endl;
+#endif
                     
                     if (use_arcsin){ 
                         Q_L += QLsin;
@@ -238,21 +239,26 @@ namespace nonlinearsigma{
                         //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
                         if (QLcos > 0.5*M_PI){
                             QLcos += -2.*M_PI;
-                            //std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
+#ifdef CHECK_QL_COS
+                            std::cout << "QLcos modified by subtracting 2pi, QLcos = " << QLcos << std::endl;
+#endif
                         }
                         if (std::abs(QLcos + QLsin) < 1e-13){
                             QLcos = -1.*QLcos;
-                            //std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
+#ifdef CHECK_QL_COS
+                            std::cout << "QLcos modified by swapping sign, QLcos = " << QLcos << std::endl;
+#endif
                         }
-                        //std::cout << "QLcos = " << QLcos << std::endl;
                         Q_L += QLcos;
                     }//choose arccos version and add to Q_L 
                     
-#ifdef EXTREME_TESTING_MODE
+#ifdef CHECK_QL_COS
                     if (std::abs(QLcos - QLsin) > 1e-13){
                         std::cout << "QLcos - QLsin = " << (QLcos - QLsin) << std::endl;
                         std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
+#endif
+#ifdef EXTREME_TESTING_MODE
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
                         std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
                     }//check if the local QL is in the correct range
