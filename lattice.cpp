@@ -225,17 +225,25 @@ namespace nonlinearsigma{
                     QLsin = std::asin(dot(phi1,cross(phi2,phi3))/rho)/(2.*M_PI);
                     
                     if (use_arcsin){
+                        std::cout << "QLsin = " << QLsin << std::endl;
                         Q_L += QLsin;
                     }//choose arcsin version and add to Q_L
                     else{
                         //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-                        if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
-                        if (QLcos == -1.*QLsin){QLcos = -1.*QLcos;}
+                        if (QLcos > 0.5*M_PI){
+                            QLcos += -2.*M_PI;
+                            std::cout << "QLcos = " << QLcos << std::endl;
+                        }
+                        if (QLcos == -1.*QLsin){
+                            QLcos = -1.*QLcos;
+                            std::cout << "QLcos = " << QLcos << std::endl;
+                        }
+                        std::cout << "QLcos = " << QLcos << std::endl;
                         Q_L += QLcos;
                     }//choose arccos version and add to Q_L 
                     
 #ifdef EXTREME_TESTING_MODE
-                    if (QLcos != QLsin){
+                    if ((QLcos - QLsin) != 0.0){
                        std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
