@@ -204,6 +204,7 @@ namespace nonlinearsigma{
         bool use_arcsin = true;//uses arcsine to find QL for each triangle
 #ifdef EXTREME_TESTING_MODE
         use_arcsin = false; //set to use arccos when testing to check they are the same (modifying domain of arccos)
+        std::cout << "using arccosine to calculate QL for triangles" << std::endl;
 #endif  
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
@@ -223,15 +224,18 @@ namespace nonlinearsigma{
                     QLcos = std::acos((1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho)/(2.*M_PI);
                     QLsin = std::asin(dot(phi1,cross(phi2,phi3))/rho)/(2.*M_PI);
                     
-                    if (use_arcsin){Q_L += QLsin;}
-                    else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-                        if (QLcos > 0.5*M_PI){QLcos -= 2.*M_PI;}
-                        else if (QLcos == -1.*QLsin){QLcos *= -1.;}
+                    if (use_arcsin){
+                        Q_L += QLsin;
+                    }//choose arcsin version and add to Q_L
+                    else{
+                        //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
+                        if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
+                        if (QLcos == -1.*QLsin){QLcos = -1.*QLcos;}
                         Q_L += QLcos;
-                    }//choose arcsin or arccos version of QL and add to Q_L 
+                    }//choose arccos version and add to Q_L 
                     
 #ifdef EXTREME_TESTING_MODE
-                    if (QLcos != QLsin){
+                    if not (QLcos == QLsin){
                        std::cout << "QLcos and QLsin not equal. QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
                     }//check if the two versions are equivalent
                     if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
