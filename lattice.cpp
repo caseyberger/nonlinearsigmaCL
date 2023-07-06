@@ -32,8 +32,8 @@ namespace nonlinearsigma{
     //other public functions
     void Lattice::setLength(int length){
         //tested 6/1/2023
-        //if you do this after initializing, you must reinitialize!
         length_ = length;
+        Lattice::initialize();
         Lattice::generateFilename_();
     }
     
@@ -201,7 +201,7 @@ namespace nonlinearsigma{
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
         double Q_L = 0.0;
-        bool use_arcsin = true;//uses arcsine to find QL for each triangle
+        bool use_arcsin = false;//uses arcsine to find QL for each triangle
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 for (int n = 0; n < 8; n++){ 
@@ -223,7 +223,7 @@ namespace nonlinearsigma{
                     if (use_arcsin){Q_L += QLsin;}
                     else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
                         if (QLcos > 0.5*M_PI){QLcos -= 2.*M_PI;}
-                        else if (QLcos == - QLsin){QLcos *= -1.;}
+                        else if (QLcos == -1.*QLsin){QLcos *= -1.;}
                         Q_L += QLcos;
                     }//choose arcsin or arccos version of QL and add to Q_L 
                     
@@ -240,8 +240,9 @@ namespace nonlinearsigma{
         }//loop over i
         
 #ifdef EXTREME_TESTING_MODE
+        std::cout << "QL = " << Q_L << std::endl;
         if (std::abs(std::remainder(Q_L,1)) > 0.001){
-            std::cout << "QL not an integer value: " << Q_L << std::endl;
+            std::cout << "QL not an integer value." << std::endl;
         }//check if we get an integer for QL
 #endif
         return Q_L;
