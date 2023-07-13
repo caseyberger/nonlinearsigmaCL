@@ -1,0 +1,15 @@
+/beegfs/fast/bergerlab/nonlinearsigmaCL/run_7_6_23/nlsigma_data_L_180_beta_1.6_itheta_0.125_nMC_10000_ntherm_4000_freq_100
+phygrid02
+Thu Jul  6 17:45:46 EDT 2023
+Starting clock.
+len = 180
+beta = 1.6
+itheta = 0.392699
+ntherm = 4000
+nMC = 10000
+step frequency = 100
+Constructing lattice
+Initializing lattice
+Starting thermalization loop of length 4000
+Thermalization loop duration: 4980.03 minutes.
+Starting Monte Carlo loop of length 10000

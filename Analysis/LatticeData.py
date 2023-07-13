@@ -8,7 +8,7 @@ class LatticeData:
                  palette = "viridis"):
         self.path = os.getcwd()+datadir #select location of data
         self.header = header #set the start of the filename for the data files
-        self.Ghead = Gheader
+        self.Gheader = Gheader
         self.tol = tol
         self.palette = palette #option to change seaborn palette
         self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L']
@@ -18,7 +18,7 @@ class LatticeData:
         data_files = []
         file_header = self.header
         if corr:
-            file_header = self.Ghead
+            file_header = self.Gheader
         for file in os.listdir(self.path):
             if file.startswith(file_header):
                 data_files.append(self.path+file)
