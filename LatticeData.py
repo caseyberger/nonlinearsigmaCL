@@ -5,7 +5,7 @@ import pandas as pd
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
                  Gheader = "Gij_avg_nonlinearsigma_data", tol = 0.00001,
-                 palette = "flare"):
+                 palette = "viridis"):
         self.path = os.getcwd()+datadir #select location of data
         self.header = header #set the start of the filename for the data files
         self.Ghead = Gheader

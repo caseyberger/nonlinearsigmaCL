@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: June 21, 2023
+// Last edited: July 6 - reverted back to July 4 version then added openmp
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -10,6 +10,7 @@
 #include <algorithm>  // shuffle
 #include <random> //default_random_engine
 #include <array> 
+#include <omp.h>
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
@@ -30,9 +31,9 @@ namespace nonlinearsigma{
     //other public functions
     void Lattice::setLength(int length){
         //tested 6/1/2023
-        //if you do this after initializing, you must reinitialize!
         length_ = length;
         Lattice::generateFilename_();
+        Lattice::initialize();
     }
     
     void Lattice::setBeta(double beta){
@@ -49,12 +50,14 @@ namespace nonlinearsigma{
     
     void Lattice::setPhi(int i, int j, Lattice::field phi){
         //tested 6/5/2023
+        //optimization target -- remove this function
         grid_[i][j][0] = phi[0];
         grid_[i][j][1] = phi[1];
         grid_[i][j][2] = phi[2];
     }
     
     void Lattice::setAvgG(int i, int j, double Gij){
+        //optimization target -- remove this function
         Gij_[i][j]= Gij;
     }
     
@@ -120,14 +123,17 @@ namespace nonlinearsigma{
     
     double Lattice::getPhiMag(int i, int j){
         //tested 6/1/2023
-        field phi = Lattice::getPhi(i,j);
+        //field phi = Lattice::getPhi(i,j);
+        field phi(Lattice::getPhi(i,j));//optimization 7/4/23
         double phi_mag = dot(phi,phi);
         return phi_mag;
     }
     
     double Lattice::getPhiTot(){
         //tested 6/1/2023
-        double phi_tot = 0.;
+        //double phi_tot = 0.;
+        double phi_tot(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:phi_tot)
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
                 phi_tot += Lattice::getPhiMag(i, j);
@@ -137,7 +143,8 @@ namespace nonlinearsigma{
     }
     
     double Lattice::getAvgG(int i, int j){
-        double Gij = Gij_[i][j];
+        //double Gij = Gij_[i][j];
+        double Gij(Gij_[i][j]);//optimization 7/4/23
         return Gij;
     }
     
@@ -198,8 +205,11 @@ namespace nonlinearsigma{
         //calculates topological charge -- note this does not produce integer values!
         //This Q_L is not renormalized. You can renormalize it later with Z 
         //is renormalizing what will make it an integer?
-        double Q_L = 0.0;
-        bool use_arccos = true;//uses arccos to find QL for each triangle
+        //double Q_L = 0.0;
+        double Q_L(0.);//optimization 7/4/23
+        //bool use_arccos = true;//uses arccos to find QL for each triangle
+        bool use_arccos(false);//optimization 7/4/23
+        #pragma omp parallel for collapse(3) default(none) shared(length_,use_arccos) reduction(+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 //Lattice::checkQL(i, j);
@@ -216,13 +226,17 @@ namespace nonlinearsigma{
         //calculates the standard lattice action A_L
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
-        double A_L = 0.0;
+        //double A_L = 0.0;
+        double A_L(0.);
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:A_L)
         for (int i = 0; i<length_; i++)
         {
             for (int j = 0; j<length_; j++)
             {
-                Lattice::field phi = Lattice::getPhi(i,j);
-                std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                //Lattice::field phi = Lattice::getPhi(i,j);
+                Lattice::field phi(Lattice::getPhi(i,j)); //optimization 7/4/23
+                //std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
+                std::array < Lattice::field, 4> phiNN(Lattice::getNeighborPhis_(i,j));//optimization 7/4/23
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
@@ -235,42 +249,51 @@ namespace nonlinearsigma{
     double Lattice::calcSL(){
         //tested 6/1/2023
         //calculates the full lattice action S_L = A_L - i theta Q_L
-        //not sure yet how to deal with the imaginary part, 
-        //so right now I'm making one variable called itheta that will be real 
-        //and analytically continued to imaginary values 
+        //optimization target -- remove this function
         double S_L = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
         return S_L;
     }
     
     double Lattice::twoPointG(int i, int j){
-        Lattice::field phi_00 = Lattice::getPhi(0,0);
-        Lattice::field phi_ij = Lattice::getPhi(i,j);
-        double G = 0;
-        G = dot(phi_00, phi_ij);
-        double oldAvgG = Lattice::getAvgG(i, j);
-        int n = acceptCount_+rejectCount_;
+        //Lattice::field phi_00 = Lattice::getPhi(0,0);
+        Lattice::field phi_00(Lattice::getPhi(0,0));//optimization 7/4/23
+        //Lattice::field phi_ij = Lattice::getPhi(i,j);
+        Lattice::field phi_ij(Lattice::getPhi(i,j));//optimization 7/4/23
+        //double G = 0.;
+        double G(dot(phi_00, phi_ij));//optimization 7/4/23
+        //double oldAvgG = Lattice::getAvgG(i, j);
+        double oldAvgG(Lattice::getAvgG(i, j));//optimization 7/4/23
+        //int n = acceptCount_+rejectCount_;
+        int n(acceptCount_+rejectCount_);//optimization 7/4/23
         double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
-        Lattice::setAvgG(i,j,newAvgG);
+        //Lattice::setAvgG(i,j,newAvgG);
+        //optimization: remove function call for simple function
+        Gij_[i][j] = newAvgG;
+        //end optimization
         return G;
     }
     
     double Lattice::calcXi(){
-        double Xi = 0.;
+        //double Xi = 0.;
+        double Xi(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:Xi)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                Xi += twoPointG(i, j);
+                Xi += Lattice::twoPointG(i, j);
             }
         }
         return Xi;
     }
     
     double* Lattice::calcF(){
-        double F_Re = 0.;
-        double F_Im = 0.;
+        //double F_Re = 0.;
+        //double F_Im = 0.;
+        double F_Re(0.),F_Im(0.);//optimization 7/4/23
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:F_Re,F_Im)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                F_Re += 0.5*twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
-                F_Im += 0.5*twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
+                F_Re += 0.5*Lattice::twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
+                F_Im += 0.5*Lattice::twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
             }
         }
         static double F[2] = {F_Re, F_Im};
@@ -281,22 +304,37 @@ namespace nonlinearsigma{
     void Lattice::metropolisStep(){
         //tested 6/5/2023
         double Si, Sf, dS, r;
+        Lattice::field phi_old, phi_new;
         
-        int nsites = length_*length_;
+        //int nsites = length_*length_;
+        int nsites(length_*length_); //optimization 7/4/23
         std::vector<int> site_arr(nsites);
         std::iota(site_arr.begin(), site_arr.end(), 0);     
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
-            int i = site_arr[n]/length_;
-            int j = site_arr[n]%length_;
-            Si = Lattice::calcSL();
-            Lattice::field phi_old = Lattice::getPhi(i, j);
+            //int i = site_arr[n]/length_;
+            int i(site_arr[n]/length_);//optimization 7/4/23
+            //int j = site_arr[n]%length_;
+            int j(site_arr[n]%length_);//optimization 7/4/23
+            //Si = Lattice::calcSL();
+            //optimization: remove function call for simple function
+            Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            //end optimization
+            phi_old = Lattice::getPhi(i, j);
 
             //update lattice
-            Lattice::field phi_new = Lattice::makePhi_();
-            Lattice::setPhi(i, j, phi_new);
-            Sf = Lattice::calcSL();
+            phi_new = Lattice::makePhi_();
+            //Lattice::setPhi(i, j, phi_new);
+            //optimization: remove function call for simple function
+            grid_[i][j][0] = phi_new[0];
+            grid_[i][j][1] = phi_new[1];
+            grid_[i][j][2] = phi_new[2];
+            //end optimization
+            //Sf = Lattice::calcSL();
+            //optimization: remove function call for simple function
+            Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            //end optimization
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
             r = 0.5;
@@ -307,7 +345,13 @@ namespace nonlinearsigma{
                 acceptCount_++;//increment accept counter
             }
             else{
-                Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
+                
+                //Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
+                //optimization: remove function call for simple function
+                grid_[i][j][0] = phi_old[0];
+                grid_[i][j][1] = phi_old[1];
+                grid_[i][j][2] = phi_old[2];
+                //end optimization
                 rejectCount_++;//increment reject counter
             }
         }//loop over sites
@@ -369,8 +413,8 @@ namespace nonlinearsigma{
         phi[1] = std::sin(inclination) * std::sin(azimuth);
         phi[2] = std::cos(inclination);
         
-        r1_ = r1;//save for debugging
-        r2_ = r2;//save for debugging
+        r1_ = r1;//save for debugging -- consider wrapping in a #ifndef statement for optimization
+        r2_ = r2;//save for debugging -- consider wrapping in a #ifndef statement for optimization
         return phi;
     }
     
@@ -395,9 +439,12 @@ namespace nonlinearsigma{
             for (int j = 0; j<length_; j++){
                 site_triangles local_triangles;
                 //triangle 1
-                Lattice::vertex v1 = {i,j};
-                Lattice::vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
-                Lattice::vertex v3 = {Lattice::plusOne_(i),j};
+                //Lattice::vertex v1 = {i,j};
+                Lattice::vertex v1({i,j});//optimization 7/4/23
+                //Lattice::vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
+                Lattice::vertex v2({Lattice::plusOne_(i),Lattice::minusOne_(j)});//optimization 7/4/23
+                //Lattice::vertex v3 = {Lattice::plusOne_(i),j};
+                Lattice::vertex v3({Lattice::plusOne_(i),j});//optimization 7/4/23
                 local_triangles[0] = {v1, v2, v3};
                 
                 //triangle 2
@@ -447,18 +494,26 @@ namespace nonlinearsigma{
     double Lattice::locQL_(int i, int j, int n, bool use_arccos){
         //tested 6/1/2023
         //Calculates QL on the nth triangle with central vertex i,j
-        double rho, rho2, QLc, QLs;
-        int i1 = triangles_[i][j][n][0][0];
-        int j1 = triangles_[i][j][n][0][1];
-        int i2 = triangles_[i][j][n][1][0];
-        int j2 = triangles_[i][j][n][1][1];
-        int i3 = triangles_[i][j][n][2][0];
-        int j3 = triangles_[i][j][n][2][1];
-        Lattice::field phi1 = Lattice::getPhi(i1,j1);
-        Lattice::field phi2 = Lattice::getPhi(i2,j2);
-        Lattice::field phi3 = Lattice::getPhi(i3,j3);
-        rho2 = 2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1));
-        rho = std::sqrt(rho2);
+        double rho, QLc, QLs;
+        //int i1 = triangles_[i][j][n][0][0];
+        int i1(triangles_[i][j][n][0][0]);//optimization 7/4/23
+        //int j1 = triangles_[i][j][n][0][1];
+        int j1(triangles_[i][j][n][0][1]);//optimization 7/4/23
+        //int i2 = triangles_[i][j][n][1][0];
+        int i2(triangles_[i][j][n][1][0]);//optimization 7/4/23
+        //int j2 = triangles_[i][j][n][1][1];
+        int j2(triangles_[i][j][n][1][1]);//optimization 7/4/23
+        //int i3 = triangles_[i][j][n][2][0];
+        int i3(triangles_[i][j][n][2][0]);//optimization 7/4/23
+        //int j3 = triangles_[i][j][n][2][1];
+        int j3(triangles_[i][j][n][2][1]);//optimization 7/4/23
+        //Lattice::field phi1 = Lattice::getPhi(i1,j1);
+        Lattice::field phi1(Lattice::getPhi(i1,j1));//optimization 7/4/23
+        //Lattice::field phi2 = Lattice::getPhi(i2,j2);
+        Lattice::field phi2(Lattice::getPhi(i2,j2));//optimization 7/4/23
+        //Lattice::field phi3 = Lattice::getPhi(i3,j3);
+        Lattice::field phi3(Lattice::getPhi(i3,j3));//optimization 7/4/23
+        rho = std::sqrt(2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1)));
         QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
         QLs = dot(phi1,cross(phi2,phi3))/rho;
         double QLcos = std::acos(QLc)/(2.*M_PI);
@@ -468,7 +523,7 @@ namespace nonlinearsigma{
             if (QLcos > 0.5*M_PI){
                 return QLcos - 2*M_PI;
             }
-            else if (QLcos = - QLsin){
+            else if (QLcos == - QLsin){
                 return -QLcos;
             }
             else{

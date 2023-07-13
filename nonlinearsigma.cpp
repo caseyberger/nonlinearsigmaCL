@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: June 21, 2023
+// Last edited: July 5, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -13,6 +13,7 @@
 #include <fstream> //fout
 #include <string> //string
 #include <sstream> //stringstream for logfile
+#include <omp.h> //openMP
 
 //custom header files
 #include "lattice.h"
@@ -399,11 +400,7 @@ void testing_suite(int len, double beta, double itheta){
     //testing lattice quantities
     cout << "Testing lattice calculations. " << endl;
     double QL, AL, SL;
-    for(int i = 0; i < len; i++){
-        for (int j = 0; j<len; j++){
-            L.checkQL(i, j);
-        }
-    }
+    
     L.setLength(2);
     L.setBeta(1.);
     L.setiTheta(M_PI);
@@ -490,15 +487,31 @@ void testing_suite(int len, double beta, double itheta){
     cout << "Metropolis testing, step 1" << endl;
     L.metropolisStep();
     L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     cout << "Metropolis testing, step 2" << endl;
     L.metropolisStep();
     L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     cout << "Metropolis testing, step 3" << endl;
     L.metropolisStep();
     L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     cout << "Metropolis testing, step 4" << endl;
     L.metropolisStep();
     L.printLattice();
+    AL = L.calcAL();
+    QL = L.calcQL();
+    SL = L.calcSL();
+    cout << "AL = " << AL << ", QL = " << QL << ", SL = AL - itheta QL = " << SL << endl << endl;
     cout << "Acceptance rate = " << L.acceptanceRate() << endl;
     L.zeroCount();
     L.thermalize();

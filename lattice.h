@@ -1,9 +1,11 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: June 16, 2023
+// Last edited: July 6, 2023 - reverted back to July 4 version, then added openmp
 #include <array>
 #include <vector>
+#include <omp.h>
 #pragma once
+
 
 namespace nonlinearsigma{
     class Lattice {
@@ -95,5 +97,3 @@ namespace nonlinearsigma{
         void generateFilename_();
     };  
 }
-
-
