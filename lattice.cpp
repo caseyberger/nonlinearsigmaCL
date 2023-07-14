@@ -190,7 +190,6 @@ namespace nonlinearsigma{
         std::cout << triangles_[i][j][1][0][0] << ","<< triangles_[i][j][1][0][1] << "), (";
         std::cout << triangles_[i][j][1][1][0] << ","<< triangles_[i][j][1][1][1] << "), (";
         std::cout << triangles_[i][j][1][2][0] << ","<< triangles_[i][j][1][2][1]<< ")" << std::endl;
-        }
     }
     
     void Lattice::printNeighbors(int i, int j){
