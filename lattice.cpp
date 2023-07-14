@@ -548,6 +548,11 @@ namespace nonlinearsigma{
             bool use_sine = false;
             QLcos = Lattice::locQL_(i,j,n,use_cosine);
             QLsin = Lattice::locQL_(i,j,n,use_sine);
+            //adjust arccos to match arcsin domain
+            if (QLcos > 0.5*M_PI){QLcos -= 2*M_PI;}
+            if (QLcos == - QLsin){QLcos *= -1.;}
+            
+            //check if they are equivalent
             if (QLcos != QLsin){
                 std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
             }
