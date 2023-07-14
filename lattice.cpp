@@ -555,6 +555,9 @@ namespace nonlinearsigma{
             if (std::abs(QLcos - QLsin) > tol){
                 std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
             }
+            else{
+                std::cout << "QLcos = QLsin = " << QLsin << std::endl;
+            }
             if (QLsin > 0.5 || QLsin < -0.5){
                 std::cout << "QL of triangle outside range [-1/2,1/2]: " << QLsin << std::endl;
             }
