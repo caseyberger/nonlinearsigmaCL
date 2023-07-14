@@ -27,6 +27,7 @@ namespace nonlinearsigma{
         void setnTherm(int ntherm);
         void setnMC(int nMC);
         void setFreq(int freq);
+        void setTrig(bool use_arcsin);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
         
@@ -77,6 +78,7 @@ namespace nonlinearsigma{
         double r1_;
         double r2_;
         bool fixedr_;
+        bool use_arcsin_;
         int nTherm_;
         int nMC_;
         int freq_;

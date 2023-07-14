@@ -68,6 +68,10 @@ int main (int argc, char *argv[])
     L.setnTherm(ntherm);
     L.setnMC(nMC);
     L.setFreq(step_freq);
+    
+#ifdef CHECK_QL_COS
+    L.setTrig(false);
+#endif
 
     cout << "Initializing lattice" << endl;
     L.initialize(); //initialize 3-component phi everywhere

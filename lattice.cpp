@@ -28,6 +28,7 @@ namespace nonlinearsigma{
         
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
+        use_arcsin_ = true;
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -70,6 +71,10 @@ namespace nonlinearsigma{
     void Lattice::setFreq(int freq){
         freq_ = freq;
         Lattice::generateFilename_();
+    }
+    
+    void Lattice::setTrig(bool use_arcsin){
+        use_arcsin_ = use_arcsin;
     }
     
     void Lattice::fixRNG(double r1, double r2){
@@ -207,14 +212,13 @@ namespace nonlinearsigma{
         //updated 7/14/2023 to deal with new triangles
         //calculates topological charge
         double Q_L(0.);//optimization 7/4/23
-        bool use_arcsin(true);
-        #pragma omp parallel for collapse(2) default(none) shared(length_,use_arcsin) reduction(+:Q_L)
+        #pragma omp parallel for collapse(2) default(none) shared(length_,use_arcsin_) reduction(+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
                 //add triangle 1 at this vertex
-                Q_L += Lattice::locQL_(i, j, 0, use_arcsin);
+                Q_L += Lattice::locQL_(i, j, 0, use_arcsin_);
                 //add triangle 2 at this vertex
-                Q_L += Lattice::locQL_(i, j, 1, use_arcsin);
+                Q_L += Lattice::locQL_(i, j, 1, use_arcsin_);
             }//loop over j
         }//loop over i
         return Q_L;
