@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: July 5, 2023
+// Last edited: July 14, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -67,6 +67,7 @@ int main (int argc, char *argv[])
     Lattice L(len, beta, itheta);//construct lattice
     L.setnTherm(ntherm);
     L.setnMC(nMC);
+    L.setFreq(step_freq);
 
     cout << "Initializing lattice" << endl;
     L.initialize(); //initialize 3-component phi everywhere

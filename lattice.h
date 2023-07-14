@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: July 6, 2023 - reverted back to July 4 version, then added openmp
+// Last edited: July 14, 2023
 #include <array>
 #include <vector>
 #include <omp.h>
