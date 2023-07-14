@@ -550,14 +550,13 @@ namespace nonlinearsigma{
             QLsin = Lattice::locQL_(i,j,n,use_sine);
             //adjust arccos to match arcsin domain
             if (QLcos > 0.5*M_PI){QLcos -= 2*M_PI;}
-            if (QLcos == - QLsin){QLcos *= -1.;}
-            
+            if (std::abs(QLcos + QLsin) < tol){QLcos = -1.*QLcos;}
             //check if they are equivalent
-            if (QLcos != QLsin){
+            if (std::abs(QLcos - QLsin) > tol){
                 std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
             }
-            if (QLsin > 0.5*M_PI || QLsin < -0.5*M_PI){
-                std::cout << "QL of triangle outside range [-pi/2,pi/2]: " << QLsin << std::endl;
+            if (QLsin > 0.5 || QLsin < -0.5){
+                std::cout << "QL of triangle outside range [-1/2,1/2]: " << QLsin << std::endl;
             }
             QLtot += QLsin;
         }
