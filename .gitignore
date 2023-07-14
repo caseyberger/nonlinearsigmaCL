@@ -1,2 +1,5 @@
-lattice.o mathlib.o nonlinearsigma.o
+*.o
 .ipynb_checkpoints/
+run_*
+*.log
+*.gcno
