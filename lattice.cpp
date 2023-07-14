@@ -448,6 +448,7 @@ namespace nonlinearsigma{
     double Lattice::locQL_(int i, int j, int n, bool use_arcsin){
         //updated 7/14/2023 for new triangles
         //Calculates QL on the nth triangle with central vertex i,j
+        double tol = 1.0e-5;
         double rho, QLc, QLs;
         int i1(triangles_[i][j][n][0][0]);
         int j1(triangles_[i][j][n][0][1]);
