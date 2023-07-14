@@ -51,11 +51,12 @@ class LatticeData:
         file = file[:-4]
         temp = file.split("_")
         pdict = dict()
-        pdict[temp[-2]] = int(temp[-1]) #nMc
-        pdict[temp[-4]] = int(temp[-3]) #ntherm
-        pdict[temp[-6]] = float(temp[-5]) #itheta
-        pdict[temp[-8]] = float(temp[-7]) #beta
-        pdict["length"] = int(temp[-9]) #length
+        pdict[temp[-2]] = int(temp[-1]) #frequency
+        pdict[temp[-4]] = int(temp[-3]) #nMc
+        pdict[temp[-6]] = int(temp[-5]) #ntherm
+        pdict[temp[-8]] = float(temp[-7]) #itheta
+        pdict[temp[-10]] = float(temp[-9]) #beta
+        pdict["length"] = int(temp[-11]) #length
         return pdict
     
     def all_params(self):
@@ -187,10 +188,10 @@ class LatticeData:
     
     def autocorrelation(self, df, norm = True):
         for observable in self.observables:
-            df["acf_"+observable] = self.autocorr_func_1d(df[observable], norm)
+            df["acf_"+observable] = self.autocorr_func_1d(df[observable], norm=norm)
         return df
     
     def ta(self,data_array):
-        acf = self.autocorr_func_1d(data_array, norm=True)
+        acf = self.autocorr_func_1d(data_array, norm=False)#switch back to true
         decorr = np.where(acf < 0.3)
         return decorr[0][1]
