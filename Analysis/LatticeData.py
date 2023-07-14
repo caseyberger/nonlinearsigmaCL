@@ -1,18 +1,41 @@
 import os
+import shutil
 import numpy as np
 import pandas as pd
 
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
-                 Gheader = "Gij_avg_nonlinearsigma_data", tol = 0.00001,
-                 palette = "viridis"):
+                 dirheader = "nlsigma_data", Gheader = "Gij_avg_nonlinearsigma_data", 
+                 tol = 0.00001, palette = "viridis"):
         self.path = os.getcwd()+datadir #select location of data
         self.header = header #set the start of the filename for the data files
+        self.dirheader = dirheader #set the start of the data directory name from the runs
         self.Gheader = Gheader
         self.tol = tol
         self.palette = palette #option to change seaborn palette
         self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L']
         self.parameters = ["itheta", "beta", "length","nMC", "ntherm"]
+        
+    def collect_data(self, src_dir):
+        src_path = os.getcwd()+src_dir
+        dst_path = self.path
+        for item in os.listdir(src_path):
+            if item.startswith(self.dirheader):
+                dir_path = src_path+item
+                nMC = int(item.split("_")[-5])
+                freq = int(item.split("_")[-1])
+                for file in os.listdir(dir_path):
+                    file_path = dir_path+"/"+file
+                    if file.startswith(self.header):
+                        f = open(file_path, "r")
+                        len_file = int(len(f.readlines()))
+                        len_complete = int(nMC/freq +1)
+                        if len_file == len_complete:
+                            shutil.copyfile(file_path, dst_path+file)
+                        else:
+                            print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
+                    elif file.startswith(self.Gheader):
+                        shutil.copyfile(file_path, dst_path+file)
         
     def get_data_files(self, corr = False):
         data_files = []
