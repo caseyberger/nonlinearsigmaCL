@@ -404,12 +404,7 @@ void testing_suite(int len, double beta, double itheta){
     cout << "Testing QL from arccos and arcsin" << endl;
     testlen = 10;
     L.setLength(testlen);
-    L.printLattice();
-    for (int i = 0; i < testlen; i++){
-        for (int j = 0; j < testlen; j++){
-            L.checkQL(i,j);
-        }
-    }
+    L.checkQL();
     cout << endl;
     
     

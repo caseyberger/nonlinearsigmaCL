@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: July 14, 2023
+// Last edited: July 14, 2023 - triangles
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -55,11 +55,6 @@ namespace nonlinearsigma{
         grid_[i][j][0] = phi[0];
         grid_[i][j][1] = phi[1];
         grid_[i][j][2] = phi[2];
-    }
-    
-    void Lattice::setAvgG(int i, int j, double Gij){
-        //optimization target -- remove this function
-        Gij_[i][j]= Gij;
     }
     
     void Lattice::setnTherm(int ntherm){
@@ -185,13 +180,16 @@ namespace nonlinearsigma{
     }
     
     void Lattice::printTriangles(int i, int j){
-        //tested 6/1/2023
+        //updated 7/14/2023
         std::cout << "At point (" << i << "," << j << ")," << std::endl;
-        for (int n = 0; n < 8; n++){
-            std::cout << "Triangle "<< n + 1 << " = (";
-            std::cout << triangles_[i][j][n][0][0] << ","<< triangles_[i][j][n][0][1] << "), (";
-            std::cout << triangles_[i][j][n][1][0] << ","<< triangles_[i][j][n][1][1] << "), (";
-            std::cout << triangles_[i][j][n][2][0] << ","<< triangles_[i][j][n][2][1]<< ")" << std::endl;
+        std::cout << "Triangle 1 = (";
+        std::cout << triangles_[i][j][0][0][0] << ","<< triangles_[i][j][0][0][1] << "), (";
+        std::cout << triangles_[i][j][0][1][0] << ","<< triangles_[i][j][0][1][1] << "), (";
+        std::cout << triangles_[i][j][0][2][0] << ","<< triangles_[i][j][0][2][1]<< ")" << std::endl;
+        std::cout << "Triangle 2 = (";
+        std::cout << triangles_[i][j][1][0][0] << ","<< triangles_[i][j][1][0][1] << "), (";
+        std::cout << triangles_[i][j][1][1][0] << ","<< triangles_[i][j][1][1][1] << "), (";
+        std::cout << triangles_[i][j][1][2][0] << ","<< triangles_[i][j][1][2][1]<< ")" << std::endl;
         }
     }
     
@@ -207,21 +205,17 @@ namespace nonlinearsigma{
     }
     
     double Lattice::calcQL(){
-        //tested 6/1/2023
-        //calculates topological charge -- note this does not produce integer values!
-        //This Q_L is not renormalized. You can renormalize it later with Z 
-        //is renormalizing what will make it an integer?
-        //double Q_L = 0.0;
+        //updated 7/14/2023 to deal with new triangles
+        //calculates topological charge
         double Q_L(0.);//optimization 7/4/23
-        //bool use_arccos = true;//uses arccos to find QL for each triangle
-        bool use_arccos(false);//optimization 7/4/23
-        #pragma omp parallel for collapse(3) default(none) shared(length_,use_arccos) reduction(+:Q_L)
+        bool use_arcsin(true);
+        #pragma omp parallel for collapse(2) default(none) shared(length_,use_arcsin) reduction(+:Q_L)
         for (int i = 0; i<length_; i++){
             for (int j = 0; j<length_; j++){
-                //Lattice::checkQL(i, j);
-                for (int n = 0; n < 8; n++){
-                    Q_L += Lattice::locQL_(i, j, n, use_arccos);
-                }//loop over triangles
+                //add triangle 1 at this vertex
+                Q_L += Lattice::locQL_(i, j, 0, use_arcsin);
+                //add triangle 2 at this vertex
+                Q_L += Lattice::locQL_(i, j, 1, use_arcsin);
             }//loop over j
         }//loop over i
         return Q_L;
@@ -232,17 +226,14 @@ namespace nonlinearsigma{
         //calculates the standard lattice action A_L
         //you may be double counting things or you may be half counting. 
         //If you are off by 1/2 or 2, check here first
-        //double A_L = 0.0;
         double A_L(0.);
         #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:A_L)
         for (int i = 0; i<length_; i++)
         {
             for (int j = 0; j<length_; j++)
             {
-                //Lattice::field phi = Lattice::getPhi(i,j);
-                Lattice::field phi(Lattice::getPhi(i,j)); //optimization 7/4/23
-                //std::array < Lattice::field, 4> phiNN = Lattice::getNeighborPhis_(i,j); //0 and 1 are + direction
-                std::array < Lattice::field, 4> phiNN(Lattice::getNeighborPhis_(i,j));//optimization 7/4/23
+                Lattice::field phi(Lattice::getPhi(i,j));
+                std::array < Lattice::field, 4> phiNN(Lattice::getNeighborPhis_(i,j));
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
@@ -261,21 +252,13 @@ namespace nonlinearsigma{
     }
     
     double Lattice::twoPointG(int i, int j){
-        //Lattice::field phi_00 = Lattice::getPhi(0,0);
-        Lattice::field phi_00(Lattice::getPhi(0,0));//optimization 7/4/23
-        //Lattice::field phi_ij = Lattice::getPhi(i,j);
-        Lattice::field phi_ij(Lattice::getPhi(i,j));//optimization 7/4/23
-        //double G = 0.;
-        double G(dot(phi_00, phi_ij));//optimization 7/4/23
-        //double oldAvgG = Lattice::getAvgG(i, j);
-        double oldAvgG(Lattice::getAvgG(i, j));//optimization 7/4/23
-        //int n = acceptCount_+rejectCount_;
-        int n(acceptCount_+rejectCount_);//optimization 7/4/23
+        Lattice::field phi_00(Lattice::getPhi(0,0));
+        Lattice::field phi_ij(Lattice::getPhi(i,j));
+        double G(dot(phi_00, phi_ij));
+        double oldAvgG(Lattice::getAvgG(i, j));
+        int n(acceptCount_+rejectCount_);
         double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
-        //Lattice::setAvgG(i,j,newAvgG);
-        //optimization: remove function call for simple function
         Gij_[i][j] = newAvgG;
-        //end optimization
         return G;
     }
     
@@ -438,6 +421,7 @@ namespace nonlinearsigma{
     
     void Lattice::makeTriangles_(){
         //tested 6/16/2023
+        //updated 7/14/2023
         
         std::vector < std::vector < site_triangles > > all_triangles;
         for(int i = 0; i < length_; i++){
@@ -445,48 +429,15 @@ namespace nonlinearsigma{
             for (int j = 0; j<length_; j++){
                 site_triangles local_triangles;
                 //triangle 1
-                //Lattice::vertex v1 = {i,j};
-                Lattice::vertex v1({i,j});//optimization 7/4/23
-                //Lattice::vertex v2 = {Lattice::plusOne_(i),Lattice::minusOne_(j)};
-                Lattice::vertex v2({Lattice::plusOne_(i),Lattice::minusOne_(j)});//optimization 7/4/23
-                //Lattice::vertex v3 = {Lattice::plusOne_(i),j};
-                Lattice::vertex v3({Lattice::plusOne_(i),j});//optimization 7/4/23
+                Lattice::vertex v1({i,j});
+                Lattice::vertex v2({Lattice::plusOne_(i),Lattice::plusOne_(j)});
+                Lattice::vertex v3({i,Lattice::plusOne_(j)});
                 local_triangles[0] = {v1, v2, v3};
                 
                 //triangle 2
                 v3 = v2;
-                v2 = {i,Lattice::minusOne_(j)};
-                local_triangles[1] = {v1, v2, v3};
-
-                //triangle 3
-                v3 = v2;
-                v2 = {Lattice::minusOne_(i),Lattice::minusOne_(j)};
-                local_triangles[2] = {v1, v2, v3};
-                              
-                //triangle 4
-                v3 = v2;
-                v2 = {Lattice::minusOne_(i),j};
-                local_triangles[3] = {v1, v2, v3};
-
-                //triangle 5
-                v3 = v2;
-                v2 = {Lattice::minusOne_(i),Lattice::plusOne_(j)};
-                local_triangles[4] = {v1, v2, v3};
-                
-                //triangle 6
-                v3 = v2;
-                v2 = {i,Lattice::plusOne_(j)};
-                local_triangles[5] = {v1, v2, v3};
-
-                //triangle 7
-                v3 = v2;
-                v2 = {Lattice::plusOne_(i),Lattice::plusOne_(j)};
-                local_triangles[6] = {v1, v2, v3};
-
-                //triangle 8
-                v3 = v2; 
                 v2 = {Lattice::plusOne_(i),j};
-                local_triangles[7] = {v1, v2, v3};
+                local_triangles[1] = {v1, v2, v3};
                 
                 tri_y.push_back(local_triangles);
             }
@@ -495,80 +446,64 @@ namespace nonlinearsigma{
         triangles_ = all_triangles;
     }
     
-    
-    
-    double Lattice::locQL_(int i, int j, int n, bool use_arccos){
-        //tested 6/1/2023
+    double Lattice::locQL_(int i, int j, int n, bool use_arcsin){
+        //updated 7/14/2023 for new triangles
         //Calculates QL on the nth triangle with central vertex i,j
         double rho, QLc, QLs;
-        //int i1 = triangles_[i][j][n][0][0];
-        int i1(triangles_[i][j][n][0][0]);//optimization 7/4/23
-        //int j1 = triangles_[i][j][n][0][1];
-        int j1(triangles_[i][j][n][0][1]);//optimization 7/4/23
-        //int i2 = triangles_[i][j][n][1][0];
-        int i2(triangles_[i][j][n][1][0]);//optimization 7/4/23
-        //int j2 = triangles_[i][j][n][1][1];
-        int j2(triangles_[i][j][n][1][1]);//optimization 7/4/23
-        //int i3 = triangles_[i][j][n][2][0];
-        int i3(triangles_[i][j][n][2][0]);//optimization 7/4/23
-        //int j3 = triangles_[i][j][n][2][1];
-        int j3(triangles_[i][j][n][2][1]);//optimization 7/4/23
-        //Lattice::field phi1 = Lattice::getPhi(i1,j1);
-        Lattice::field phi1(Lattice::getPhi(i1,j1));//optimization 7/4/23
-        //Lattice::field phi2 = Lattice::getPhi(i2,j2);
-        Lattice::field phi2(Lattice::getPhi(i2,j2));//optimization 7/4/23
-        //Lattice::field phi3 = Lattice::getPhi(i3,j3);
-        Lattice::field phi3(Lattice::getPhi(i3,j3));//optimization 7/4/23
+        int i1(triangles_[i][j][n][0][0]);
+        int j1(triangles_[i][j][n][0][1]);
+        int i2(triangles_[i][j][n][1][0]);
+        int j2(triangles_[i][j][n][1][1]);
+        int i3(triangles_[i][j][n][2][0]);
+        int j3(triangles_[i][j][n][2][1]);
+        Lattice::field phi1(Lattice::getPhi(i1,j1));
+        Lattice::field phi2(Lattice::getPhi(i2,j2));
+        Lattice::field phi3(Lattice::getPhi(i3,j3));
         rho = std::sqrt(2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1)));
         QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
         QLs = dot(phi1,cross(phi2,phi3))/rho;
         double QLcos = std::acos(QLc)/(2.*M_PI);
         double QLsin = std::asin(QLs)/(2.*M_PI);
-        if (use_arccos){ 
-            //adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-            if (QLcos > 0.5*M_PI){
-                return QLcos - 2*M_PI;
-            }
-            else if (QLcos == - QLsin){
-                return -QLcos;
-            }
-            else{
-                return QLcos;
-            }
-        }
-        else{
-            return QLsin;
+        if(use_arcsin){return QLsin;}
+        else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
+            if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
+            if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
+            return QLcos;
         }
     }
     
-    void Lattice::checkQL(int i, int j){
+    void Lattice::checkQL(){
         //tested 6/1/2023
         //ensures we get the same QLtri with either cosine or sine
         //also ensures that QLtri is in the correct range of [-pi/2, pi/2]
         //also ensures that QL over all triangles is an integer (w/in some tolerance)
         double QLtot = 0;
         double tol = 1.0e-5;
-        for (int n = 0; n < 8; n++){
-            double QLcos, QLsin;
-            bool use_cosine = true;
-            bool use_sine = false;
-            QLcos = Lattice::locQL_(i,j,n,use_cosine);
-            QLsin = Lattice::locQL_(i,j,n,use_sine);
-            //adjust arccos to match arcsin domain
-            if (QLcos > 0.5*M_PI){QLcos -= 2*M_PI;}
-            if (std::abs(QLcos + QLsin) < tol){QLcos = -1.*QLcos;}
-            //check if they are equivalent
-            if (std::abs(QLcos - QLsin) > tol){
-                std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
-            }
-            else{
-                std::cout << "QLcos = QLsin = " << QLsin << std::endl;
-            }
-            if (QLsin > 0.5 || QLsin < -0.5){
-                std::cout << "QL of triangle outside range [-1/2,1/2]: " << QLsin << std::endl;
-            }
-            QLtot += QLsin;
-        }
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                for (int n = 0; n < 2; n++){
+                    double QLcos, QLsin;
+                    bool use_cosine = true;
+                    bool use_sine = false;
+                    QLcos = Lattice::locQL_(i,j,n,use_cosine);
+                    QLsin = Lattice::locQL_(i,j,n,use_sine);
+                    //adjust arccos to match arcsin domain
+                    if (QLcos > 0.5*M_PI){QLcos -= 2*M_PI;}
+                    if (std::abs(QLcos + QLsin) < tol){QLcos = -1.*QLcos;}
+                    //check if they are equivalent
+                    if (std::abs(QLcos - QLsin) > tol){
+                        std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
+                    }
+                    else{
+                        std::cout << "QLcos = QLsin = " << QLsin << std::endl;
+                    }
+                    if (QLsin > 0.5 || QLsin < -0.5){
+                        std::cout << "QL of triangle outside range [-1/2,1/2]: " << QLsin << std::endl;
+                    }
+                    QLtot += QLsin;
+                }//loop over n
+            }//loop over j
+        }//loop over i
         std::cout << "QLtot = " << QLtot << std::endl;
         if (std::abs(std::remainder(QLtot,1)) > tol){
             std::cout << "QL not an integer value: " << QLtot << std::endl;
