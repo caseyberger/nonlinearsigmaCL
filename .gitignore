@@ -3,3 +3,4 @@
 run_*
 *.log
 *.gcno
+old/
