@@ -27,6 +27,7 @@ namespace nonlinearsigma{
         void setAvgG(int i, int j, double Gij);
         void setnTherm(int ntherm);
         void setnMC(int nMC);
+        void setFreq(int freq);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
         
@@ -79,6 +80,7 @@ namespace nonlinearsigma{
         bool fixedr_;
         int nTherm_;
         int nMC_;
+        int freq_;
         int acceptCount_;
         int rejectCount_;
         double accRate_;

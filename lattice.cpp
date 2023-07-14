@@ -24,6 +24,7 @@ namespace nonlinearsigma{
         Lattice::setiTheta(itheta); //set itheta
         Lattice::setnTherm(1000); //set therm steps to default number
         Lattice::setnMC(1000); //set Monte Carlo steps to default number
+        Lattice::setFreq(100); //set frequency between saved configs to default number
         
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
@@ -68,6 +69,11 @@ namespace nonlinearsigma{
     
     void Lattice::setnMC(int nMC){
         nMC_ = nMC;
+        Lattice::generateFilename_();
+    }
+    
+    void Lattice::setFreq(int freq){
+        freq_ = freq;
         Lattice::generateFilename_();
     }
     
@@ -606,7 +612,8 @@ namespace nonlinearsigma{
         std::string th_str  = std::to_string(itheta_);
         std::string nt_str  = std::to_string(nTherm_);
         std::string nmc_str = std::to_string(nMC_);
-        std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + nt_str + "_nMC_" + nmc_str + ".csv";
+        std::string frq_str = std::to_string(freq_);
+        std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + nt_str + "_nMC_" + nmc_str + "_freq_" + frq_str + ".csv";
         filename_ = fname;
     }
     
