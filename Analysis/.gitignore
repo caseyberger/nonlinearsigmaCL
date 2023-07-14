@@ -1,0 +1,4 @@
+#ignore all data files
+data_*
+run_*
+*.csv
