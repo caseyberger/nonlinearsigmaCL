@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: July 14, 2023 - triangles
+// Last edited: July 17, 2023 - removed cosine domain adjustment
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -470,8 +470,8 @@ namespace nonlinearsigma{
         double QLsin = std::asin(QLs)/(2.*M_PI);
         if(use_arcsin){return QLsin;}
         else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-            if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
-            if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
+            //if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
+            //if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
             return QLcos;
         }
     }
