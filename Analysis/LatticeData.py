@@ -134,6 +134,21 @@ class LatticeData:
         df_all["time (hr)"] = df_all["time (sec)"]/3600.
         return df_all
     
+    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000):
+        df = self.do_stats(therm = 0.0)
+        df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
+        len_mask = df.index.get_level_values('length') == L 
+        beta_mask = df.index.get_level_values('beta') == beta 
+        nMC_mask = df.index.get_level_values('nMC') == nMC
+        ntherm_mask = df.index.get_level_values('ntherm') == ntherm
+        df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
+        df = df.unstack(level = [0,2,3,4])
+        df.columns = df.columns.droplevel(level = [1,2,3,4,5])
+        x = df.index.to_numpy()
+        y = df[obs+"_mean"]
+        err = df[obs+"_std"]
+        return x, y, err/np.sqrt(len(err))
+    
     def get_corr_func(self,suppress_output = False,**kwargs):
         df = self.get_data(single_run = True, corr = True, suppress_output = suppress_output, **kwargs)
         length = kwargs["length"]
