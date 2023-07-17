@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: July 17, 2023 - removed cosine domain adjustment
+// Last edited: July 17, 2023 - removed cosine domain adjustment, then removed A_L double counting
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -240,7 +240,7 @@ namespace nonlinearsigma{
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
                 //nearest neighbors in negative direction:
-                A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
+                //A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
             }
         }
         return -1.*beta_*A_L;
