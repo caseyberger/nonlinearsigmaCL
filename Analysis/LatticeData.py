@@ -117,34 +117,54 @@ class LatticeData:
                         print(key, value)
         return df
     
-    def do_stats(self, therm = 0., **kwargs):
+    def do_stats(self, therm = 0., stack = False, **kwargs):
         df = self.get_data(**kwargs)
         therm_condition = df["step"].astype(float) >= therm*df["nMC"].astype(float)
         df = df[therm_condition]
         df.drop(columns = ["step"], inplace = True)
-        df_max = df.groupby(["length","itheta","beta","nMC","ntherm"]).max()
-        df.drop(columns = ["dt"], inplace = True)
-        df_means = df.groupby(["length","itheta","beta","nMC","ntherm"]).mean()
-        ta_cols = [i+"_ta" for i in self.observables]
-        df.drop(columns = ta_cols, inplace = True)
-        df_sdevs = df.groupby(["length","itheta","beta","nMC","ntherm"]).std()
-        df_all = df_means.join(df_sdevs,lsuffix = "_mean",rsuffix = "_std")
+        if stack:
+            df_max = df.groupby(["length","itheta","beta","nMC","ntherm"]).max()
+            df.drop(columns = ["dt"], inplace = True)
+            df_means = df.groupby(["length","itheta","beta","nMC","ntherm"]).mean()
+            ta_cols = [i+"_ta" for i in self.observables]
+            df.drop(columns = ta_cols, inplace = True)
+            df_sdevs = df.groupby(["length","itheta","beta","nMC","ntherm"]).std()
+            df_all = df_means.join(df_sdevs,lsuffix = "_mean",rsuffix = "_std")
+        else:
+            df_max = df.groupby(["length","itheta","beta","nMC","ntherm","freq"]).max().reset_index()
+            df.drop(columns = ["dt"], inplace = True)
+            df_means = df.groupby(["length","itheta","beta","nMC","ntherm","freq"]).mean().reset_index()
+            ta_cols = [i+"_ta" for i in self.observables]
+            df.drop(columns = ta_cols, inplace = True)
+            df_sdevs = df.groupby(["length","itheta","beta","nMC","ntherm","freq"]).std().reset_index()
+            df_all = df_means.join(df_sdevs,lsuffix = "_mean",rsuffix = "_std")
+            df_all.drop(columns = ["length_std", "itheta_std","beta_std", "nMC_std", "ntherm_std","freq_std"],inplace = True)
+            df_all.rename(columns = {"length_mean":"length", "itheta_mean":"itheta","beta_mean":"beta", 
+                           "nMC_mean":"nMC", "ntherm_mean":"ntherm", "freq_mean":"freq"}, inplace = True)
         df_all["time (sec)"] = df_max["dt"]
         df_all["time (min)"] = df_all["time (sec)"]/60.
         df_all["time (hr)"] = df_all["time (sec)"]/3600.
         return df_all
     
-    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000):
-        df = self.do_stats(therm = 0.0)
-        df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
-        len_mask = df.index.get_level_values('length') == L 
-        beta_mask = df.index.get_level_values('beta') == beta 
-        nMC_mask = df.index.get_level_values('nMC') == nMC
-        ntherm_mask = df.index.get_level_values('ntherm') == ntherm
-        df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
-        df = df.unstack(level = [0,2,3,4])
-        df.columns = df.columns.droplevel(level = [1,2,3,4,5])
-        x = df.index.to_numpy()
+    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, stack = False):
+        df = self.do_stats(therm = 0.0, stack = stack)
+        if stack:
+            df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
+            len_mask = df.index.get_level_values('length') == L 
+            beta_mask = df.index.get_level_values('beta') == beta 
+            nMC_mask = df.index.get_level_values('nMC') == nMC
+            ntherm_mask = df.index.get_level_values('ntherm') == ntherm
+            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
+            df = df.unstack(level = [0,2,3,4])
+            df.columns = df.columns.droplevel(level = [1,2,3,4,5])
+            x = df.index.to_numpy()
+        else:
+            len_mask = df['length'] == L 
+            beta_mask = df["beta"] == beta 
+            nMC_mask = df["nMC"] == nMC
+            ntherm_mask = df["ntherm"] == ntherm
+            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
+            x = df["itheta"]
         y = df[obs+"_mean"]
         err = df[obs+"_std"]
         return x, y, err/np.sqrt(len(err))
