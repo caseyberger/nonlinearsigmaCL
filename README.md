@@ -295,14 +295,95 @@ and you can check the status of your jobs any time with the command
 squeue -u your_username
 ```
 
-## Data and Analysis
+## Python Code for Analysis
 
+There are a number of Jupyter Notebooks prepared to explore the data that comes out of the simulation. These are all located in the Analysis folder. There is also a Python class, LatticeData.py, which creates an analyzer object that has internal functions for analysis and visualization.
 
+### LatticeData.py - Data Analyzer Class
+
+#### Importing and initializing
+
+This is a Python class. You can create a lattice data object, which then holds all the functionality you need to analyze and visualize the data. You will need to import this into your notebook like this:
 ```python
-
+from LatticeData import *
 ```
 
+You will want to also import the following:
+* Numpy
+* Pandas
+* Matplotlib
+* Seaborn
+
+The simplest way to start now is by initializing the object:
+
+``` python
+analyzer = LatticeData()
+```
+You can now do a number of operations with this analyzer. The full list of functions is included later, but if you wanted to get all the data from that folder and put it into a Pandas dataframe, that would look like this:
+
+```python
+df = analyzer.get_data()
+```
+
+There are a number of default settings in this class, which you can change when you initialize. The defaults are:
+```python
+analyzer_default = LatticeData(datadir = "/data/", header = "nonlinearsigma_data",
+                 dirheader = "nlsigma_data", Gheader = "Gij_avg_nonlinearsigma_data", 
+                 tol = 0.00001, palette = "viridis")
+```
+which initializes the following internal variables:
+```python
+
+self.path = os.getcwd()+datadir #location of data
+self.header = header #set the start of the filename for the data files
+self.dirheader = dirheader #set the start of the data directory name from the runs
+self.Gheader = Gheader #set the start of the filename for correlation function files
+self.tol = tol #set the error range for parameters -- this is for filtering
+self.palette = palette #option to change seaborn palette
+self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L'] #observables whose expectation values can be computed
+self.parameters = ["itheta", "beta", "length","nMC", "ntherm", "freq"] #parameters read in by the simulation code
+```
+Most of these will not need to be changed, but let's say you want to analyze a special batch of data, which you've stored in a directory called ```data_test```, and you want to use a different visualization palette, you could intialize the object like this:
+```python
+analyzer_special = LatticeData(datadir = "/data_test/", palette = "magma")
+```
+(You can choose any [seaborn palette](https://seaborn.pydata.org/tutorial/color_palettes.html) for this)
+
+Then when you run the function ```python  df = analyzer_special.get_data()```, it will aggregate all the data files in the folder ```data_test```.
+
+#### Lattice Data Class Built-In Functions
+
+Below is a complete list of functions for the LatticeData class, with a brief description. While Python doesn't have the same public/private distinctions as C++, I've organized them into those same groups. Public functions are things that you may want to use. Private functions are functions that you should never need to call yourself, but are called internally.
+
+##### "Public" or External Functions
+
+##### "Private" or Internal Functions
+
+### Analysis Notebooks
+
+#### AnalysisTesting.ipynb
+
+#### PhiDist.ipynb
+
+#### DataComparison.ipynb
+
+#### SystematicsAndTiming.ipynb
+
+#### CorrelationFunction.ipynb
+
+#### Observables.ipynb
+
+## Summary of Preliminary Results
+
 ## Current issues and open questions
+
+Issues we are working on resolving:
+* The topological charge calculation ($Q_{L}$) is currently returning non-integer values
+* The correlation function at the smallest nonzero lattice momentum $2\pi/L$ is a complex number, therefore so is our correlation length. Correlation length at imaginary $\theta$ should be real 
+
+Research questions and next steps
+* What can a ML model learn from the configuration data we have so far?
+* How will Complex Langevin results differ from these if at all?
 
 
 ```python
