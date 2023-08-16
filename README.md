@@ -349,15 +349,285 @@ analyzer_special = LatticeData(datadir = "/data_test/", palette = "magma")
 ```
 (You can choose any [seaborn palette](https://seaborn.pydata.org/tutorial/color_palettes.html) for this)
 
-Then when you run the function ```python  df = analyzer_special.get_data()```, it will aggregate all the data files in the folder ```data_test```.
-
-#### Lattice Data Class Built-In Functions
+Then when you run the function
+```python  
+df = analyzer_special.get_data()
+```
+it will aggregate all the data files in the folder ```data_test```.
 
 Below is a complete list of functions for the LatticeData class, with a brief description. While Python doesn't have the same public/private distinctions as C++, I've organized them into those same groups. Public functions are things that you may want to use. Private functions are functions that you should never need to call yourself, but are called internally.
 
-##### "Public" or External Functions
+#### Lattice Data Class Built-In Functions ("Public" or external)
 
-##### "Private" or Internal Functions
+##### copy_data_from_directory
+
+```python
+copy_data_from_directory(self, src_dir, dst_path = None)
+```
+This function loops through a specified, directory, finds any simulation directories (directions that begin with "nlsigma_data" or whatever you have specified under ```dirheader``` in your intialization), and copies the .csv files within those directories to some destination directory. The default destination directory is whatever you've specified for your data directory.
+    The function requires a source directory to be passed as a string -- this is the directory where you have all your simulation results that you want copied over -- and gives you the option to specify a different destination directory using ```dst_path```)
+    
+If some of your simulations are not complete yet (determined by testing whether the .csv has the correct number of lines), this function will not copy those files and will print out the name of the run and how many lines there are in the data output file. For example, the folder ```run_7_18_23_stats``` contains some runs that haven't finished yet. If I try to copy the data from that directory into my data directory:
+    
+```python
+analyzer.copy_data_from_directory("run_7_18_23_stats")
+```
+here's what appears printed out:
+```
+run L_180_beta_1.600000_itheta_0.000000_ntherm_5000_nMC_50000_freq_100 not yet complete: 378 lines
+run L_180_beta_1.600000_itheta_2.356194_ntherm_5000_nMC_50000_freq_100 not yet complete: 391 lines
+run L_180_beta_1.600000_itheta_3.141593_ntherm_5000_nMC_50000_freq_100 not yet complete: 237 lines
+run L_180_beta_1.600000_itheta_1.570796_ntherm_5000_nMC_50000_freq_100 not yet complete: 381 lines
+run L_180_beta_1.600000_itheta_0.785398_ntherm_5000_nMC_50000_freq_100 not yet complete: 240 lines
+```
+And those runs will not be in the data directory, while completed runs will have been copied in.
+
+##### all_params
+
+```python
+all_params(self)
+```
+This function collects every unique set of parameters from your default data directory and returns it as a dataframe. It does not take any inputs -- if you want to know what combinations of parameters are in your directory, this function will tell you.
+    
+```python
+params = analyzer.all_params()
+params.head()
+```
+```
+>
+    freq	nMC	ntherm	itheta	beta	length
+0	100.0	50000.0	5000.0	0.785398	1.6	20.0
+1	100.0	50000.0	5000.0	0.000000	1.6	80.0
+2	100.0	50000.0	5000.0	0.000000	1.6	20.0
+3	100.0	50000.0	5000.0	1.570796	1.6	40.0
+4	100.0	50000.0	5000.0	2.356194	1.6	10.0
+```
+
+
+If you want to collect data from more than one run, you can do this by only specifying which parameters you want in your dataframe, and the function will filter the data accordingly.
+
+```python
+param_dict = {"length": 10, "itheta":2.356194}
+filtered_data = analyzer.get_data(single_run = False, suppress_output = True, **param_dict)
+```
+
+If you want *all* the data, just leave out the parameter dictionary entirely and it won't filter anything.
+
+```python
+all_data = analyzer.get_data(single_run = False, suppress_output = True)
+```
+
+NOTE: I strongly recommend suppressing output if you are collecting more than 2 or 3 runs, as it will slow the program down and produce a flood of output.
+
+##### get_data
+
+```python
+get_data(self, single_run = False, corr = False, suppress_output = True, **kwargs)
+```
+
+This function will collect raw data from one or more runs and return it as a Pandas dataframe. 
+
+If you want to just get data from one simulation run (e.g. to check thermalization or autocorrelation), you should set ```single_run``` to ``` True```. If you want the correlation function data from that run, you should set ```corr``` to ```True``` -- otherwise it will return the observable data. If you want it to print out the parameter sets it's putting into the dataset, set ```suppress_output``` to ```False```
+
+You then need to specify what the parameters are for the run you want to see. You do this by creating a dictionary. When selecting a single one, you must ensure your dictionary has *all* the parameter values specified. The keys for these values are:
+* "length": length of the lattice in each direction
+* "itheta": value of the imaginary value used for theta -- actual number here, not an integer multiple of pi, but you can always use ```np.pi``` to specify it
+* "beta": for our purposes this will always be 1.6, but you need to specify it anyway
+* "nMC": number of steps in the Monte Carlo loop 
+* "ntherm": number of steps in the thermalization loop
+* "freq": frequency with which the configurations were saved
+
+If you forget one of these, the function will remind you: 
+
+```python
+param_dict = {"length": 10, "freq": 100, "itheta":2.356194, "beta":1.6, "nMC":50000}
+one_run = analyzer.get_data(single_run = True, suppress_output = False, **param_dict)
+
+```
+```
+Missing parameters in input: 
+['ntherm']
+```
+So you know now to add in the "ntherm" you're looking for. Now it should work:
+```python
+param_dict = {"length": 10, "freq": 100, "itheta":2.356194, "beta":1.6, "nMC":50000, "ntherm": 5000}
+one_run = analyzer.get_data(single_run = True, suppress_output = False, **param_dict)
+```
+```
+freq 100
+nMC 50000
+ntherm 5000
+itheta 2.356194
+beta 1.6
+length 10
+```
+
+```python
+one_run.head(3)
+```
+```
+	step	|phi|	Q_L	A_L	S_L	Xi_L	F_LRe	F_LIm	acc	dt	...	Q_L_ta	A_L_ta	S_L_ta	Xi_L_ta	corr_length_Re	corr_length_Im	F_Re_py	F_Im_py	mass_gap_Re	mass_gap_Im
+0	0	100.0	0.479179	-183.166830	-184.295868	45.724903	3.675149	8.145972	0.240000	0.0	...	1	3	3	4	8.966957	-3.640801	0.916337	0.890996	0.095738	0.038872
+1	100	100.0	0.159302	-195.846927	-196.222275	62.369185	3.675149	8.145972	0.203762	0.0	...	1	3	3	4	10.472580	-4.252121	0.916337	0.890996	0.081974	0.033283
+2	200	100.0	0.000000	-199.012224	-199.012224	48.119359	3.675149	8.145972	0.207164	0.0	...	1	3	3	4	9.198745	-3.734913	0.916337	0.890996	0.093325	0.037892
+3	300	100.0	0.312655	-179.261053	-179.997729	46.124447	3.675149	8.145972	0.205681	0.0	...	1	3	3	4	9.006048	-3.656673	0.916337	0.890996	0.095322	0.038703
+```
+
+##### do_stats
+
+```python 
+do_stats(self, therm = 0., stack = False, **kwargs)
+```
+This function collects data from the directory you specified when you initialized the object. If you want to filter the data by parameters, you just need to enter a parameter dictionary just like when using get_data() above, and it will filter to include only data that matches the parameter values you've entered.
+
+Once all the raw data is collected, it will perform some basic statistical analysis. All observables will have a mean and standard error calculated from data after thermalization. If you need to change the thermalization point, you can increase it by changing the ```therm``` argument in the function -- give it the fractional value of the data you want it to drop from the beginning of the dataset. So for example, if you have a run with ```nMC = 1000``` and ```freq = 10```, you will have a total of 100 steps in your dataset. If you set ```therm = 0.2```, it will drop the first 20 steps before computing the mean and standard error.
+
+After calculating means and standard errors, it also computes the autocorrelation time (the step at which the observable's autocorrelation value drops below 0.3), and then determines how long that run took to complete, saving that information in seconds, minutes, and hours.
+
+It saves all of this along with the parameters used in that run. The result is a very comprehensive dataframe. Here's an example of it run on a data directory with 25 runs in it:
+
+```python
+df_stats = analyzer.do_stats()
+df_stats.info()
+```
+```
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 25 entries, 0 to 24
+Data columns (total 41 columns):
+ #   Column               Non-Null Count  Dtype  
+---  ------               --------------  -----  
+ 0   length               25 non-null     float64
+ 1   itheta               25 non-null     float64
+ 2   beta                 25 non-null     float64
+ 3   nMC                  25 non-null     float64
+ 4   ntherm               25 non-null     float64
+ 5   freq                 25 non-null     float64
+ 6   |phi|_mean           25 non-null     float64
+ 7   Q_L_mean             25 non-null     float64
+ 8   A_L_mean             25 non-null     float64
+ 9   S_L_mean             25 non-null     float64
+ 10  Xi_L_mean            25 non-null     float64
+ 11  F_LRe_mean           25 non-null     float64
+ 12  F_LIm_mean           25 non-null     float64
+ 13  acc_mean             25 non-null     float64
+ 14  Q_L_ta               25 non-null     float64
+ 15  A_L_ta               25 non-null     float64
+ 16  S_L_ta               25 non-null     float64
+ 17  Xi_L_ta              25 non-null     float64
+ 18  corr_length_Re_mean  25 non-null     float64
+ 19  corr_length_Im_mean  25 non-null     float64
+ 20  F_Re_py_mean         25 non-null     float64
+ 21  F_Im_py_mean         25 non-null     float64
+ 22  mass_gap_Re_mean     25 non-null     float64
+ 23  mass_gap_Im_mean     25 non-null     float64
+ 24  |phi|_std            25 non-null     float64
+ 25  Q_L_std              25 non-null     float64
+ 26  A_L_std              25 non-null     float64
+ 27  S_L_std              25 non-null     float64
+ 28  Xi_L_std             25 non-null     float64
+ 29  F_LRe_std            25 non-null     float64
+ 30  F_LIm_std            25 non-null     float64
+ 31  acc_std              25 non-null     float64
+ 32  corr_length_Re_std   25 non-null     float64
+ 33  corr_length_Im_std   25 non-null     float64
+ 34  F_Re_py_std          25 non-null     float64
+ 35  F_Im_py_std          25 non-null     float64
+ 36  mass_gap_Re_std      25 non-null     float64
+ 37  mass_gap_Im_std      25 non-null     float64
+ 38  time (sec)           25 non-null     float64
+ 39  time (min)           25 non-null     float64
+ 40  time (hr)            25 non-null     float64
+dtypes: float64(41)
+memory usage: 8.1 KB
+
+```
+
+If I only want the analyzed data for runs where the lattice had a length of 20, I could modify this as follows:
+
+```python
+df_stats = analyzer.do_stats(**{"length":20})
+df_stats.info()
+```
+```
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 5 entries, 0 to 4
+Data columns (total 41 columns):
+ #   Column               Non-Null Count  Dtype  
+---  ------               --------------  -----  
+ 0   length               5 non-null      float64
+ 1   itheta               5 non-null      float64
+ 2   beta                 5 non-null      float64
+ 3   nMC                  5 non-null      float64
+ 4   ntherm               5 non-null      float64
+ 5   freq                 5 non-null      float64
+ 6   |phi|_mean           5 non-null      float64
+ 7   Q_L_mean             5 non-null      float64
+ 8   A_L_mean             5 non-null      float64
+ 9   S_L_mean             5 non-null      float64
+ 10  Xi_L_mean            5 non-null      float64
+ 11  F_LRe_mean           5 non-null      float64
+ 12  F_LIm_mean           5 non-null      float64
+ 13  acc_mean             5 non-null      float64
+ 14  Q_L_ta               5 non-null      float64
+ 15  A_L_ta               5 non-null      float64
+ 16  S_L_ta               5 non-null      float64
+ 17  Xi_L_ta              5 non-null      float64
+ 18  corr_length_Re_mean  5 non-null      float64
+ 19  corr_length_Im_mean  5 non-null      float64
+ 20  F_Re_py_mean         5 non-null      float64
+ 21  F_Im_py_mean         5 non-null      float64
+ 22  mass_gap_Re_mean     5 non-null      float64
+ 23  mass_gap_Im_mean     5 non-null      float64
+ 24  |phi|_std            5 non-null      float64
+ 25  Q_L_std              5 non-null      float64
+ 26  A_L_std              5 non-null      float64
+ 27  S_L_std              5 non-null      float64
+ 28  Xi_L_std             5 non-null      float64
+ 29  F_LRe_std            5 non-null      float64
+ 30  F_LIm_std            5 non-null      float64
+ 31  acc_std              5 non-null      float64
+ 32  corr_length_Re_std   5 non-null      float64
+ 33  corr_length_Im_std   5 non-null      float64
+ 34  F_Re_py_std          5 non-null      float64
+ 35  F_Im_py_std          5 non-null      float64
+ 36  mass_gap_Re_std      5 non-null      float64
+ 37  mass_gap_Im_std      5 non-null      float64
+ 38  time (sec)           5 non-null      float64
+ 39  time (min)           5 non-null      float64
+ 40  time (hr)            5 non-null      float64
+dtypes: float64(41)
+memory usage: 1.7 KB
+```
+Notice we now only have 5 entries in our dataframe, not 25. We can check that this worked:
+
+```python
+df_stats["length"].unique()
+```
+```
+array([20.])
+```
+
+If you want the data returned using Pandas MultiIndex, set ```stack``` to ```True```, but MultiIndex doesn't always play well with seaborn and other plotting tools, so the default is ```False```.
+
+##### get_plot_data
+
+```python
+get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, stack = False)
+```
+
+##### get_corr_func
+
+```python
+get_corr_func(self,suppress_output = False,**kwargs)
+```
+
+#### Lattice Data Class Built-In Functions ("Private" or internal)
+
+##### calc_F
+
+```python
+calc_F(self, **kwargs)
+```
 
 ### Analysis Notebooks
 
