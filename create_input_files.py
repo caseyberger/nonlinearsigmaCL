@@ -29,6 +29,7 @@ script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
 email = "cberger@smith.edu"
 num_cpus = 28
+partition = "phyq"
 
 
 def generate_input_file(length,beta,itheta,nMC,ntherm,freq):
@@ -64,7 +65,7 @@ def copy_executable(script_name, file_ext):
 	copy_cmd = "cp "+source_path+" "+destination_path
 	os.system(copy_cmd)
 
-def generate_slurm_script(script_name,file_ext,job_name,email, cpus_per_task=38):
+def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_per_task=38):
 	#generates the sbatch file that you run with sbatch filename
 	#should be paired with the appropriate input file somehow...
 	filename = "submit_sigma.sh"
@@ -78,7 +79,7 @@ def generate_slurm_script(script_name,file_ext,job_name,email, cpus_per_task=38)
 	slurm_file.write("#SBATCH --job-name="+str(job_name)+"\t\t\t# Job name\n")
 	slurm_file.write("#SBATCH --mail-type=ALL\t\t\t\t# Mail events (NONE, BEGIN, END, FAIL, ALL)\n")
 	slurm_file.write("#SBATCH --mail-user="+str(email)+"\t\t\t# Where to send mail\n")
-	slurm_file.write("#SBATCH --partition=phyq\t\t\t# Which partition to use\n")
+	slurm_file.write("#SBATCH --partition="+str(partition)+"\t\t\t# Which partition to use\n")
 	slurm_file.write("#SBATCH --nodes=1\t\t\t# Number of nodes\n")
 	slurm_file.write("#SBATCH --cpus-per-task="+str(cpus_per_task)+"\t\t\t# Number of threads per task (OpenMP)\n")
 	slurm_file.write("#SBATCH --mem=1gb\t\t\t# Job memory request\n")
@@ -96,5 +97,5 @@ def generate_slurm_script(script_name,file_ext,job_name,email, cpus_per_task=38)
 for length in L_list:
 	for itheta in itheta_list:
 		file_ext = generate_input_file(length,beta,itheta,nMC,ntherm,freq)
-		generate_slurm_script(script_name,file_ext,job_name,email,cpus_per_task = num_cpus)
+		generate_slurm_script(script_name,file_ext,job_name,email,partition,cpus_per_task = num_cpus)
 		copy_executable(script_name, file_ext)
