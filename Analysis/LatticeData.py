@@ -10,15 +10,19 @@ class LatticeData:
         self.path = os.getcwd()+datadir #select location of data
         self.header = header #set the start of the filename for the data files
         self.dirheader = dirheader #set the start of the data directory name from the runs
-        self.Gheader = Gheader
-        self.tol = tol
+        self.Gheader = Gheader #set the start of the filename for correlation function files
+        self.tol = tol #set the error range for parameters -- this is for filtering
         self.palette = palette #option to change seaborn palette
-        self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L']
-        self.parameters = ["itheta", "beta", "length","nMC", "ntherm"]
+        self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L'] #observables whose expectation values can be computed
+        self.parameters = ["itheta", "beta", "length","nMC", "ntherm", "freq"] #parameters read in by the simulation code
         
-    def collect_data(self, src_dir):
-        src_path = os.getcwd()+src_dir
-        dst_path = self.path
+    #external functions / public
+    def copy_data_from_directory(self, src_dir, dst_path = None):
+        src_path = os.getcwd()+'/'+src_dir+'/'
+        if dst_path is None:
+            dst_path = self.path
+        else:
+            dst_path = dst_path
         for item in os.listdir(src_path):
             if item.startswith(self.dirheader):
                 dir_path = src_path+item
@@ -36,29 +40,6 @@ class LatticeData:
                             print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
                     elif file.startswith(self.Gheader):
                         shutil.copyfile(file_path, dst_path+file)
-        
-    def get_data_files(self, corr = False):
-        data_files = []
-        file_header = self.header
-        if corr:
-            file_header = self.Gheader
-        for file in os.listdir(self.path):
-            if file.startswith(file_header):
-                data_files.append(self.path+file)
-        return data_files
-
-    def get_file_params(self, file):
-        file = file[:-4]
-        temp = file.split("_")
-        pdict = dict()
-        pdict[temp[-2]] = int(temp[-1]) #frequency
-        pdict[temp[-4]] = int(temp[-3]) #nMc
-        pdict[temp[-6]] = int(temp[-5]) #ntherm
-        pdict[temp[-8]] = float(temp[-7]) #itheta
-        pdict[temp[-10]] = float(temp[-9]) #beta
-        pdict["length"] = int(temp[-11]) #length
-        return pdict
-    
     def all_params(self):
         param_df = pd.DataFrame()
         files = self.get_data_files()
@@ -66,17 +47,6 @@ class LatticeData:
             pdict = self.get_file_params(file)
             param_df = param_df.append(pdict,ignore_index=True)
         return param_df
-    
-    def in_list(self,pdict,**kwargs):
-        count = 0
-        for key, value in kwargs.items():
-            if (pdict[key] > value+self.tol) or (pdict[key] <  value-self.tol):
-                break
-            count += 1
-        if count == len(kwargs.keys()):
-            return True
-        else:
-            return False
     
     def get_data(self,single_run = False, corr = False, suppress_output = True, **kwargs):
         if single_run:
@@ -176,7 +146,41 @@ class LatticeData:
         G_avg = df["G_avg"].to_numpy()
         G_avg = G_avg.reshape((length,length))
         return G_avg
+        
+    #internal functions / private
+    def get_data_files(self, corr = False):
+        data_files = []
+        file_header = self.header
+        if corr:
+            file_header = self.Gheader
+        for file in os.listdir(self.path):
+            if file.startswith(file_header):
+                data_files.append(self.path+file)
+        return data_files
+
+    def get_file_params(self, file):
+        file = file[:-4]
+        temp = file.split("_")
+        pdict = dict()
+        pdict[temp[-2]] = int(temp[-1]) #frequency
+        pdict[temp[-4]] = int(temp[-3]) #nMc
+        pdict[temp[-6]] = int(temp[-5]) #ntherm
+        pdict[temp[-8]] = float(temp[-7]) #itheta
+        pdict[temp[-10]] = float(temp[-9]) #beta
+        pdict["length"] = int(temp[-11]) #length
+        return pdict
     
+    def in_list(self,pdict,**kwargs):
+        count = 0
+        for key, value in kwargs.items():
+            if (pdict[key] > value+self.tol) or (pdict[key] <  value-self.tol):
+                break
+            count += 1
+        if count == len(kwargs.keys()):
+            return True
+        else:
+            return False
+        
     def calc_F(self, **kwargs):
         G_avg = self.get_corr_func(suppress_output = True, **kwargs)
         L = kwargs["length"]
@@ -191,7 +195,7 @@ class LatticeData:
         Xi = Xi.to_numpy()
         L = L.to_numpy()
         return np.sqrt(Xi/F_py)/(2.*np.sin(np.pi/L))
-        
+    
     def next_pow_two(self,n):
         i = 1
         while i < n:
