@@ -21,11 +21,11 @@ with $\phi$ a 3-component unit vector.
 In lattice action form, we have (see B. Alles, M. Giordano, and A. Papa. Behavior near θ = π of the mass gap in the two-dimensional o(3) nonlinear sigma model. Phys. Rev. B, 90:184421, Nov 2014):
 
 $
-\begin{eqnarray}
+\begin{align}
 S_{L} &=& A_{L} - i \theta Q_{L}\\
 A_{L} &=& -\frac{1}{g_{L}}\sum_{x,\mu}\left(\phi_{x}\cdot \phi_{x+\hat{\mu}}\right)\\
 Q_{L} &=& \sum_{x}\sum_{\Delta} Q_{L} \Delta
-\end{eqnarray}
+\end{align}
 $
 
 where $\vec{\phi}$ a 3-component unit vector ($\vec{\phi} \cdot\vec{\phi} = 1$) and $Q_{L}$ is the total topological charge on the lattice. 
