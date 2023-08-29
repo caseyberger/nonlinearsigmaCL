@@ -116,9 +116,9 @@ class LatticeData:
         df_all["time (hr)"] = df_all["time (sec)"]/3600.
         return df_all
     
-    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
+    def get_plot_data(self, df, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
                       freq = 100, stack = False):
-        df = self.do_stats(therm = 0.0, stack = stack)
+        #df = self.do_stats(therm = 0.0, stack = stack)
         if stack:
             df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
             len_mask = df.index.get_level_values('length') == L 
