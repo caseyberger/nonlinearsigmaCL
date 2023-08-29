@@ -612,14 +612,102 @@ If you want the data returned using Pandas MultiIndex, set ```stack``` to ```Tru
 ##### get_plot_data
 
 ```python
-get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, stack = False)
+get_plot_data(self, df, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, freq = 100, stack = False)
 ```
+This function allows you to get the analyzed data for one observable (you may specify which one, but the default is ```Q_L```) as a function of itheta in order to plot it. You must specify a single value for all other parameters (```L```, ```beta```, ```nMC```, ```ntherm```, ```freq```) or leave them blank to use the defaults.
+
+This pulls its data from the internally stored dataframe self.df_stats, which is created when you run the do_stats function. If you have not run that function yet, it will do it for you, with the default settings of ```therm = 0.0``` and ```stack = False```.
+
+<div class="alert alert-warning">
+This doesn't play nice with MultiIndex right now, so I recommend making sure to do this with the default of 
+   
+```python
+stack = False
+```
+</div> 
+
+This function could be modified in order to choose your independent variable, but right now all the plots we are interested in are functions of itheta, so it's unneccesary to plot the observable as a function of any other parameter. Seaborn can be used with the raw data to study systematic effects or other things that may be functions of ```nMC```, ```ntherm``` or ```L```. 
+
+This returns three items: x, y, and y_err, which can then be plotted immediately with the matplotlib errorbar function.
+
+For example, if you wanted to plot ```Q_L``` as a function of ```itheta``` for all the different lengths you have in your data, you would do the following:
+
+```python
+params = analyzer.all_params()
+lengths = params["length"].unique()
+colors = sns.color_palette("Blues", len(lengths))
+observable = "Q_L"
+
+for n,length in enumerate(lengths):
+    x,y,err = analyzer.get_plot_data(obs = observable, L = length, beta = 1.6, nMC = 50000, 
+                                     ntherm = 5000, freq = 100)
+    plt.errorbar(x, y , yerr = err, marker = ".", ls = "none", color = colors[n], label ="L="+str(length))
+plt.legend()
+plt.title(observable)
+plt.show()
+```
+And you would get the following output:
+
+<img src = "./Figs_README/QL_v_itheta_example.jpg">
+
+And if you wanted to plot the magnetic susceptibility ```Xi_L``` as a function of ```itheta``` for each length, you would do:
+
+```python
+params = analyzer.all_params()
+lengths = params["length"].unique()
+colors = sns.color_palette("Reds", len(lengths))
+observable = "Xi_L"
+
+for n,length in enumerate(lengths):
+    x,y,err = analyzer.get_plot_data(obs = observable, L = length, beta = 1.6, nMC = 50000, 
+                                     ntherm = 5000, freq = 100)
+    plt.errorbar(x, y , yerr = err, marker = ".", ls = "none", color = colors[n], label ="L="+str(length))
+plt.legend()
+plt.title(observable)
+plt.show()
+```
+And you would get the following output:
+
+<img src = "./Figs_README/XiL_v_itheta_example.jpg">
 
 ##### get_corr_func
 
 ```python
 get_corr_func(self,suppress_output = False,**kwargs)
 ```
+
+This function returns the average correlation function for the set of parameters specified. This requires returning one single run, so it plays by the same rules as ```get_data``` with ```single_run = True``` and it will tell you if you left out a parameter:
+
+```python
+itheta = np.pi
+beta = 1.6
+length = 20
+nMC = 50000
+corr_params = {"itheta": itheta, "beta": beta,"length": length,"nMC": nMC}
+G_ij = analyzer.get_corr_func(suppress_output = False, **corr_params)
+```
+
+```
+Missing parameters in input: 
+['ntherm', 'freq']
+
+```
+When you specify the complete set of parameters, it returns a 2D numpy array that represents the average correlation function on each lattice site. You can then plot this with imshow:
+```python
+plt.imshow(G_ij, cmap = "viridis", aspect='equal')
+plt.colorbar()
+plt.title("Correlation function for L = "+str(corr_params["length"])+", itheta = "+str(corr_params["itheta"]))
+plt.show()
+
+```
+and you will get something that looks like this:
+
+
+<img src = "./Figs_README/Gij_example.jpg">
+
+<div class="alert alert-warning">
+Currently, the simulation returns the average value of the correlation function computed after thermalization. There is no way to change this after the simulation is run, and we don't have the code set up yet to return any error on the correlation function. That may come in future versions of the code.
+</div> 
 
 #### Lattice Data Class Built-In Functions ("Private" or internal)
 
@@ -650,6 +738,7 @@ calc_F(self, **kwargs)
 Issues we are working on resolving:
 * The topological charge calculation ($Q_{L}$) is currently returning non-integer values
 * The correlation function at the smallest nonzero lattice momentum $2\pi/L$ is a complex number, therefore so is our correlation length. Correlation length at imaginary $\theta$ should be real 
+* Currently, the simulation returns the average value of the correlation function computed after thermalization. There is no way to change this after the simulation is run, and we don't have the code set up yet to return any error on the correlation function. That may come in future versions of the code.
 
 Research questions and next steps
 * What can a ML model learn from the configuration data we have so far?
