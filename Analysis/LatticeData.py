@@ -93,12 +93,12 @@ class LatticeData:
         df = df[therm_condition]
         df.drop(columns = ["step"], inplace = True)
         if stack:
-            df_max = df.groupby(["length","itheta","beta","nMC","ntherm"]).max()
+            df_max = df.groupby(["length","itheta","beta","nMC","ntherm", "freq"]).max()
             df.drop(columns = ["dt"], inplace = True)
-            df_means = df.groupby(["length","itheta","beta","nMC","ntherm"]).mean()
+            df_means = df.groupby(["length","itheta","beta","nMC","ntherm", "freq"]).mean()
             ta_cols = [i+"_ta" for i in self.observables]
             df.drop(columns = ta_cols, inplace = True)
-            df_sdevs = df.groupby(["length","itheta","beta","nMC","ntherm"]).std()
+            df_sdevs = df.groupby(["length","itheta","beta","nMC","ntherm", "freq"]).std()
             df_all = df_means.join(df_sdevs,lsuffix = "_mean",rsuffix = "_std")
         else:
             df_max = df.groupby(["length","itheta","beta","nMC","ntherm","freq"]).max().reset_index()
@@ -116,7 +116,8 @@ class LatticeData:
         df_all["time (hr)"] = df_all["time (sec)"]/3600.
         return df_all
     
-    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, stack = False):
+    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
+                      freq = 100, stack = False):
         df = self.do_stats(therm = 0.0, stack = stack)
         if stack:
             df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
@@ -124,16 +125,18 @@ class LatticeData:
             beta_mask = df.index.get_level_values('beta') == beta 
             nMC_mask = df.index.get_level_values('nMC') == nMC
             ntherm_mask = df.index.get_level_values('ntherm') == ntherm
-            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
-            df = df.unstack(level = [0,2,3,4])
-            df.columns = df.columns.droplevel(level = [1,2,3,4,5])
+            freq_mask = df.index.get_level_values('freq') == freq
+            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask & freq_mask]
+            df = df.unstack(level = [0,2,3,4,5])
+            df.columns = df.columns.droplevel(level = [1,2,3,4,5,6])
             x = df.index.to_numpy()
         else:
             len_mask = df['length'] == L 
             beta_mask = df["beta"] == beta 
             nMC_mask = df["nMC"] == nMC
             ntherm_mask = df["ntherm"] == ntherm
-            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask]
+            freq_mask = df["freq"] == freq
+            df = df[len_mask & beta_mask & nMC_mask & ntherm_mask & freq_mask]
             x = df["itheta"]
         y = df[obs+"_mean"]
         err = df[obs+"_std"]
