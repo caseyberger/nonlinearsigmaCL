@@ -15,6 +15,8 @@ class LatticeData:
         self.palette = palette #option to change seaborn palette
         self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L'] #observables whose expectation values can be computed
         self.parameters = ["itheta", "beta", "length","nMC", "ntherm", "freq"] #parameters read in by the simulation code
+        self.df_stats = pd.DataFrame() #initialize an empty dataframe to fill later
+        self.df_stacked = False #set internal state for that dataframe
         
     #external functions / public
     def copy_data_from_directory(self, src_dir, dst_path = None):
@@ -114,12 +116,17 @@ class LatticeData:
         df_all["time (sec)"] = df_max["dt"]
         df_all["time (min)"] = df_all["time (sec)"]/60.
         df_all["time (hr)"] = df_all["time (sec)"]/3600.
+        self.df_stats = df_all
+        self.df_stacked = stack
         return df_all
     
-    def get_plot_data(self, df, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
-                      freq = 100, stack = False):
-        #df = self.do_stats(therm = 0.0, stack = stack)
-        if stack:
+    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
+                      freq = 100):
+        if len(self.df_stats) == 0:
+            print("Generating dataframe of data with default statistical analysis")
+            df = self.do_stats()
+        df = self.df_stats
+        if self.df_stacked:
             df.columns = pd.MultiIndex.from_product([df.columns, ["data"]])
             len_mask = df.index.get_level_values('length') == L 
             beta_mask = df.index.get_level_values('beta') == beta 
