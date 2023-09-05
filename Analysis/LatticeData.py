@@ -48,6 +48,7 @@ class LatticeData:
         for file in files:
             pdict = self.get_file_params(file)
             param_df = param_df.append(pdict,ignore_index=True)
+        param_df["itheta/pi"] = param_df["itheta"]/np.pi
         return param_df
     
     def get_data(self,single_run = False, corr = False, suppress_output = True, **kwargs):
