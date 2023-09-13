@@ -65,6 +65,10 @@ int main (int argc, char *argv[])
     //Initalize the lattice - dynamically allocate the memory for the lattice
     cout << "Constructing lattice" << endl;    
     Lattice L(len, beta, itheta);//construct lattice
+#ifdef USE_ARCCOS
+    L.setTrig(false);
+    cout << "Using arccosine to calculate QL" << endl;
+#endif
     L.setnTherm(ntherm);
     L.setnMC(nMC);
     L.setFreq(step_freq);
