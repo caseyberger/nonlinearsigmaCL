@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: July 14, 2023
+// Last edited: July 14, 2023 - triangles
 #include <array>
 #include <vector>
 #include <omp.h>
@@ -13,7 +13,7 @@ namespace nonlinearsigma{
         
         using vertex = std::array<int,2>;
         using triangle = std::array<vertex,3>;
-        using site_triangles = std::array<triangle,8>;
+        using site_triangles = std::array<triangle,2>;
         using field = std::array<double, 3>;
         
         //constructor
@@ -24,10 +24,10 @@ namespace nonlinearsigma{
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
         void setPhi(int i, int j, field phi);//tested 6/5/2023
-        void setAvgG(int i, int j, double Gij);
         void setnTherm(int ntherm);
         void setnMC(int nMC);
         void setFreq(int freq);
+        void setTrig(bool use_arcsin);
         void fixRNG(double r1, double r2);//tested 6/1/2023
         void freeRNG();//tested 6/1/2023
         
@@ -49,12 +49,12 @@ namespace nonlinearsigma{
         
         //print things to the screen
         void printLattice();//tested 5/30/2023
-        void printTriangles(int i, int j); //tested 6/1/2023
+        void printTriangles(int i, int j);//updated 7/14/2023
         void printNeighbors(int i, int j);//tested 6/1/2023
         
         //calculate and test lattice quantities
-        double calcQL();//tested 6/1/2023 -- note it's not producing integers!!
-        void checkQL(int i, int j);//tested 6/1/2023
+        double calcQL();//updated 7/14/2023
+        void checkQL();//updated 7/14/2023
         double calcAL();//tested 6/1/2023
         double calcSL();//tested 6/1/2023
         double twoPointG(int i, int j);
@@ -78,6 +78,7 @@ namespace nonlinearsigma{
         double r1_;
         double r2_;
         bool fixedr_;
+        bool use_arcsin_;
         int nTherm_;
         int nMC_;
         int freq_;
@@ -91,8 +92,8 @@ namespace nonlinearsigma{
         field makePhi_(); //tested 6/1/2023
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
-        void makeTriangles_(); //tested 6/16/2023
-        double locQL_(int i, int j, int n, bool use_arccos);//tested 6/1/2023
+        void makeTriangles_();//updated 7/14/2023
+        double locQL_(int i, int j, int n, bool use_arccos);//updated 7/14/2023
         std::array < vertex, 4 > getNeighbors_(int i, int j);//tested 6/1/2023
         std::array < field, 4 > getNeighborPhis_(int i, int j);//tested 6/1/2023
         void printPhi_(int i, int j); //tested 5/30/2023
