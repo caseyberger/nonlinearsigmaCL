@@ -107,8 +107,8 @@ class fields:
                 for y in range(self.Nx):
                     xp1 = self.plus_one(x,self.Nx)
                     yp1 = self.plus_one(y,self.Ny)
-                    A += np.dot(self.phi(x,y,newlattice),self.phi(xp1,y,newlattice))
-                    A += np.dot(self.phi(x,y,newlattice),self.phi(x,yp1,newlattice))
+                    A += np.dot(self.phi(x,y,newlattice = True),self.phi(xp1,y,newlattice = True))
+                    A += np.dot(self.phi(x,y,newlattice = True),self.phi(x,yp1,newlattice = True))
         else:
             for x in range(self.Nx):
                 for y in range(self.Nx):
@@ -119,7 +119,7 @@ class fields:
         return A/self.gL
          
     def S_L(self,newlattice = False):
-        S = self.A_L(newlattice)-1.j*self.Q_L(newlattice)
+        S = self.A_L(newlattice = newlattice)-1.j*self.Q_L(newlattice = newlattice)
         return S
     
     def site(self,x,y):
@@ -133,16 +133,15 @@ class fields:
         temp = self.representation
         temp[x][y] = self.random_spin()
         self.newlattice = temp
-        
-        oldS = self.S_L 
-        newS = self.A_L(x,y,changespin = True,newspin=newspin) - 1.j*self.Q_L(x,y)#don't need to deal with Q_L while testing theta = 0 -- update later for CL! 
+        oldS = self.S_L()
+        newS = self.A_L(newlattice = True) - 1.j*self.Q_L(newlattice = True)
         dS = newS-oldS
         if dS < 0:
-            self.representation[x][y] = newspin
+            self.representation[x][y] = self.newlattice[x][y]
         else:
             r = np.random.rand()
             if r <= np.exp(-1.*dS):
-                self.representation[x][y] = newspin
+                self.representation[x][y] = self.newlattice[x][y]
             else:
                 pass
        
