@@ -26,7 +26,7 @@ class LatticeData:
         else:
             dst_path = dst_path
         for item in os.listdir(src_path):
-            if item.startswith(self.dirheader):
+            if item.startswith(self.dirheader):å
                 dir_path = src_path+item
                 nMC = int(item.split("_")[-5])
                 freq = int(item.split("_")[-1])
@@ -42,6 +42,7 @@ class LatticeData:
                             print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
                     elif file.startswith(self.Gheader):
                         shutil.copyfile(file_path, dst_path+file)
+                        
     def all_params(self):
         param_df = pd.DataFrame()
         files = self.get_data_files()
@@ -121,8 +122,7 @@ class LatticeData:
         self.df_stacked = stack
         return df_all
     
-    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, 
-                      freq = 100):
+    def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, freq = 100):
         if len(self.df_stats) == 0:
             print("Generating dataframe of data with default statistical analysis")
             df = self.do_stats()
