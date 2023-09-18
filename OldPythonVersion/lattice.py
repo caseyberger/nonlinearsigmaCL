@@ -8,6 +8,7 @@ class fields:
         self.n_eq = n_eq
         self.n_MC = n_MC
         self.representation = np.zeros([Nx,Ny,3])
+        self.newlattice = np.zeros([Nx,Ny,3])
         self.integer = integer
         
     def random_spin(self):
@@ -32,8 +33,11 @@ class fields:
                     self.representation[x][y] = self.random_spin()
             #self.representation = L
         
-    def phi(self,x,y):
-        return self.representation[x][y]
+    def phi(self,x,y,newlattice = False):
+        if newlattice:
+            return self.newlattice[x][y]
+        else:
+            return self.representation[x][y]
     
     def plus_one(self,x,Nx):
         x+=1
@@ -78,7 +82,7 @@ class fields:
         q = np.dot(phi1,phi2) + np.dot(phi2,phi3) + np.dot(phi3,phi1) + 1.j*np.dot(phi1,np.cross(phi2,phi3))
         return q
         
-    def Q_L(self,x,y):
+    def Q_L(self,newlattice = False):
         Q_L = 0
         triangle_dict = dict()
         triangle = 1
@@ -88,7 +92,6 @@ class fields:
         triangle_dict[triangle] = [vertex_1, vertex_2, vertex_3]
         triangle+=1
         while triangle <= 8:
-            rhosquared = self.rho_squared(vertex_1, vertex_2, vertex_3)
             q = self.q_sum(vertex_1, vertex_2, vertex_3)
             Q_L += -1.j*(np.log(1.+q)-0.5*np.log(rhosquared))/(2.*np.pi)
             vertex_3 = vertex_2
@@ -97,25 +100,26 @@ class fields:
             triangle+=1
         return Q_L
     
-    def A_L(self,x,y,changespin = False,newspin = None):
-        '''
-        assumption: mu represents the x and y directions 
-        as it comes from the partial derivative of phi(x)
-        '''
+    def A_L(self,newlattice = False):
         A = 0.
-        if changespin:
-            A += np.dot(newspin,self.phi(self.plus_one(x,self.Nx),y)) 
-            A += np.dot(newspin,self.phi(x,self.plus_one(y,self.Ny)))
+        if newlattice:
+            for x in range(self.Nx):
+                for y in range(self.Nx):
+                    xp1 = self.plus_one(x,self.Nx)
+                    yp1 = self.plus_one(y,self.Ny)
+                    A += np.dot(self.phi(x,y,newlattice),self.phi(xp1,y,newlattice))
+                    A += np.dot(self.phi(x,y,newlattice),self.phi(x,yp1,newlattice))
         else:
-            A += np.dot(self.phi(x,y),self.phi(self.plus_one(x,self.Nx),y)) 
-            A += np.dot(self.phi(x,y),self.phi(x,self.plus_one(y,self.Ny)))
+            for x in range(self.Nx):
+                for y in range(self.Nx):
+                    xp1 = self.plus_one(x,self.Nx)
+                    yp1 = self.plus_one(y,self.Ny)
+                    A += np.dot(self.phi(x,y),self.phi(xp1,y)) 
+                    A += np.dot(self.phi(x,y),self.phi(x,yp1))
         return A/self.gL
          
-    def S_L(self):
-        S = 0.
-        for x in range(self.Nx):
-            for y in range(self.Ny):
-                S+= self.A_L(x,y)-1.j*self.Q_L(x,y)
+    def S_L(self,newlattice = False):
+        S = self.A_L(newlattice)-1.j*self.Q_L(newlattice)
         return S
     
     def site(self,x,y):
@@ -126,9 +130,11 @@ class fields:
         return np.exp(-1.*S)
     
     def change_spin(self,x,y):
-        oldspin = self.site(x,y)
-        newspin = self.random_spin()
-        oldS = self.A_L(x,y) - 1.j*self.Q_L(x,y) 
+        temp = self.representation
+        temp[x][y] = self.random_spin()
+        self.newlattice = temp
+        
+        oldS = self.S_L 
         newS = self.A_L(x,y,changespin = True,newspin=newspin) - 1.j*self.Q_L(x,y)#don't need to deal with Q_L while testing theta = 0 -- update later for CL! 
         dS = newS-oldS
         if dS < 0:
