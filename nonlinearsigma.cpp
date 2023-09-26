@@ -106,6 +106,7 @@ int main (int argc, char *argv[])
 
     for (int n = 0; n<L.getnMC(); n++){
         L.metropolisStep();
+        L.calcGij();
         phi  = L.getPhiTot();
         A_L  = L.calcAL();
         Q_L  = L.calcQL();

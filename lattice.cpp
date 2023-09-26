@@ -254,15 +254,19 @@ namespace nonlinearsigma{
         return S_L;
     }
     
-    double Lattice::twoPointG(int i, int j){
-        Lattice::field phi_00(Lattice::getPhi(0,0));
-        Lattice::field phi_ij(Lattice::getPhi(i,j));
-        double G(dot(phi_00, phi_ij));
-        double oldAvgG(Lattice::getAvgG(i, j));
-        int n(acceptCount_+rejectCount_);
-        double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
-        Gij_[i][j] = newAvgG;
-        return G;
+    void Lattice::calcGij(){
+        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:F_Re,F_Im)
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                Lattice::field phi_00(Lattice::getPhi(0,0));
+                Lattice::field phi_ij(Lattice::getPhi(i,j));
+                double G(dot(phi_00, phi_ij));
+                double oldAvgG(Lattice::getAvgG(i, j));
+                int n(acceptCount_+rejectCount_);
+                double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
+                Gij_[i][j] = newAvgG;
+            }
+        }
     }
     
     double Lattice::calcXi(){
@@ -271,7 +275,7 @@ namespace nonlinearsigma{
         #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:Xi)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                Xi += Lattice::twoPointG(i, j);
+                Xi += Lattice::getAvgG(i,j);
             }
         }
         return Xi;
@@ -284,8 +288,9 @@ namespace nonlinearsigma{
         #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:F_Re,F_Im)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
-                F_Re += 0.5*Lattice::twoPointG(i, j)*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
-                F_Im += 0.5*Lattice::twoPointG(i, j)*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
+                double Gij = Lattice::getAvgG(i,j);
+                F_Re += 0.5*Gij*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
+                F_Im += 0.5*Gij*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
             }
         }
         static double F[2] = {F_Re, F_Im};

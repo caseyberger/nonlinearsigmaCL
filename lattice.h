@@ -57,7 +57,7 @@ namespace nonlinearsigma{
         void checkQL();//updated 7/14/2023
         double calcAL();//tested 6/1/2023
         double calcSL();//tested 6/1/2023
-        double twoPointG(int i, int j);
+        void calcGij();
         double calcXi();
         double* calcF();
         
