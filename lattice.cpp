@@ -255,7 +255,7 @@ namespace nonlinearsigma{
     }
     
     void Lattice::calcGij(){
-        #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:F_Re,F_Im)
+        #pragma omp parallel for collapse(2) default(none) shared(length_)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 Lattice::field phi_00(Lattice::getPhi(0,0));
