@@ -106,6 +106,8 @@ int main (int argc, char *argv[])
 
     for (int n = 0; n<L.getnMC(); n++){
         L.metropolisStep();
+        //most of these observable calculations don't need to happen unless you're saving the output
+        //edit for speedup
         L.calcGij();
         phi  = L.getPhiTot();
         A_L  = L.calcAL();
