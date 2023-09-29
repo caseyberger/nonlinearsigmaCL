@@ -4,3 +4,4 @@ run_*
 *.log
 *.gcno
 old/
+Analysis/data*
