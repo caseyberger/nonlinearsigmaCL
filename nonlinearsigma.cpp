@@ -29,6 +29,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int 
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
 void testing_suite(int len, double beta, double itheta);
+void save_config(Lattice L, int step);
 
 int main (int argc, char *argv[])
 {
@@ -106,20 +107,19 @@ int main (int argc, char *argv[])
 
     for (int n = 0; n<L.getnMC(); n++){
         L.metropolisStep();
-        //most of these observable calculations don't need to happen unless you're saving the output
-        //edit for speedup
-        L.calcGij();
-        phi  = L.getPhiTot();
-        A_L  = L.calcAL();
-        Q_L  = L.calcQL();
-        S_L  = L.calcSL();
-        Xi_L = L.calcXi();
-        F_L  = L.calcF();
-        acc  = L.acceptanceRate();
-        time(&time_now);
-        dt = time_now - begin_mc;
         if (n%step_freq == 0){
+            L.calcGij();//should I do this every step or only when saving?
+            phi  = L.getPhiTot();
+            A_L  = L.calcAL();
+            Q_L  = L.calcQL();
+            S_L  = L.calcSL();
+            Xi_L = L.calcXi();
+            F_L  = L.calcF();
+            acc  = L.acceptanceRate();
+            time(&time_now);
+            dt = time_now - begin_mc;
             write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
+            save_config(L, n);
         }
 #ifdef TESTING_MODE
         time(&time_now);
@@ -304,7 +304,7 @@ void test_phi_distribution(Lattice L){
 }
 
 void save_correlation_function(Lattice L){
-    //output phi distributions as .csv file
+    //output average correlation function as .csv file
     cout << "Saving average correlation function to file" <<endl;
     //create header of logfile
     string fname = "Gij_avg_"+L.getFilename();
@@ -329,6 +329,33 @@ void save_correlation_function(Lattice L){
     }
     fout.close();
 }
+
+void save_config(Lattice L, int step){
+    //output phi distributions as .csv file
+    //create header of logfile
+    string step_str   = std::to_string(step);
+    string fname = "config_"+step_str+".csv";
+    ofstream fout; //output stream
+    fout.open(fname.c_str(),ios::out);
+    
+    // check if files are open
+    if (!fout.is_open())
+    {
+        cerr << "Unable to open file " << fname <<"." << endl;
+        exit(10);
+    }
+    fout.setf(ios::fixed);
+    fout << "i,j,phi_x,phi_y,phi_z" << endl;
+    for (int i = 0; i < len; i++){
+        for (int j = 0; j < len; j++){
+            field phi = L.getPhi(i,j);
+            fout << i <<","<< j << ",";
+            fout << phi[0]<< "," << phi[1]<< "," << phi[2] << endl;
+        }
+    }
+    fout.close();
+}
+
     
 void testing_suite(int len, double beta, double itheta){
     cout << "Extreme testing mode enabled. Running through tests." << endl;
