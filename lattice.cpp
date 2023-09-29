@@ -12,6 +12,7 @@
 #include <array> 
 #include <omp.h>
 #include <fstream> //fout
+
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
@@ -213,7 +214,7 @@ namespace nonlinearsigma{
         std::string step_str   = std::to_string(step);
         std::string fname = "config_"+step_str+".csv";
         std::ofstream fout; //output stream
-        fout.open(fname.c_str(),ios::out);
+        fout.open(fname.c_str(),std::ios::out);
 
         // check if files are open
         if (!fout.is_open())
@@ -221,7 +222,7 @@ namespace nonlinearsigma{
             std::cerr << "Unable to open file " << fname <<"." << std::endl;
             std::exit(10);
         }
-        fout.setf(ios::fixed);
+        fout.setf(std::ios::fixed);
         fout << "i,j,phi_x,phi_y,phi_z" << std::endl;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
