@@ -52,6 +52,9 @@ namespace nonlinearsigma{
         void printTriangles(int i, int j);//updated 7/14/2023
         void printNeighbors(int i, int j);//tested 6/1/2023
         
+        //write things to file
+        void saveConfig(int step);
+        
         //calculate and test lattice quantities
         double calcQL();//updated 7/14/2023
         void checkQL();//updated 7/14/2023

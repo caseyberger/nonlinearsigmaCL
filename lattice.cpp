@@ -208,6 +208,30 @@ namespace nonlinearsigma{
         std::cout << "(" << nn[3][0] << "," << nn[3][1] << "), with phi (" << nnphi[3][0] << "," << nnphi[3][1] << "," << nnphi[3][2] << ")" << std::endl;
     }
     
+    void Lattice::saveConfig(int step){
+        std::string step_str   = std::to_string(step);
+        std::string fname = "config_"+step_str+".csv";
+        std::ofstream fout; //output stream
+        fout.open(fname.c_str(),ios::out);
+
+        // check if files are open
+        if (!fout.is_open())
+        {
+            std::cerr << "Unable to open file " << fname <<"." << std::endl;
+            std::exit(10);
+        }
+        fout.setf(ios::fixed);
+        fout << "i,j,phi_x,phi_y,phi_z" << std::endl;
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                field phi = Lattice::getPhi(i,j);
+                fout << i <<","<< j << ",";
+                fout << phi[0]<< "," << phi[1]<< "," << phi[2] << std::endl;
+            }
+        }
+        fout.close();
+    }
+    
     double Lattice::calcQL(){
         //updated 7/14/2023 to deal with new triangles
         //calculates topological charge

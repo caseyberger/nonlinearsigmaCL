@@ -29,7 +29,6 @@ void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int 
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
 void testing_suite(int len, double beta, double itheta);
-void save_config(Lattice L, int step);
 
 int main (int argc, char *argv[])
 {
@@ -119,7 +118,7 @@ int main (int argc, char *argv[])
             time(&time_now);
             dt = time_now - begin_mc;
             write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
-            save_config(L, n);
+            L.saveConfig(n);
         }
 #ifdef TESTING_MODE
         time(&time_now);
@@ -329,33 +328,6 @@ void save_correlation_function(Lattice L){
     }
     fout.close();
 }
-
-void save_config(Lattice L, int step){
-    //output phi distributions as .csv file
-    //create header of logfile
-    string step_str   = std::to_string(step);
-    string fname = "config_"+step_str+".csv";
-    ofstream fout; //output stream
-    fout.open(fname.c_str(),ios::out);
-    
-    // check if files are open
-    if (!fout.is_open())
-    {
-        cerr << "Unable to open file " << fname <<"." << endl;
-        exit(10);
-    }
-    fout.setf(ios::fixed);
-    fout << "i,j,phi_x,phi_y,phi_z" << endl;
-    for (int i = 0; i < len; i++){
-        for (int j = 0; j < len; j++){
-            field phi = L.getPhi(i,j);
-            fout << i <<","<< j << ",";
-            fout << phi[0]<< "," << phi[1]<< "," << phi[2] << endl;
-        }
-    }
-    fout.close();
-}
-
     
 void testing_suite(int len, double beta, double itheta){
     cout << "Extreme testing mode enabled. Running through tests." << endl;
