@@ -5,4 +5,4 @@ run_*
 *.gcno
 old/
 Analysis/data*
-__pycache__*
+Analysis/__pycache__*
