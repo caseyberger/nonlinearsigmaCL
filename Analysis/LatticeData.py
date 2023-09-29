@@ -26,7 +26,7 @@ class LatticeData:
         else:
             dst_path = dst_path
         for item in os.listdir(src_path):
-            if item.startswith(self.dirheader):å
+            if item.startswith(self.dirheader):
                 dir_path = src_path+item
                 nMC = int(item.split("_")[-5])
                 freq = int(item.split("_")[-1])
@@ -193,6 +193,7 @@ class LatticeData:
             return False
         
     def calc_F(self, **kwargs):
+        #fix this to actually get the 2-point correlation function instead of the average G
         G_avg = self.get_corr_func(suppress_output = True, **kwargs)
         L = kwargs["length"]
         F = complex(0,0)
