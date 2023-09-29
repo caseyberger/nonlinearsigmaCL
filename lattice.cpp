@@ -11,6 +11,7 @@
 #include <random> //default_random_engine
 #include <array> 
 #include <omp.h>
+#include <fstream> //fout
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
