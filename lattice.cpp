@@ -228,8 +228,8 @@ namespace nonlinearsigma{
                 field phi = Lattice::getPhi(i,j);
                 fout << i <<","<< j << ",";
                 fout << phi[0]<< "," << phi[1]<< "," << phi[2];
-                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << "Y"<< std::endl;}
-                else{fout << "N"<< std::endl;}
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y"<< std::endl;}
+                else{fout << ", N"<< std::endl;}
             }
         }
         fout.close();
