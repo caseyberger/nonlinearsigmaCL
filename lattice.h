@@ -37,6 +37,7 @@ namespace nonlinearsigma{
         double getiTheta();//tested 6/1/2023
         int getnTherm();
         int getnMC();
+        int getExceptionalConfigCount();
         std::string getFilename();
         field getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
