@@ -317,15 +317,14 @@ void save_correlation_function(Lattice L){
         exit(10);
     }
     fout.setf(ios::fixed);
-    int nExceptional = L.getExceptionalConfigCount();
-    fout << "num_exceptional = " << nExceptional << endl;
-    fout << "i,j,G_avg" << endl;
+    fout << "i,j,G_avg,exceptional" << endl;
     int len = L.getLength();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             double G = L.getAvgG(i,j);
-            fout << i <<","<< j << ",";
-            fout << G << endl;
+            fout << i <<","<< j << ","<< G << ",";
+            if (L.exceptionalConfig(i,j,0) or L.exceptionalConfig(i,j,1)){fout << "Y"<< endl;}
+            else{fout << "N"<< endl;}
         }
     }
     fout.close();

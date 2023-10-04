@@ -37,7 +37,6 @@ namespace nonlinearsigma{
         double getiTheta();//tested 6/1/2023
         int getnTherm();
         int getnMC();
-        int getExceptionalConfigCount();
         std::string getFilename();
         field getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
@@ -64,12 +63,14 @@ namespace nonlinearsigma{
         void calcGij();
         double calcXi();
         double* calcF();
+        bool exceptionalConfig(int i, int j, int n);
         
         //monte carlo tools
         void metropolisStep();//tested 6/5/2023
         void thermalize();//tested 6/5/2023
         void zeroCount();//tested 6/5/2023
         double acceptanceRate();//tested 6/5/2023
+
     
         //private members -- only accessible within the class functions
         private:
@@ -91,11 +92,9 @@ namespace nonlinearsigma{
         double accRate_;
         std::vector < std::vector < double > > Gij_;
         std::string filename_;
-        int exceptionalconfigs_;
         
         //functions
         field makePhi_(); //tested 6/1/2023
-        bool exceptionalConfig_(int i, int j, int n);
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_();//updated 7/14/2023
