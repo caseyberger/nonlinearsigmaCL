@@ -222,12 +222,14 @@ namespace nonlinearsigma{
             std::exit(10);
         }
         fout.setf(std::ios::fixed);
-        fout << "i,j,phi_x,phi_y,phi_z" << std::endl;
+        fout << "i,j,phi_x,phi_y,phi_z,exceptional" << std::endl;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 field phi = Lattice::getPhi(i,j);
                 fout << i <<","<< j << ",";
-                fout << phi[0]<< "," << phi[1]<< "," << phi[2] << std::endl;
+                fout << phi[0]<< "," << phi[1]<< "," << phi[2];
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << "Y"<< std::endl;}
+                else{fout << "N"<< std::endl;}
             }
         }
         fout.close();
