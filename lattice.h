@@ -93,6 +93,7 @@ namespace nonlinearsigma{
         
         //functions
         field makePhi_(); //tested 6/1/2023
+        bool exceptionalConfig_(int i, int j, int n);
         int plusOne_(int i); //tested 5/30/2023
         int minusOne_(int i);//tested 5/30/2023
         void makeTriangles_();//updated 7/14/2023

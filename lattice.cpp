@@ -27,8 +27,8 @@ namespace nonlinearsigma{
         Lattice::setnTherm(1000); //set therm steps to default number
         Lattice::setnMC(1000); //set Monte Carlo steps to default number
         Lattice::setFreq(100); //set frequency between saved configs to default number
-        
         Lattice::generateFilename_();
+        exceptionalconfigs_ = 0; //counts exceptional configurations
         fixedr_ = false; //this should only be set to true when testing
         use_arcsin_ = true;
     }
@@ -114,6 +114,10 @@ namespace nonlinearsigma{
         return nMC_;
     }
     
+    int Lattice::getExceptionalConfigCount(){
+        return exceptionalconfigs_;
+    }
+    
     std::string Lattice::getFilename(){
         return filename_;
     }
@@ -165,6 +169,12 @@ namespace nonlinearsigma{
             std::vector < Lattice::field > gridj;
             for (int j = 0; j<length_; j++){
                 field phi = Lattice::makePhi_();
+                if (Lattice::exceptionalConfig_(i,j,0)){
+                    exceptionalconfigs_+=1;
+                }
+                if (Lattice::exceptionalConfig_(i,j,1)){
+                    exceptionalconfigs_+=1;
+                }
                 gridj.push_back(phi);
                 Gj.push_back(0.);
             }
@@ -328,6 +338,7 @@ namespace nonlinearsigma{
         //tested 6/5/2023
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
+        exceptionalconfigs_ = 0;
         
         //int nsites = length_*length_;
         int nsites(length_*length_); //optimization 7/4/23
@@ -366,9 +377,14 @@ namespace nonlinearsigma{
 #endif
             if(dS < 0 || r < std::exp(-1.*dS)){
                 acceptCount_++;//increment accept counter
+                if (Lattice::exceptionalConfig_(i,j,0)){
+                    exceptionalconfigs_+=1;
+                }
+                if (Lattice::exceptionalConfig_(i,j,1)){
+                    exceptionalconfigs_+=1;
+                }
             }
             else{
-                
                 //Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
                 //optimization: remove function call for simple function
                 grid_[i][j][0] = phi_old[0];
@@ -380,6 +396,7 @@ namespace nonlinearsigma{
         }//loop over sites
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
         accRate_ = acc_rate;
+        
 #ifdef EXTREME_TESTING_MODE
         std:: cout << "Acceptance rate: " << acc_rate << std::endl;
 #endif
@@ -439,6 +456,22 @@ namespace nonlinearsigma{
         r1_ = r1;//save for debugging -- consider wrapping in a #ifndef statement for optimization
         r2_ = r2;//save for debugging -- consider wrapping in a #ifndef statement for optimization
         return phi;
+    }
+    
+    bool Lattice::exceptionalConfig_(int i, int j, int n){
+        int i1(triangles_[i][j][n][0][0]);
+        int j1(triangles_[i][j][n][0][1]);
+        int i2(triangles_[i][j][n][1][0]);
+        int j2(triangles_[i][j][n][1][1]);
+        int i3(triangles_[i][j][n][2][0]);
+        int j3(triangles_[i][j][n][2][1]);
+        Lattice::field phi1(Lattice::getPhi(i1,j1));
+        Lattice::field phi2(Lattice::getPhi(i2,j2));
+        Lattice::field phi3(Lattice::getPhi(i3,j3));
+        double check1 = dot(phi1,cross(phi2,phi3));
+        double check2 = 1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1));
+        if (check1 == 0; or check2 <= 0.){return True;}
+        else {return False;}
     }
     
     int Lattice::plusOne_(int i){
