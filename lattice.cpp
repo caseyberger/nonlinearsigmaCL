@@ -470,7 +470,7 @@ namespace nonlinearsigma{
         Lattice::field phi3(Lattice::getPhi(i3,j3));
         double check1 = dot(phi1,cross(phi2,phi3));
         double check2 = 1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1));
-        if (check1 == 0; or check2 <= 0.){return true;}
+        if (check1 == 0 or check2 <= 0.){return true;}
         else {return false;}
     }
     

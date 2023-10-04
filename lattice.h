@@ -91,6 +91,7 @@ namespace nonlinearsigma{
         double accRate_;
         std::vector < std::vector < double > > Gij_;
         std::string filename_;
+        int exceptionalconfigs_;
         
         //functions
         field makePhi_(); //tested 6/1/2023
