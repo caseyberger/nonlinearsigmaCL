@@ -40,6 +40,7 @@ class LatticeData:
                             shutil.copyfile(file_path, dst_path+file)
                         else:
                             print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
+                        f.close()
                     elif file.startswith(self.Gheader):
                         shutil.copyfile(file_path, dst_path+file)
                         
@@ -52,7 +53,7 @@ class LatticeData:
         param_df["itheta/pi"] = param_df["itheta"]/np.pi
         return param_df
     
-    def get_data(self,single_run = False, corr = False, suppress_output = True, **kwargs):
+    def get_data(self,single_run = False, corr = False, suppress_output = True, reset_index = True,**kwargs):
         if single_run:
             missing_params = []
             for p in self.parameters:
@@ -89,6 +90,8 @@ class LatticeData:
                 if not suppress_output:
                     for key, value in pdict.items():
                         print(key, value)
+        if reset_index:
+            df.reset_index()
         return df
     
     def do_stats(self, therm = 0., stack = False, **kwargs):
@@ -157,8 +160,34 @@ class LatticeData:
         G_avg = df["G_avg"].to_numpy()
         G_avg = G_avg.reshape((length,length))
         return G_avg
+    
+    def get_exceptional_configurations(self,src_dir):
+        src_path = os.getcwd()+'/'+src_dir+'/'
+        config_df = pd.DataFrame()
+        for item in os.listdir(src_path):
+            if item.startswith(self.dirheader):
+                dir_path = src_path+item
+                pdict = dict()
+                for file in os.listdir(dir_path):
+                    config_dict = dict()
+                    file_path = dir_path+"/"+file
+                    if file.startswith(self.header):
+                        pdict = self.get_file_params(file)
+                for file in os.listdir(dir_path):
+                    if file.startswith("config"):
+                        config_num = int(file[0:-4].split("_")[-1])
+                        config_dict["config"] = config_num
+                        temp = pd.read_csv(file_path, skipinitialspace = True)
+                        num_N = temp['exceptional'].value_counts()['N']
+                        num_exc = len(temp['exceptional']) - num_N
+                        config_dict["num_exc"] = num_exc
+                    config_dict.update(pdict) 
+                    config_df = config_df.append(config_dict,ignore_index=True)
+        config_df["any_exc"] = config_df["num_exc"]>0
+        config_df["any_exc"] = config_df["any_exc"].astype(int)
+        return config_df
         
-    #internal functions / private
+    #internal functions / private                        
     def get_data_files(self, corr = False):
         data_files = []
         file_header = self.header
