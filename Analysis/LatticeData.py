@@ -162,29 +162,31 @@ class LatticeData:
         return G_avg
     
     def get_exceptional_configurations(self,src_dir):
-        src_path = os.getcwd()+'/'+src_dir+'/'
-        config_df = pd.DataFrame()
-        for item in os.listdir(src_path):
-            if item.startswith(self.dirheader):
-                dir_path = src_path+item
-                pdict = dict()
-                for file in os.listdir(dir_path):
-                    config_dict = dict()
-                    file_path = dir_path+"/"+file
-                    if file.startswith(self.header):
-                        pdict = self.get_file_params(file)
-                for file in os.listdir(dir_path):
-                    if file.startswith("config"):
-                        config_num = int(file[0:-4].split("_")[-1])
-                        config_dict["config"] = config_num
-                        temp = pd.read_csv(file_path, skipinitialspace = True)
-                        num_N = temp['exceptional'].value_counts()['N']
-                        num_exc = len(temp['exceptional']) - num_N
-                        config_dict["num_exc"] = num_exc
-                    config_dict.update(pdict) 
-                    config_df = config_df.append(config_dict,ignore_index=True)
-        config_df["any_exc"] = config_df["num_exc"]>0
-        config_df["any_exc"] = config_df["any_exc"].astype(int)
+        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        config_df = pd.DataFrame() #create empty data frame
+        for item in os.listdir(src_path):#loop over all files in the run directory
+            if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
+                dir_path = src_path+item #create path to the sub-directory
+                pdict = dict() #create empty dictionary for parameters
+                for file in os.listdir(dir_path): #loop over every file in the run sub-directory
+                    file_path = dir_path+"/"+file #create path to the file we're looking at
+                    if file.startswith(self.header): #if it's the full observable logfile
+                        pdict = self.get_file_params(file) #add the parameters for this run to pdict
+                for file in os.listdir(dir_path): #loop again over every file
+                    if file.startswith("config"): #find just the config files
+                        config_dict = dict() #create empty dictionary to store config number and number of exceptional sites in that config
+                        config_dict.update(pdict) #add parameter dictionary to the config dict
+                        config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
+                        config_dict["config"] = config_num #store the config number
+                        temp = pd.read_csv(file_path, skipinitialspace = True) #read the config file
+                        #why do it this way???
+                        #num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s                 
+                        #num_exc = len(temp['exceptional']) - num_N #number of exc
+                        num_exc = temp['exceptional'].value_counts()['Y']#count exceptional configs
+                        config_dict["num_exc"] = num_exc #add to dictionary
+                        config_df = config_df.append(config_dict,ignore_index=True)
+        config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
+        config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
         return config_df
         
     #internal functions / private                        
