@@ -179,10 +179,8 @@ class LatticeData:
                         config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
                         config_dict["config"] = config_num #store the config number
                         temp = pd.read_csv(file_path, skipinitialspace = True) #read the config file
-                        #why do it this way???
-                        #num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s                 
-                        #num_exc = len(temp['exceptional']) - num_N #number of exc
-                        num_exc = temp['exceptional'].value_counts()['Y']#count exceptional configs
+                        num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s to avoid key error            
+                        num_exc = len(temp['exceptional']) - num_N #number of exc
                         config_dict["num_exc"] = num_exc #add to dictionary
                         config_df = config_df.append(config_dict,ignore_index=True)
         config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
