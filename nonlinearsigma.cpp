@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: July 14, 2023
+// Last edited: Oct 25, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
