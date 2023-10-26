@@ -339,28 +339,33 @@ namespace nonlinearsigma{
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
-            //int i = site_arr[n]/length_;
-            int i(site_arr[n]/length_);//optimization 7/4/23
-            //int j = site_arr[n]%length_;
-            int j(site_arr[n]%length_);//optimization 7/4/23
-            //Si = Lattice::calcSL();
-            //optimization: remove function call for simple function
+            int i(site_arr[n]/length_);
+            int j(site_arr[n]%length_);
             Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
-            //end optimization
             phi_old = Lattice::getPhi(i, j);
+            
+            bool exceptional_config = true;
+            int exc_count = 0;
+            while (exceptional_config){
+                //update lattice
+                phi_new = Lattice::makePhi_();
+                grid_[i][j][0] = phi_new[0];
+                grid_[i][j][1] = phi_new[1];
+                grid_[i][j][2] = phi_new[2]; 
+            
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
+                    exceptional_config = true;
+                    exc_count++;
+                }
+                else{
+                    exceptional_config = false;
+                }
+                if (exc_count > 100){
+                    break;
+                }
+            }
 
-            //update lattice
-            phi_new = Lattice::makePhi_();
-            //Lattice::setPhi(i, j, phi_new);
-            //optimization: remove function call for simple function
-            grid_[i][j][0] = phi_new[0];
-            grid_[i][j][1] = phi_new[1];
-            grid_[i][j][2] = phi_new[2];
-            //end optimization
-            //Sf = Lattice::calcSL();
-            //optimization: remove function call for simple function
             Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
-            //end optimization
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
             r = 0.5;
