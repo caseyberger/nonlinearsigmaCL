@@ -162,18 +162,18 @@ class LatticeData:
         return G_avg
     
     def get_exceptional_configurations(self,src_dir):
-        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
-        config_df = pd.DataFrame() #create empty data frame
-        for item in os.listdir(src_path):#loop over all files in the run directory
-            if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
-                dir_path = src_path+item #create path to the sub-directory
-                pdict = dict() #create empty dictionary for parameters
-                for file in os.listdir(dir_path): #loop over every file in the run sub-directory
-                    file_path = dir_path+"/"+file #create path to the file we're looking at
-                    if file.startswith(self.header): #if it's the full observable logfile
-                        pdict = self.get_file_params(file) #add the parameters for this run to pdict
-                for file in os.listdir(dir_path): #loop again over every file
-                    if file.startswith("config"): #find just the config files
+        src_path = os.getcwd()+'/'+src_dir+'/' 
+        config_df = pd.DataFrame() 
+        for item in os.listdir(src_path):
+            if item.startswith(self.dirheader): 
+                dir_path = src_path+item 
+                pdict = dict() 
+                for file in os.listdir(dir_path): 
+                    file_path = dir_path+"/"+file
+                    if file.startswith(self.header): 
+                        pdict = self.get_file_params(file) 
+                for file in os.listdir(dir_path): 
+                    if file.startswith("config"): 
                         config_dict = dict() #create empty dictionary to store config number and number of exceptional sites in that config
                         config_dict.update(pdict) #add parameter dictionary to the config dict
                         config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
@@ -186,6 +186,33 @@ class LatticeData:
         config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
         config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
         return config_df
+    
+    def convert_config_spherical(self,src_dir):
+        count = 0 #testing
+        src_path = os.getcwd()+'/'+src_dir+'/' 
+        config_df = pd.DataFrame() 
+        for item in os.listdir(src_path):
+            if item.startswith(self.dirheader): 
+                dir_path = src_path+item 
+                pdict = dict() 
+                for file in os.listdir(dir_path): 
+                    file_path = dir_path+"/"+file
+                    if file.startswith(self.header): 
+                        pdict = self.get_file_params(file) 
+                for file in os.listdir(dir_path): 
+                    if file.startswith("config"): 
+                        df = pd.read_csv(file)
+                        print(df.head())
+                        count +=1
+                    if count > 0:
+                        break
+    
+    def spherical(x,y,z):
+        azimuthal=np.arcsin(np.sqrt(1-z**2))
+        polar=np.arcsin(y/(np.sqrt(1-z**2)))
+        if x<0:
+            polar=np.pi-polar
+        return polar,azimuthal
         
     #internal functions / private                        
     def get_data_files(self, corr = False):
