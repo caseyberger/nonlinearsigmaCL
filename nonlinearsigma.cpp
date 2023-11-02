@@ -79,6 +79,7 @@ int main (int argc, char *argv[])
 
     cout << "Initializing lattice" << endl;
     L.initialize(); //initialize 3-component phi everywhere
+    L.clean(); //remove exceptional configurations from the lattice
     create_logfile(L); //generates logfile with header 
     
     double phi = 0.0;

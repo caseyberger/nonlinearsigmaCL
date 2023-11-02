@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Oct 25, 2023
+// Last edited: Nov 2, 2023
 
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
@@ -176,6 +176,42 @@ namespace nonlinearsigma{
         Lattice::zeroCount();
     }
     
+    void Lattice::clean(){
+        //cleaning the lattice means removing exceptional configurations
+        int nsites(length_*length_); 
+        std::vector<int> site_arr(nsites);
+        std::iota(site_arr.begin(), site_arr.end(), 0);     
+        shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
+        
+        int exc_lim(1000000);
+
+        for(unsigned int n = 0; n < site_arr.size(); n++){
+            int i(site_arr[n]/length_);
+            int j(site_arr[n]%length_);
+            bool exceptional_config = true;
+            int exc_count = 0;
+            while (exceptional_config){
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
+                    exceptional_config = true;
+                    exc_count++;
+                    //update lattice
+                    phi_new = Lattice::makePhi_();
+                    grid_[i][j][0] = phi_new[0];
+                    grid_[i][j][1] = phi_new[1];
+                    grid_[i][j][2] = phi_new[2]; 
+                }
+                else{
+                    exceptional_config = false;
+                }
+                if (exc_count > exc_lim){
+                    break;
+                }
+            }//while still exceptional at i,j
+            std::cout << "Num attempts at non-exceptional at site (i,j) = ";
+            std::cout << i << "," << j << "was " << exc_count << std::endj;
+        }//loop over sites
+    }
+    
     void Lattice::printLattice(){
         //tested 5/30/2023
         for (int i = 0; i < length_; i++){
@@ -332,8 +368,7 @@ namespace nonlinearsigma{
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
         
-        //int nsites = length_*length_;
-        int nsites(length_*length_); //optimization 7/4/23
+        int nsites(length_*length_); 
         std::vector<int> site_arr(nsites);
         std::iota(site_arr.begin(), site_arr.end(), 0);     
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
@@ -343,28 +378,6 @@ namespace nonlinearsigma{
             int j(site_arr[n]%length_);
             Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
             phi_old = Lattice::getPhi(i, j);
-            
-            bool exceptional_config = true;
-            int exc_count = 0;
-            while (exceptional_config){
-                //update lattice
-                phi_new = Lattice::makePhi_();
-                grid_[i][j][0] = phi_new[0];
-                grid_[i][j][1] = phi_new[1];
-                grid_[i][j][2] = phi_new[2]; 
-            
-                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
-                    exceptional_config = true;
-                    exc_count++;
-                }
-                else{
-                    exceptional_config = false;
-                }
-                if (exc_count > 100){
-                    break;
-                }
-            }
-
             Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN

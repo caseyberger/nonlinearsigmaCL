@@ -44,8 +44,9 @@ namespace nonlinearsigma{
         double getPhiTot(); //tested 6/1/2023
         double getAvgG(int i, int j);
         
-        //initialize the lattice
+        //initialize the lattice and clean lattice (remove exceptional)
         void initialize(); //tested 5/30/2023
+        void clean();
         
         //print things to the screen
         void printLattice();//tested 5/30/2023
