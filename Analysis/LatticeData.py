@@ -1,7 +1,17 @@
+#Authors: Casey Berger and Andy Esseln
+#Last updated: 2023-11-08 by Casey 
+#Last edit: swap old get_exceptional_configurations function for Andy's new version
+
 import os
 import shutil
 import numpy as np
 import pandas as pd
+
+'''
+Some proposed changes:
+
+- Make multiple classes -- one for data utils and one for the data itself? Or maybe you need one for the correlation function data and one for the other data? The observables?
+'''
 
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
@@ -160,7 +170,9 @@ class LatticeData:
         G_avg = df["G_avg"].to_numpy()
         G_avg = G_avg.reshape((length,length))
         return G_avg
-    
+
+    '''
+    #old version (pre-Nov 8)
     def get_exceptional_configurations(self,src_dir):
         src_path = os.getcwd()+'/'+src_dir+'/' 
         config_df = pd.DataFrame() 
@@ -183,6 +195,46 @@ class LatticeData:
                         num_exc = len(temp['exceptional']) - num_N #number of exc
                         config_dict["num_exc"] = num_exc #add to dictionary
                         config_df = config_df.append(config_dict,ignore_index=True)
+        config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
+        config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
+        return config_df
+    '''
+
+    def get_exceptional_configurations(self,src_dir):
+        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        config_df = pd.DataFrame() #create empty data frame
+        for item in os.listdir(src_path):#loop over all files in the run directory
+            if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
+                dir_path = src_path+item #create path to the sub-directory
+                pdict = dict() #create empty dictionary for parameters
+                nMC = int(item.split("_")[-5])
+                freq = int(item.split("_")[-1])
+                for file in os.listdir(dir_path): #loop over every file in the run sub-directory
+                    file_path = dir_path+"/"+file #create path to the file we're looking at
+                    if file.startswith(self.header): #if it's the full observable logfile
+                        f = open(file_path, "r")
+                        len_file = int(len(f.readlines()))
+                        len_complete = int(nMC/freq +1)
+                        if len_file != len_complete:
+                            print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
+                            good=False
+                        else:
+                            pdict = self.get_file_params(file) #add the parameters for this run to pdict
+                            good=True    
+                        f.close()
+                if good==True:
+                    for file in os.listdir(dir_path): #loop again over every file
+                        if file.startswith("config"): #find just the config files
+                            file_path = dir_path+"/"+file #create path to the file we're looking at
+                            config_dict = dict() #create empty dictionary to store config number and number of exceptional sites in that config
+                            config_dict.update(pdict) #add parameter dictionary to the config dict
+                            config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
+                            config_dict["config"] = config_num #store the config number
+                            temp = pd.read_csv(file_path, skipinitialspace = True) #read the config file
+                            num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s to avoid key error            
+                            num_exc = len(temp['exceptional']) - num_N #number of exc
+                            config_dict["num_exc"] = num_exc #add to dictionary
+                            config_df = config_df.append(config_dict,ignore_index=True)
         config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
         config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
         return config_df
@@ -226,7 +278,7 @@ class LatticeData:
         return data_files
 
     def get_file_params(self, file):
-        file = file[:-4]
+        file = file[:-4]#remove ".csv" before splitting
         temp = file.split("_")
         pdict = dict()
         pdict[temp[-2]] = int(temp[-1]) #frequency
