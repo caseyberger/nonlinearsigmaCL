@@ -1,7 +1,16 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Nov 2, 2023
-
+// Last edited: Nov 8, 2023
+/* changelog: 
+ - removed setPhi function which no longer is called from anywhere
+ - removed getPhiMag for the same reason
+ 
+ 
+ suggestions for changes
+ - can you create a class in C++ that inherits the lattice object? 
+         If so, make a testing object so you can put functions like fixRNG 
+        and freeRNG and setTrig into another class to streamline this one.
+*/
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
 #include <string> //string
@@ -49,14 +58,6 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         itheta_ = itheta;
         Lattice::generateFilename_();
-    }
-    
-    void Lattice::setPhi(int i, int j, Lattice::field phi){
-        //tested 6/5/2023
-        //optimization target -- remove this function
-        grid_[i][j][0] = phi[0];
-        grid_[i][j][1] = phi[1];
-        grid_[i][j][2] = phi[2];
     }
     
     void Lattice::setnTherm(int ntherm){
@@ -128,14 +129,6 @@ namespace nonlinearsigma{
         return r;
     }
     
-    double Lattice::getPhiMag(int i, int j){
-        //tested 6/1/2023
-        //field phi = Lattice::getPhi(i,j);
-        field phi(Lattice::getPhi(i,j));//optimization 7/4/23
-        double phi_mag = dot(phi,phi);
-        return phi_mag;
-    }
-    
     double Lattice::getPhiTot(){
         //tested 6/1/2023
         //double phi_tot = 0.;
@@ -143,7 +136,8 @@ namespace nonlinearsigma{
         #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:phi_tot)
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
-                phi_tot += Lattice::getPhiMag(i, j);
+                field phi(Lattice::getPhi(i,j)); 
+                phi_tot += dot(phi,phi);
             }
         }
         return phi_tot;
@@ -155,26 +149,30 @@ namespace nonlinearsigma{
         return Gij;
     }
     
-    void Lattice::initialize(){
-        //tested 5/30/2023
-        std::vector < std::vector < Lattice::field > > grid;
-        std::vector < std::vector < double > > Gij;
-        for(int i = 0; i < length_; i++){
-            std::vector <double> Gj;
-            std::vector < Lattice::field > gridj;
-            for (int j = 0; j<length_; j++){
-                field phi = Lattice::makePhi_();
-                gridj.push_back(phi);
-                Gj.push_back(0.);
+    void Lattice::removeExceptional(int i, int j, int exc_lim){
+        bool exceptional_config = true;
+        int exc_count = 0;
+        while (exceptional_config){
+            if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
+                exceptional_config = true;
+                exc_count++;
+                //update lattice
+                field phi_new = Lattice::makePhi_();
+                grid_[i][j][0] = phi_new[0];
+                grid_[i][j][1] = phi_new[1];
+                grid_[i][j][2] = phi_new[2]; 
             }
-            Gij.push_back(Gj);
-            grid.push_back(gridj);
-        }
-        grid_ = grid;
-        Gij_ = Gij;
-        Lattice::makeTriangles_();
-        Lattice::zeroCount();
+            else{
+                exceptional_config = false;
+            }
+            if (exc_count > exc_lim){
+                break;
+            }
+        }//while still exceptional at i,j
+        std::cout << "Num attempts at non-exceptional at site (i,j) = ";
+        std::cout << i << "," << j << "was " << exc_count << std::endl;
     }
+    
     
     void Lattice::clean(){
         //cleaning the lattice means removing exceptional configurations
@@ -188,6 +186,8 @@ namespace nonlinearsigma{
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
             int j(site_arr[n]%length_);
+            Lattice::removeExceptional(i, j, exc_lim);
+            /*
             bool exceptional_config = true;
             int exc_count = 0;
             while (exceptional_config){
@@ -209,7 +209,30 @@ namespace nonlinearsigma{
             }//while still exceptional at i,j
             std::cout << "Num attempts at non-exceptional at site (i,j) = ";
             std::cout << i << "," << j << "was " << exc_count << std::endl;
+            */
         }//loop over sites
+    }
+    
+    void Lattice::initialize(){
+        //tested 5/30/2023
+        std::vector < std::vector < Lattice::field > > grid;
+        std::vector < std::vector < double > > Gij;
+        for(int i = 0; i < length_; i++){
+            std::vector <double> Gj;
+            std::vector < Lattice::field > gridj;
+            for (int j = 0; j<length_; j++){
+                field phi = Lattice::makePhi_();
+                gridj.push_back(phi);
+                Gj.push_back(0.);
+            }
+            Gij.push_back(Gj);
+            grid.push_back(gridj);
+        }
+        grid_ = grid;
+        Gij_ = Gij;
+        Lattice::makeTriangles_();
+        Lattice::zeroCount();
+        Lattice::clean();
     }
     
     void Lattice::printLattice(){
@@ -367,7 +390,9 @@ namespace nonlinearsigma{
         //tested 6/5/2023
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
+        int exc_lim = 1000;
         
+        //generate randomized array of sites
         int nsites(length_*length_); 
         std::vector<int> site_arr(nsites);
         std::iota(site_arr.begin(), site_arr.end(), 0);     
@@ -377,7 +402,19 @@ namespace nonlinearsigma{
             int i(site_arr[n]/length_);
             int j(site_arr[n]%length_);
             Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
-            phi_old = Lattice::getPhi(i, j);
+            phi_old = Lattice::getPhi(i, j);//store old field in case you reject the change
+            
+            //generate new field at site
+            phi_new = Lattice::makePhi_();
+            grid_[i][j][0] = phi_new[0];
+            grid_[i][j][1] = phi_new[1];
+            grid_[i][j][2] = phi_new[2];
+            
+            //make sure the change isn't exceptional
+            Lattice::removeExceptional(i, j, exc_lim);
+            
+            
+            //calculate change in action with new field 
             Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
@@ -389,12 +426,9 @@ namespace nonlinearsigma{
                 acceptCount_++;//increment accept counter
             }
             else{
-                //Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
-                //optimization: remove function call for simple function
                 grid_[i][j][0] = phi_old[0];
                 grid_[i][j][1] = phi_old[1];
                 grid_[i][j][2] = phi_old[2];
-                //end optimization
                 rejectCount_++;//increment reject counter
             }
         }//loop over sites

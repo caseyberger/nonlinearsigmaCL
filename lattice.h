@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: July 14, 2023 - triangles
+// Last edited: Nov 8, 2023
 #include <array>
 #include <vector>
 #include <omp.h>
@@ -23,7 +23,6 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
-        void setPhi(int i, int j, field phi);//tested 6/5/2023
         void setnTherm(int ntherm);
         void setnMC(int nMC);
         void setFreq(int freq);
@@ -40,12 +39,12 @@ namespace nonlinearsigma{
         std::string getFilename();
         field getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
-        double getPhiMag(int i, int j); //tested 6/1/2023
         double getPhiTot(); //tested 6/1/2023
         double getAvgG(int i, int j);
         
         //initialize the lattice and clean lattice (remove exceptional)
         void initialize(); //tested 5/30/2023
+        void removeExceptional(int i, int j, int exc_lim);
         void clean();
         
         //print things to the screen

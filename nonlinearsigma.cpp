@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Oct 25, 2023
+// Last edited: Nov 8, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -79,7 +79,6 @@ int main (int argc, char *argv[])
 
     cout << "Initializing lattice" << endl;
     L.initialize(); //initialize 3-component phi everywhere
-    L.clean(); //remove exceptional configurations from the lattice
     create_logfile(L); //generates logfile with header 
     
     double phi = 0.0;
@@ -293,7 +292,6 @@ void test_phi_distribution(Lattice L){
     /*for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             field phi = L.getPhi(i,j);
-            double phimag = L.getPhiMag(i,j);
             double *r = L.getRandNums();
             fout << i <<","<< j << ",";
             fout << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << phimag << ",";
