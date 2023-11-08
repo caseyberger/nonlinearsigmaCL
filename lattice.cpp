@@ -165,12 +165,12 @@ namespace nonlinearsigma{
             else{
                 exceptional_config = false;
             }
-            if (exc_count > exc_lim){
+            if (exc_count >= exc_lim){
                 break;
             }
         }//while still exceptional at i,j
         std::cout << "Num attempts at non-exceptional at site (i,j) = ";
-        std::cout << i << "," << j << "was " << exc_count << std::endl;
+        std::cout << i << "," << j << " was " << exc_count << std::endl;
     }
     
     
