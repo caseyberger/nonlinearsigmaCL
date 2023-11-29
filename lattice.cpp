@@ -2,10 +2,10 @@
 // Created: Mar 28, 2023
 // Last edited: Nov 29, 2023
 /* changelog for last edit: 
- - added a maxExc_ internal variable
- - update maxExc_ whenever removeExceptional is called
- - reset maxExc_ to zero before cleaning and at the start of each metropolis loop
- - output maxExc_ in config file so we can see how many configurations it had to remove in the worst case
+ - added a gridExc_ internal variable
+ - update gridExc_ whenever removeExceptional is called
+ - reset gridExc_ to zero before cleaning and at the start of each metropolis loop
+ - output gridExc_ in config file so we can see how many attempts it made at each site
  
  
  suggestions for changes
@@ -41,7 +41,6 @@ namespace nonlinearsigma{
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
         use_arcsin_ = true;
-        maxExc_ = 0;
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -126,6 +125,10 @@ namespace nonlinearsigma{
         return grid_[i][j];
     }
     
+    int Lattice::getAttempts(int i, int j){
+        return gridAttempts_[i][j];
+    }
+    
     double* Lattice::getRandNums(){
         //tested 6/1/2023
         static double r[2] = {r1_, r2_};
@@ -159,7 +162,7 @@ namespace nonlinearsigma{
             if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
                 exceptional_config = true;
                 exc_count++;
-                //update lattice
+                //try new field value
                 field phi_new = Lattice::makePhi_();
                 grid_[i][j][0] = phi_new[0];
                 grid_[i][j][1] = phi_new[1];
@@ -172,11 +175,7 @@ namespace nonlinearsigma{
                 break;
             }
         }//while still exceptional at i,j
-        //std::cout << "Num attempts at non-exceptional at site (i,j) = ";
-        //std::cout << i << "," << j << " was " << exc_count << std::endl;
-        if (exc_count > maxExc_){
-            maxExc_ = exc_count;//update number of exceptional configs removed
-        }
+        gridAttempts_[i][j] = exc_count;//update grid with number of attempts made
     }
     
     
@@ -187,8 +186,7 @@ namespace nonlinearsigma{
         std::iota(site_arr.begin(), site_arr.end(), 0);     
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
         
-        int exc_lim(1000);
-        maxExc_ = 0;
+        int exc_lim(10000);
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
@@ -201,19 +199,29 @@ namespace nonlinearsigma{
         //tested 5/30/2023
         std::vector < std::vector < Lattice::field > > grid;
         std::vector < std::vector < double > > Gij;
+        std::vector < std::vector < int > > gridAttempts;
+        std::vector < std::vector < bool > > gridMCAccepted;
         for(int i = 0; i < length_; i++){
             std::vector <double> Gj;
+            std::vector <int> gridAttemptsj;
+            std::vector <bool> gridMCAcceptedj;
             std::vector < Lattice::field > gridj;
             for (int j = 0; j<length_; j++){
                 field phi = Lattice::makePhi_();
                 gridj.push_back(phi);
                 Gj.push_back(0.);
+                gridAttemptsj.push_back(0);
+                gridMCAcceptedj.push_back(false);
             }
             Gij.push_back(Gj);
             grid.push_back(gridj);
+            gridAttempts.push_back(gridAttemptsj);
+            gridMCAccepted.push_back(gridMCAcceptedj);
         }
         grid_ = grid;
         Gij_ = Gij;
+        gridAttempts_ = gridAttempts;
+        gridMCAccepted_ = gridMCAccepted;
         Lattice::makeTriangles_();
         Lattice::zeroCount();
         Lattice::clean();
@@ -265,16 +273,19 @@ namespace nonlinearsigma{
             std::exit(10);
         }
         fout.setf(std::ios::fixed);
-        fout << "i,j,phi_x,phi_y,phi_z,Gij,num_removed, exceptional" << std::endl;
+        fout << "i,j,phi_x,phi_y,phi_z,Gij, numAttempts, exceptional, MCAccepted" << std::endl;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 field phi = Lattice::getPhi(i,j);
                 double Gij = Lattice::getAvgG(i,j);
+                int numAttempts = Lattice::getAttempts(i,j);
                 fout << i <<","<< j << ",";
                 fout << phi[0] << "," << phi[1] << "," << phi[2] << ",";
-                fout << Gij << "," << maxExc_ ;
-                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y"<< std::endl;}
-                else{fout << ", N"<< std::endl;}
+                fout << Gij << "," <<  numAttempts;
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y";}
+                else{fout << ", N";}
+                if (gridMCAccepted_[i][j]){fout << ", Y" << std::endl;}
+                else{fout << ", N" << std::endl;}
             }
         }
         fout.close();
@@ -374,8 +385,7 @@ namespace nonlinearsigma{
         //tested 6/5/2023
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
-        int exc_lim = 1000;
-        maxExc_ = 0;
+        int exc_lim = 10000;
         
         //generate randomized array of sites
         int nsites(length_*length_); 
@@ -409,12 +419,15 @@ namespace nonlinearsigma{
 #endif
             if(dS < 0 || r < std::exp(-1.*dS)){
                 acceptCount_++;//increment accept counter
+                gridMCAccepted_[i][j] = true; //update MC results for this sweep
             }
             else{
                 grid_[i][j][0] = phi_old[0];
                 grid_[i][j][1] = phi_old[1];
                 grid_[i][j][2] = phi_old[2];
                 rejectCount_++;//increment reject counter
+                gridAttempts_[i][j] = 0; //reset num attempts to zero because we stuck with the old config
+                gridMCAccepted_[i][j] = false; //update MC results for this sweep
             }
         }//loop over sites
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);

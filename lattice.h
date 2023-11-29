@@ -41,6 +41,7 @@ namespace nonlinearsigma{
         double* getRandNums();//tested 6/1/2023
         double getPhiTot(); //tested 6/1/2023
         double getAvgG(int i, int j);
+        int getAttempts(int i, int j);
         
         //initialize the lattice and clean lattice (remove exceptional)
         void initialize(); //tested 5/30/2023
@@ -77,6 +78,8 @@ namespace nonlinearsigma{
         //variables
         int length_;
         std::vector < std::vector < field > > grid_;
+        std::vector < std::vector < int > > gridAttempts_;
+        std::vector < std::vector < bool > > gridMCAccepted_;
         std::vector < std::vector < site_triangles > > triangles_;
         double beta_;
         double itheta_;
@@ -84,7 +87,6 @@ namespace nonlinearsigma{
         double r2_;
         bool fixedr_;
         bool use_arcsin_;
-        int maxExc_;
         int nTherm_;
         int nMC_;
         int freq_;
