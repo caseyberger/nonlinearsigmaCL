@@ -1,6 +1,0 @@
-L = 80
-beta = 1.6
-itheta = 0.0
-ntherm = 0
-nMC = 20000
-freq = 10
