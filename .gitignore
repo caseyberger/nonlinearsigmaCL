@@ -7,3 +7,4 @@ old/
 Analysis/data*
 Analysis/old_data/
 Analysis/*data/
+Analysis/test_*/
