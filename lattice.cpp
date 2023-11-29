@@ -2,9 +2,10 @@
 // Created: Mar 28, 2023
 // Last edited: Nov 29, 2023
 /* changelog for last edit: 
- - added a nExc_ internal variable
- - update nExc_ whenever removeExceptional is called
- - output nExc in config file so we can see how many configurations it had to remove
+ - added a maxExc_ internal variable
+ - update maxExc_ whenever removeExceptional is called
+ - reset maxExc_ to zero before cleaning and at the start of each metropolis loop
+ - output maxExc_ in config file so we can see how many configurations it had to remove in the worst case
  
  
  suggestions for changes
@@ -40,7 +41,7 @@ namespace nonlinearsigma{
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
         use_arcsin_ = true;
-        nExc_ = 0;
+        maxExc_ = 0;
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -173,7 +174,9 @@ namespace nonlinearsigma{
         }//while still exceptional at i,j
         //std::cout << "Num attempts at non-exceptional at site (i,j) = ";
         //std::cout << i << "," << j << " was " << exc_count << std::endl;
-        nExc_ = exc_count;//update number of exceptional configs removed
+        if (exc_count > maxExc_){
+            maxExc_ = exc_count;//update number of exceptional configs removed
+        }
     }
     
     
@@ -185,6 +188,7 @@ namespace nonlinearsigma{
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
         
         int exc_lim(1000);
+        maxExc_ = 0;
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
@@ -268,7 +272,7 @@ namespace nonlinearsigma{
                 double Gij = Lattice::getAvgG(i,j);
                 fout << i <<","<< j << ",";
                 fout << phi[0] << "," << phi[1] << "," << phi[2] << ",";
-                fout << Gij << "," nExc_ << "," ;
+                fout << Gij << "," << maxExc_ ;
                 if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y"<< std::endl;}
                 else{fout << ", N"<< std::endl;}
             }
@@ -371,6 +375,7 @@ namespace nonlinearsigma{
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
         int exc_lim = 1000;
+        maxExc_ = 0;
         
         //generate randomized array of sites
         int nsites(length_*length_); 

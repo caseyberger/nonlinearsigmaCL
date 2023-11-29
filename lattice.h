@@ -84,7 +84,7 @@ namespace nonlinearsigma{
         double r2_;
         bool fixedr_;
         bool use_arcsin_;
-        int nExc_;
+        int maxExc_;
         int nTherm_;
         int nMC_;
         int freq_;
