@@ -1,9 +1,10 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Nov 8, 2023
-/* changelog: 
- - removed setPhi function which no longer is called from anywhere
- - removed getPhiMag for the same reason
+// Last edited: Nov 29, 2023
+/* changelog for last edit: 
+ - added a nExc_ internal variable
+ - update nExc_ whenever removeExceptional is called
+ - output nExc in config file so we can see how many configurations it had to remove
  
  
  suggestions for changes
@@ -39,6 +40,7 @@ namespace nonlinearsigma{
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
         use_arcsin_ = true;
+        nExc_ = 0;
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -169,8 +171,9 @@ namespace nonlinearsigma{
                 break;
             }
         }//while still exceptional at i,j
-        std::cout << "Num attempts at non-exceptional at site (i,j) = ";
-        std::cout << i << "," << j << " was " << exc_count << std::endl;
+        //std::cout << "Num attempts at non-exceptional at site (i,j) = ";
+        //std::cout << i << "," << j << " was " << exc_count << std::endl;
+        nExc_ = exc_count;//update number of exceptional configs removed
     }
     
     
@@ -181,7 +184,7 @@ namespace nonlinearsigma{
         std::iota(site_arr.begin(), site_arr.end(), 0);     
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
         
-        int exc_lim(1000000);
+        int exc_lim(1000);
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
@@ -258,14 +261,14 @@ namespace nonlinearsigma{
             std::exit(10);
         }
         fout.setf(std::ios::fixed);
-        fout << "i,j,phi_x,phi_y,phi_z,Gij,exceptional" << std::endl;
+        fout << "i,j,phi_x,phi_y,phi_z,Gij,num_removed, exceptional" << std::endl;
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 field phi = Lattice::getPhi(i,j);
                 double Gij = Lattice::getAvgG(i,j);
                 fout << i <<","<< j << ",";
                 fout << phi[0] << "," << phi[1] << "," << phi[2] << ",";
-                fout << Gij;
+                fout << Gij << "," nExc_ << "," ;
                 if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y"<< std::endl;}
                 else{fout << ", N"<< std::endl;}
             }

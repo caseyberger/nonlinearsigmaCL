@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: Nov 8, 2023
+// Last edited: Nov 29, 2023
 #include <array>
 #include <vector>
 #include <omp.h>
@@ -84,6 +84,7 @@ namespace nonlinearsigma{
         double r2_;
         bool fixedr_;
         bool use_arcsin_;
+        int nExc_;
         int nTherm_;
         int nMC_;
         int freq_;
