@@ -187,29 +187,6 @@ namespace nonlinearsigma{
             int i(site_arr[n]/length_);
             int j(site_arr[n]%length_);
             Lattice::removeExceptional(i, j, exc_lim);
-            /*
-            bool exceptional_config = true;
-            int exc_count = 0;
-            while (exceptional_config){
-                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
-                    exceptional_config = true;
-                    exc_count++;
-                    //update lattice
-                    field phi_new = Lattice::makePhi_();
-                    grid_[i][j][0] = phi_new[0];
-                    grid_[i][j][1] = phi_new[1];
-                    grid_[i][j][2] = phi_new[2]; 
-                }
-                else{
-                    exceptional_config = false;
-                }
-                if (exc_count > exc_lim){
-                    break;
-                }
-            }//while still exceptional at i,j
-            std::cout << "Num attempts at non-exceptional at site (i,j) = ";
-            std::cout << i << "," << j << "was " << exc_count << std::endl;
-            */
         }//loop over sites
     }
     
