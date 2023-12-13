@@ -105,6 +105,9 @@ int main (int argc, char *argv[])
     time(&begin_mc);
 
     for (int n = 0; n<L.getnMC(); n++){
+#ifdef TESTING_MODE
+        cout << "MC step "<<n << endl;
+#endif
         L.metropolisStep();
         if (n%step_freq == 0){
             L.calcGij();//should I do this every step or only when saving?
