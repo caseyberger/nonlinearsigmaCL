@@ -1,11 +1,8 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Nov 29, 2023
+// Last edited: Dec 13, 2023
 /* changelog for last edit: 
- - added a gridExc_ internal variable
- - update gridExc_ whenever removeExceptional is called
- - reset gridExc_ to zero before cleaning and at the start of each metropolis loop
- - output gridExc_ in config file so we can see how many attempts it made at each site
+ - added print statements in testing mode to removeExceptional
  
  
  suggestions for changes
@@ -160,6 +157,16 @@ namespace nonlinearsigma{
         int exc_count = 0;
         while (exceptional_config){
             if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
+#ifdef TESTING_MODE
+                Lattice::printPhi_(i, j);
+                std::cout << "Attempt "<< exc_count << ":" << std::endl;
+                if (Lattice::exceptionalConfig(i,j,0)){
+                    std::cout << "Triangle 1 exceptional "<<std::endl; 
+                    }
+                if (Lattice::exceptionalConfig(i,j,1)){
+                    std::cout << "Triangle 2 exceptional "<<std::endl;
+                    }
+#endif
                 exceptional_config = true;
                 exc_count++;
                 //try new field value
@@ -463,6 +470,7 @@ namespace nonlinearsigma{
     }
     
     bool Lattice::exceptionalConfig(int i, int j, int n){
+        //check that these are done counterconclockwise
         int i1(triangles_[i][j][n][0][0]);
         int j1(triangles_[i][j][n][0][1]);
         int i2(triangles_[i][j][n][1][0]);
