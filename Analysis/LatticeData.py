@@ -1,17 +1,20 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2023-11-08 by Casey 
-#Last edit: swap old get_exceptional_configurations function for Andy's new version
-
-import os
-import shutil
-import numpy as np
-import pandas as pd
+#Last updated: 2023-12-13 by Casey 
+#Last edit: added Andy's new functions, added _error_message and _message functions to clean up use of "print"
 
 '''
 Some proposed changes:
 
 - Make multiple classes -- one for data utils and one for the data itself? Or maybe you need one for the correlation function data and one for the other data? The observables?
 '''
+
+
+import os
+import shutil
+import numpy as np
+import pandas as pd
+
+
 
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
@@ -49,7 +52,8 @@ class LatticeData:
                         if len_file == len_complete:
                             shutil.copyfile(file_path, dst_path+file)
                         else:
-                            print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
+                            status_msg = "Status: "+str(len_file)+" lines written"
+                            self._message("run not yet complete",file[20:-4],status_msg)
                         f.close()
                     elif file.startswith(self.Gheader):
                         shutil.copyfile(file_path, dst_path+file)
@@ -70,11 +74,10 @@ class LatticeData:
                 if p not in kwargs.keys():
                     missing_params.append(p)
             if len(missing_params) > 0:
-                print("Missing parameters in input: ")
-                print(missing_params)
+                self._error_message("Missing parameters in input: ", missing_params)
                 return None
         else:
-            #print("Returning multiple runs")
+            #self._message("Returning multiple runs")
             pass
         files = self.get_data_files(corr = corr)
         df = pd.DataFrame()
@@ -137,7 +140,7 @@ class LatticeData:
     
     def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, freq = 100):
         if len(self.df_stats) == 0:
-            print("Generating dataframe of data with default statistical analysis")
+            self._message("Generating dataframe of data with default statistical analysis")
             df = self.do_stats()
         df = self.df_stats
         if self.df_stacked:
@@ -216,7 +219,8 @@ class LatticeData:
                         len_file = int(len(f.readlines()))
                         len_complete = int(nMC/freq +1)
                         if len_file != len_complete:
-                            print("run "+file[20:-4]+" not yet complete: "+str(len_file)+" lines")
+                            status_msg = "Status: "+str(len_file)+" lines written"
+                            self._message("run not yet complete",file[20:-4],status_msg)
                             good=False
                         else:
                             pdict = self.get_file_params(file) #add the parameters for this run to pdict
@@ -239,7 +243,62 @@ class LatticeData:
         config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
         return config_df
     
+    def find_exc(self,src_dir,**kwargs): 
+        '''
+        takes a dictionary of parameters as kwargs just like get_data for one run
+        src_dir is the raw data directory, not the processed directory
+
+        #note from Andy:
+        #to make graphs with this function, I do something like...
+        corr_params = {"itheta": 0.5, "beta": 1.6,"length": 40,"nMC": 50000, "ntherm": 0, "freq": 100}
+        excarray=analyzer.find_exc('/data/run_2023_10_26_exc_config_test',**corr_params)
+        aconfig=excarray[:,:,0] #0 if you want to show the first configuration, or put in another number
+        plt.imshow(aconfig)
+        '''
+        missing_params=[]
+        for p in self.parameters:
+            if p not in kwargs.keys():
+                missing_params.append(p)
+        if len(missing_params) > 0:
+            self._error_message("Missing parameters in input: ", missing_params)
+            return None #tells you if you didn't put in enough paramters, again just like get_data
+        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        for item in os.listdir(src_path):#loop over all files in the run directory
+            if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
+                params=self.get_file_params(item,fordir=True) #if directory, not file, don't need to take off .csv
+                if params==kwargs: #find the right file
+                    dir_path = src_path+item #create path to that sub-directory
+                    length=params['length']
+                    freq=params['freq']
+                    nMC=params['nMC']
+                    for file in os.listdir(dir_path): #loop over every file in the run sub-directory
+                        file_path = dir_path+"/"+file #create path to the file we're looking at
+                        if file.startswith(self.header): #if it's the full observable logfile
+                            f = open(file_path, "r")
+                            len_file = int(len(f.readlines()))-1 #take out top line
+                            len_complete = int(nMC/freq)
+                            if len_file != len_complete: #we can still look at where the exceptional configurations are in an imcomplete file!
+                                status_msg = "Status: "+str(len_file)+" lines written. Continuing..."
+                                self._message("run not yet complete",file[20:-4],status_msg)
+                    excarray=np.empty((length,length,len_file),dtype=bool) #3D array - rows in lattice, columns in lattice, number of (completed) configs
+                    for file in os.listdir(dir_path): #loop over every file in the subdirectory
+                        file_path = dir_path+"/"+file #make path to that file
+                        if file.startswith("config"): #pick out just the config files
+                            cfn=int(file[7:-4]) #get number of the configuration from file name
+                            temp=pd.read_csv(file_path, skipinitialspace = True)
+                            for row in range(length):
+                                yns=temp['exceptional'][length*row:length*(row+1)] #get data for first row
+                                excarray[row,:,int(cfn/freq)]=self._yn2bool(yns) #turn it into booleans, put it in the array...
+                                #1st index will count up as we go through this loop, go through each row
+                                #2nd index is : because you're filling in the whole row
+                                #3rd index puts it in the right place for the configuration number - ie, for config330 with frequency=10, it goes in the 33rd
+        return excarray
+
+    
     def convert_config_spherical(self,src_dir):
+        '''
+        Add Andy's to_spherical function in here to convert each config to spherical??
+        '''
         count = 0 #testing
         src_path = os.getcwd()+'/'+src_dir+'/' 
         config_df = pd.DataFrame() 
@@ -254,19 +313,45 @@ class LatticeData:
                 for file in os.listdir(dir_path): 
                     if file.startswith("config"): 
                         df = pd.read_csv(file)
-                        print(df.head())
                         count +=1
                     if count > 0:
                         break
     
-    def spherical(x,y,z):
+    def to_spherical(x,y,z):
+        '''
+        note from Andy:
+        if z=1 - phi points straight up - then the polar angle returns undefined. That makes sense, but 
+        is it better to assign it a nan in this situation rather than getting it via the divide by 0 error? 
+        Or to assign a set value (like 0?) to the polar angle in that case?
+
+        It was such a big deal with the other code that I tried to avoid using arccos's... probably for no 
+        reason, but it works this way too so might as well
+
+        I thought about putting in a line to check that the components you put have length one and to give 
+        an error if they don't, but I figured that would be checked elsewhere in the code, and also that 
+        rounding somewhere might cause them to add to almost-but-not-quite 1, and so including a line like 
+        that would be making problems where none exist
+        '''
         azimuthal=np.arcsin(np.sqrt(1-z**2))
         polar=np.arcsin(y/(np.sqrt(1-z**2)))
         if x<0:
             polar=np.pi-polar
         return polar,azimuthal
         
-    #internal functions / private                        
+    #internal functions / private    
+    
+    def _yn2bool(self,series):
+        #required for find_exc()
+        boollist=[]
+        for i in series:
+            if i=='Y':
+                boollist.append(True)
+            elif i=='N':
+                boollist.append(False)
+            else:
+                self._message('not Y/N')
+        return boollist
+    
     def get_data_files(self, corr = False):
         data_files = []
         file_header = self.header
@@ -277,8 +362,9 @@ class LatticeData:
                 data_files.append(self.path+file)
         return data_files
 
-    def get_file_params(self, file):
-        file = file[:-4]#remove ".csv" before splitting
+    def get_file_params(self, file, fordir = False):
+        if not fordir:
+            file = file[:-4]#remove ".csv" before splitting
         temp = file.split("_")
         pdict = dict()
         pdict[temp[-2]] = int(temp[-1]) #frequency
@@ -354,3 +440,12 @@ class LatticeData:
         acf = self.autocorr_func_1d(data_array, norm=False)#switch back to true
         decorr = np.where(acf < 0.3)
         return decorr[0][1]
+    
+    def _error_message(self, *args):
+        print("Error: ")
+        for arg in args:
+            print(arg)
+            
+    def _message(self, *args):
+        for arg in args:
+            print(arg)
