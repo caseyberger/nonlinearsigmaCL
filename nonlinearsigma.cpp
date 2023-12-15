@@ -78,6 +78,9 @@ int main (int argc, char *argv[])
 #endif
 
     cout << "Initializing lattice" << endl;
+#ifdef TESTING_MODE
+    cout << "MC step 0" << endl;
+#endif
     L.initialize(); //initialize 3-component phi everywhere
     create_logfile(L); //generates logfile with header 
     
@@ -103,8 +106,9 @@ int main (int argc, char *argv[])
     cout << "Starting Monte Carlo loop of length " << L.getnMC() << endl;
     
     time(&begin_mc);
-
-    for (int n = 0; n<L.getnMC(); n++){
+    L.saveConfig(0);
+    
+    for (int n = 1; n<L.getnMC(); n++){
 #ifdef TESTING_MODE
         cout << "MC step "<<n << endl;
 #endif
