@@ -6,6 +6,10 @@
 Some proposed changes:
 
 - Make multiple classes -- one for data utils and one for the data itself? Or maybe you need one for the correlation function data and one for the other data? The observables?
+
+- make the __init__ do more work -- copy files, get data, do stats, and save everything?
+
+- make the internal attributes more useful -- e.g. store the run directory and use it!
 '''
 
 
@@ -13,8 +17,6 @@ import os
 import shutil
 import numpy as np
 import pandas as pd
-
-
 
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
@@ -449,3 +451,5 @@ class LatticeData:
     def _message(self, *args):
         for arg in args:
             print(arg)
+            
+    
