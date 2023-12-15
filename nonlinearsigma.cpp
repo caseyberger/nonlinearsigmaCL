@@ -106,9 +106,8 @@ int main (int argc, char *argv[])
     cout << "Starting Monte Carlo loop of length " << L.getnMC() << endl;
     
     time(&begin_mc);
-    L.saveConfig(0);
     
-    for (int n = 1; n<L.getnMC(); n++){
+    for (int n = 0; n<L.getnMC(); n++){
 #ifdef TESTING_MODE
         cout << "MC step "<<n << endl;
 #endif
