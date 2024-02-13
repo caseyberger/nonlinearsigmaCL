@@ -29,7 +29,8 @@ script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
 email = "cberger@smith.edu"
 num_cpus = 28
-partition = "phyq"
+partition = "phyq" #phyq for smith, cpu-long for unity
+time_limit = "14-00:00:00" #dd-hh:mm:ss
 
 
 def generate_input_file(length,beta,itheta,nMC,ntherm,freq):
@@ -65,7 +66,7 @@ def copy_executable(script_name, file_ext):
 	copy_cmd = "cp "+source_path+" "+destination_path
 	os.system(copy_cmd)
 
-def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_per_task=38):
+def generate_slurm_script(script_name,file_ext,job_name,email, partition, time_limit, cpus_per_task=38):
 	#generates the sbatch file that you run with sbatch filename
 	#should be paired with the appropriate input file somehow...
 	filename = "submit_sigma.sh"
@@ -83,7 +84,7 @@ def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_p
 	slurm_file.write("#SBATCH --nodes=1\t\t\t# Number of nodes\n")
 	slurm_file.write("#SBATCH --cpus-per-task="+str(cpus_per_task)+"\t\t\t# Number of threads per task (OpenMP)\n")
 	slurm_file.write("#SBATCH --mem=1gb\t\t\t# Job memory request\n")
-	slurm_file.write("##SBATCH --time=05:00:00\t\t\t# Time limit hrs:min:sec\n")
+	slurm_file.write("#SBATCH --time="+str(time_limit)+"\t\t\t# Time limit dd-hh:mm:ss\n")
 	slurm_file.write("#SBATCH --output="+str(job_name)+"%j.log\t\t\t# Standard output\n")
 	slurm_file.write("#SBATCH --error=err_"+str(job_name)+"%j.log\t\t\t# Standard error log\n\n")
 	slurm_file.write("pwd; hostname; date\n\n")
@@ -97,5 +98,5 @@ def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_p
 for length in L_list:
 	for itheta in itheta_list:
 		file_ext = generate_input_file(length,beta,itheta,nMC,ntherm,freq)
-		generate_slurm_script(script_name,file_ext,job_name,email,partition,cpus_per_task = num_cpus)
+		generate_slurm_script(script_name,file_ext,job_name,email,partition,time_limit,cpus_per_task = num_cpus)
 		copy_executable(script_name, file_ext)
