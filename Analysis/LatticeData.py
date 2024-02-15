@@ -1,6 +1,8 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2023-12-13 by Casey 
-#Last edit: added Andy's new functions, added _error_message and _message functions to clean up use of "print"
+#Last updated: 2024-2-15 by Casey 
+#Last edit: 
+# modified __init__ to allow us to use the full filepath (works better on Unity)
+# fixed get_file_params to cope with the existence of underscores in the filenames
 
 '''
 Some proposed changes:
@@ -21,11 +23,18 @@ import pandas as pd
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
                  dirheader = "nlsigma_data", Gheader = "Gij_avg_nonlinearsigma_data", 
-                 tol = 0.00001, palette = "viridis"):
-        self.path = os.getcwd()+datadir #select location of data
-        self.header = header #set the start of the filename for the data files
-        self.dirheader = dirheader #set the start of the data directory name from the runs
-        self.Gheader = Gheader #set the start of the filename for correlation function files
+                 tol = 0.00001, palette = "viridis", use_full_filepath = False):
+        self.use_full_filepath = use_full_filepath
+        #select location of data
+        if use_full_filepath:
+            self.path = datadir+'/'
+        else:
+            self.path = os.getcwd()+'/'+datadir+'/'
+        #set the headers for data files and directories
+        self.header = header 
+        self.Gheader = Gheader
+        self.dirheader = dirheader 
+        
         self.tol = tol #set the error range for parameters -- this is for filtering
         self.palette = palette #option to change seaborn palette
         self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L'] #observables whose expectation values can be computed
@@ -35,7 +44,11 @@ class LatticeData:
         
     #external functions / public
     def copy_data_from_directory(self, src_dir, dst_path = None):
-        src_path = os.getcwd()+'/'+src_dir+'/'
+        #select source location of data
+        if self.use_full_filepath:
+            src_path = src_dir+'/'
+        else:
+            src_path = os.getcwd()+'/'+src_dir+'/'
         if dst_path is None:
             dst_path = self.path
         else:
@@ -170,11 +183,15 @@ class LatticeData:
     
     def get_corr_func(self,suppress_output = False,**kwargs):
         df = self.get_data(single_run = True, corr = True, suppress_output = suppress_output, **kwargs)
-        length = kwargs["length"]
-        df["i,j"] = df["i"]+df["j"]
-        G_avg = df["G_avg"].to_numpy()
-        G_avg = G_avg.reshape((length,length))
-        return G_avg
+        if not df.empty:
+            length = kwargs["length"]
+            df["i,j"] = df["i"]+df["j"]
+            G_avg = df["G_avg"].to_numpy()
+            G_avg = G_avg.reshape((length,length))
+            return G_avg
+        else:
+            run_details = "L = "+str(kwargs["length"])+", itheta = "+str(kwargs["itheta"])+", nMC = "+str(kwargs["nMC"])+", ntherm = "+str(kwargs["ntherm"])+", freq = "+str(kwargs["freq"])
+            self._error_message("Empty correlation function for run ",run_details)
 
     '''
     #old version (pre-Nov 8)
@@ -369,12 +386,18 @@ class LatticeData:
             file = file[:-4]#remove ".csv" before splitting
         temp = file.split("_")
         pdict = dict()
-        pdict[temp[-2]] = int(temp[-1]) #frequency
-        pdict[temp[-4]] = int(temp[-3]) #nMc
-        pdict[temp[-6]] = int(temp[-5]) #ntherm
-        pdict[temp[-8]] = float(temp[-7]) #itheta
-        pdict[temp[-10]] = float(temp[-9]) #beta
-        pdict["length"] = int(temp[-11]) #length
+        freq = temp.index("freq")+1
+        pdict["freq"] = int(temp[freq])
+        nMC = temp.index("nMC")+1
+        pdict["nMC"] = int(temp[nMC])
+        ntherm = temp.index("ntherm")+1
+        pdict["ntherm"] = int(temp[ntherm])
+        itheta = temp.index("itheta")+1
+        pdict["itheta"] = float(temp[itheta])
+        beta = temp.index("beta")+1
+        pdict["beta"] = float(temp[beta])
+        L = temp.index("L")+1
+        pdict["length"] = int(temp[L])
         return pdict
     
     def in_list(self,pdict,**kwargs):
