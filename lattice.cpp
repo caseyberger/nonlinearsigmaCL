@@ -223,7 +223,7 @@ namespace nonlinearsigma{
         
         
 #ifdef TESTING_MODE
-        if (any exceptional){
+        if (any_exceptional){
             Lattice::printPhi_(i, j);
             std::cout << "Attempt "<< exc_count << ":" << std::endl;
             if (tri1){
