@@ -1,8 +1,10 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2024-2-15 by Casey 
+#Last updated: 2024-2-16 by Casey 
 #Last edit: 
 # modified __init__ to allow us to use the full filepath (works better on Unity)
 # fixed get_file_params to cope with the existence of underscores in the filenames
+# fixed copy_data_from_directory and get_exceptional to allow us to use the full filepath
+# changed instances of appending to pandas dataframe to concat instead (append is deprecated now). Also used reset_index() on these
 
 '''
 Some proposed changes:
@@ -78,8 +80,11 @@ class LatticeData:
         files = self.get_data_files()
         for file in files:
             pdict = self.get_file_params(file)
-            param_df = param_df.append(pdict,ignore_index=True)
+            #param_df = param_df.append(pdict,ignore_index=True)
+            temp = pd.DataFrame.from_dict([pdict])
+            param_df = pd.concat([param_df,temp])
         param_df["itheta/pi"] = param_df["itheta"]/np.pi
+        param_df.reset_index()
         return param_df
     
     def get_data(self,single_run = False, corr = False, suppress_output = True, reset_index = True,**kwargs):
@@ -193,37 +198,11 @@ class LatticeData:
             run_details = "L = "+str(kwargs["length"])+", itheta = "+str(kwargs["itheta"])+", nMC = "+str(kwargs["nMC"])+", ntherm = "+str(kwargs["ntherm"])+", freq = "+str(kwargs["freq"])
             self._error_message("Empty correlation function for run ",run_details)
 
-    '''
-    #old version (pre-Nov 8)
     def get_exceptional_configurations(self,src_dir):
-        src_path = os.getcwd()+'/'+src_dir+'/' 
-        config_df = pd.DataFrame() 
-        for item in os.listdir(src_path):
-            if item.startswith(self.dirheader): 
-                dir_path = src_path+item 
-                pdict = dict() 
-                for file in os.listdir(dir_path): 
-                    file_path = dir_path+"/"+file
-                    if file.startswith(self.header): 
-                        pdict = self.get_file_params(file) 
-                for file in os.listdir(dir_path): 
-                    if file.startswith("config"): 
-                        config_dict = dict() #create empty dictionary to store config number and number of exceptional sites in that config
-                        config_dict.update(pdict) #add parameter dictionary to the config dict
-                        config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
-                        config_dict["config"] = config_num #store the config number
-                        temp = pd.read_csv(file_path, skipinitialspace = True) #read the config file
-                        num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s to avoid key error            
-                        num_exc = len(temp['exceptional']) - num_N #number of exc
-                        config_dict["num_exc"] = num_exc #add to dictionary
-                        config_df = config_df.append(config_dict,ignore_index=True)
-        config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
-        config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
-        return config_df
-    '''
-
-    def get_exceptional_configurations(self,src_dir):
-        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        if self.use_full_filepath:
+            src_path = src_dir+'/'
+        else:
+            src_path = os.getcwd()+'/'+src_dir+'/'
         config_df = pd.DataFrame() #create empty data frame
         for item in os.listdir(src_path):#loop over all files in the run directory
             if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
@@ -257,9 +236,12 @@ class LatticeData:
                             num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s to avoid key error            
                             num_exc = len(temp['exceptional']) - num_N #number of exc
                             config_dict["num_exc"] = num_exc #add to dictionary
-                            config_df = config_df.append(config_dict,ignore_index=True)
+                            temp = pd.DataFrame.from_dict([config_dict])
+                            config_df = pd.concat([config_df,temp])
+                            #config_df = config_df.append(config_dict,ignore_index=True)
         config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
         config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
+        config_df.reset_index()
         return config_df
     
     def find_exc(self,src_dir,**kwargs): 
