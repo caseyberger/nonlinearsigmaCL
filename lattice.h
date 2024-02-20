@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: Nov 29, 2023
+// Last edited: Feb 16 2024
 #include <array>
 #include <vector>
 #include <omp.h>
@@ -65,6 +65,7 @@ namespace nonlinearsigma{
         double calcXi();
         double* calcF();
         bool exceptionalConfig(int i, int j, int n);
+        bool exceptionalTriangles(int i, int j, int exc_count);//added 2/16/2024
         
         //monte carlo tools
         void metropolisStep();//tested 6/5/2023

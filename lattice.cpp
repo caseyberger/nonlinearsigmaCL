@@ -1,8 +1,9 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Dec 13, 2023
+// Last edited: Feb 16, 2023
 /* changelog for last edit: 
- - added print statements in testing mode to removeExceptional
+ - added new function exceptionalTriangles to check all six triangles that touch vertex (i,j)
+ - updated removeExceptional to use the new exceptionalTriangles function
  
  
  suggestions for changes
@@ -156,17 +157,8 @@ namespace nonlinearsigma{
         bool exceptional_config = true;
         int exc_count = 0;
         while (exceptional_config){
-            if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){
-#ifdef TESTING_MODE
-                Lattice::printPhi_(i, j);
-                std::cout << "Attempt "<< exc_count << ":" << std::endl;
-                if (Lattice::exceptionalConfig(i,j,0)){
-                    std::cout << "Triangle 1 exceptional "<<std::endl; 
-                    }
-                if (Lattice::exceptionalConfig(i,j,1)){
-                    std::cout << "Triangle 2 exceptional "<<std::endl;
-                    }
-#endif
+            //checks the six triangles that inclue vertex (i,j) 
+            if (Lattice::exceptionalTriangles(i, j, exc_count)){
                 exceptional_config = true;
                 exc_count++;
                 //try new field value
@@ -181,8 +173,80 @@ namespace nonlinearsigma{
             if (exc_count >= exc_lim){
                 break;
             }
-        }//while still exceptional at i,j
+        }//while still exceptional at vertex (i,j)
         gridAttempts_[i][j] = exc_count;//update grid with number of attempts made
+    }
+    
+    bool Lattice::exceptionalTriangles(int i, int j, int exc_count){
+        //triangles owned by vertex i,j
+        //algorithm: check each triangle individually and print (in test mode) which is exceptional
+        bool any_exceptional = false;
+        bool tri1, tri2, tri3, tri4, tri5, tri6;
+        int im1 = Lattice::minusOne_(i);
+        int jm1 = Lattice::minusOne_(j);
+        //triangle 1: vertex (i,j), lower triangle
+        if (Lattice::exceptionalConfig(i,j,0)){
+            tri1 = true;
+            any_exceptional = true;
+            }
+        else{tri1 = false;}
+        //triangle 2: vertex (i,j), upper triangle
+        if (Lattice::exceptionalConfig(i,j,1)){
+            tri2 = true;
+            any_exceptional = true;
+        }
+        else{tri2 = false;}
+        //triangle 3: vertex (i-1,j-1), lower triangle
+        if (Lattice::exceptionalConfig(im1,jm1,0)){
+            tri3 = true;
+            any_exceptional = true;
+        }
+        else{tri3 = false;}
+        //triangle 4: vertex (i-1,j-1), upper triangle
+        if (Lattice::exceptionalConfig(im1,jm1,1)){
+            tri4 = true;
+            any_exceptional = true;
+        }
+        else{tri4 = false;}
+        //triangle 5: vertex (i-1,j), lower triangle
+        if (Lattice::exceptionalConfig(im1,j,0)){
+            tri5 = true;
+            any_exceptional = true;
+        }
+        else{tri5 = false;}
+        //triangle 6: vertex (i,j-1), upper triangle
+        if (Lattice::exceptionalConfig(i,jm1,1)){
+            tri6 = true;
+            any_exceptional = true;
+        }
+        else{tri6 = false;}
+        
+        
+#ifdef TESTING_MODE
+        if (any_exceptional){
+            Lattice::printPhi_(i, j);
+            std::cout << "Attempt "<< exc_count << ":" << std::endl;
+            if (tri1){
+                std::cout << "Triangle 1 exceptional "<<std::endl; 
+            }
+            if (tri2){
+                std::cout << "Triangle 2 exceptional "<<std::endl;
+            }
+            if (tri3){
+                std::cout << "Triangle 3 exceptional "<<std::endl;
+            }
+            if (tri4){
+                std::cout << "Triangle 4 exceptional "<<std::endl;
+            }
+            if (tri5){
+                std::cout << "Triangle 5 exceptional "<<std::endl;
+            }
+            if (tri6){
+                std::cout << "Triangle 6 exceptional "<<std::endl;
+            }
+        }
+#endif
+        return any_exceptional;
     }
     
     
