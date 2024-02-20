@@ -184,38 +184,38 @@ namespace nonlinearsigma{
         bool tri1, tri2, tri3, tri4, tri5, tri6;
         int im1 = Lattice::minusOne_(i);
         int jm1 = Lattice::minusOne_(j);
-        //triangle 1: vertex (i,j), lower triangle
+        //triangle 1: vertex (i,j), upper triangle
         if (Lattice::exceptionalConfig(i,j,0)){
             tri1 = true;
             any_exceptional = true;
             }
         else{tri1 = false;}
-        //triangle 2: vertex (i,j), upper triangle
+        //triangle 2: vertex (i,j), lower triangle
         if (Lattice::exceptionalConfig(i,j,1)){
             tri2 = true;
             any_exceptional = true;
         }
         else{tri2 = false;}
-        //triangle 3: vertex (i-1,j-1), lower triangle
+        //triangle 3: vertex (i-1,j-1), upper triangle
         if (Lattice::exceptionalConfig(im1,jm1,0)){
             tri3 = true;
             any_exceptional = true;
         }
         else{tri3 = false;}
-        //triangle 4: vertex (i-1,j-1), upper triangle
+        //triangle 4: vertex (i-1,j-1), lower triangle
         if (Lattice::exceptionalConfig(im1,jm1,1)){
             tri4 = true;
             any_exceptional = true;
         }
         else{tri4 = false;}
         //triangle 5: vertex (i-1,j), lower triangle
-        if (Lattice::exceptionalConfig(im1,j,0)){
+        if (Lattice::exceptionalConfig(im1,j,1)){
             tri5 = true;
             any_exceptional = true;
         }
         else{tri5 = false;}
         //triangle 6: vertex (i,j-1), upper triangle
-        if (Lattice::exceptionalConfig(i,jm1,1)){
+        if (Lattice::exceptionalConfig(i,jm1,0)){
             tri6 = true;
             any_exceptional = true;
         }
