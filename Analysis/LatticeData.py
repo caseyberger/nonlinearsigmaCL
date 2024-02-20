@@ -1,15 +1,10 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2023-12-13 by Casey 
-#Last edit: added Andy's new functions, added _error_message and _message functions to clean up use of "print"
-
+#Last updated: 2023-12-15 by Andy 
+#Last edit: updated find_exc and find_attempts
 '''
 Some proposed changes:
 
 - Make multiple classes -- one for data utils and one for the data itself? Or maybe you need one for the correlation function data and one for the other data? The observables?
-
-- make the __init__ do more work -- copy files, get data, do stats, and save everything?
-
-- make the internal attributes more useful -- e.g. store the run directory and use it!
 '''
 
 
@@ -18,10 +13,13 @@ import shutil
 import numpy as np
 import pandas as pd
 
+
+
 class LatticeData:
     def __init__(self, datadir = "/data/", header = "nonlinearsigma_data",
                  dirheader = "nlsigma_data", Gheader = "Gij_avg_nonlinearsigma_data", 
                  tol = 0.00001, palette = "viridis"):
+        self.datadir = datadir
         self.path = os.getcwd()+datadir #select location of data
         self.header = header #set the start of the filename for the data files
         self.dirheader = dirheader #set the start of the data directory name from the runs
@@ -176,35 +174,6 @@ class LatticeData:
         G_avg = G_avg.reshape((length,length))
         return G_avg
 
-    '''
-    #old version (pre-Nov 8)
-    def get_exceptional_configurations(self,src_dir):
-        src_path = os.getcwd()+'/'+src_dir+'/' 
-        config_df = pd.DataFrame() 
-        for item in os.listdir(src_path):
-            if item.startswith(self.dirheader): 
-                dir_path = src_path+item 
-                pdict = dict() 
-                for file in os.listdir(dir_path): 
-                    file_path = dir_path+"/"+file
-                    if file.startswith(self.header): 
-                        pdict = self.get_file_params(file) 
-                for file in os.listdir(dir_path): 
-                    if file.startswith("config"): 
-                        config_dict = dict() #create empty dictionary to store config number and number of exceptional sites in that config
-                        config_dict.update(pdict) #add parameter dictionary to the config dict
-                        config_num = int(file[0:-4].split("_")[-1]) #pull the number from the filename
-                        config_dict["config"] = config_num #store the config number
-                        temp = pd.read_csv(file_path, skipinitialspace = True) #read the config file
-                        num_N = temp['exceptional'].value_counts()['N'] #count all the "N"s to avoid key error            
-                        num_exc = len(temp['exceptional']) - num_N #number of exc
-                        config_dict["num_exc"] = num_exc #add to dictionary
-                        config_df = config_df.append(config_dict,ignore_index=True)
-        config_df["any_exc"] = config_df["num_exc"]>0 #flag all configurations that have any exceptional sites
-        config_df["any_exc"] = config_df["any_exc"].astype(int) #store as 0s and 1s instead of bool for counting
-        return config_df
-    '''
-
     def get_exceptional_configurations(self,src_dir):
         src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
         config_df = pd.DataFrame() #create empty data frame
@@ -265,10 +234,12 @@ class LatticeData:
             self._error_message("Missing parameters in input: ", missing_params)
             return None #tells you if you didn't put in enough paramters, again just like get_data
         src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        found=False #I want to check that I've found a file that matches, so that if I get through the for loop and never have, I can say the parameters don't match
         for item in os.listdir(src_path):#loop over all files in the run directory
             if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
                 params=self.get_file_params(item,fordir=True) #if directory, not file, don't need to take off .csv
                 if params==kwargs: #find the right file
+                    found=True
                     dir_path = src_path+item #create path to that sub-directory
                     length=params['length']
                     freq=params['freq']
@@ -282,21 +253,62 @@ class LatticeData:
                             if len_file != len_complete: #we can still look at where the exceptional configurations are in an imcomplete file!
                                 status_msg = "Status: "+str(len_file)+" lines written. Continuing..."
                                 self._message("run not yet complete",file[20:-4],status_msg)
-                    excarray=np.empty((length,length,len_file),dtype=bool) #3D array - rows in lattice, columns in lattice, number of (completed) configs
+                    excdf=pd.DataFrame(columns=np.arange(0,length,1),index=np.arange(0,len_file,1)) #create empty df of correct shape
                     for file in os.listdir(dir_path): #loop over every file in the subdirectory
                         file_path = dir_path+"/"+file #make path to that file
                         if file.startswith("config"): #pick out just the config files
                             cfn=int(file[7:-4]) #get number of the configuration from file name
                             temp=pd.read_csv(file_path, skipinitialspace = True)
                             for row in range(length):
-                                yns=temp['exceptional'][length*row:length*(row+1)] #get data for first row
-                                excarray[row,:,int(cfn/freq)]=self._yn2bool(yns) #turn it into booleans, put it in the array...
-                                #1st index will count up as we go through this loop, go through each row
-                                #2nd index is : because you're filling in the whole row
-                                #3rd index puts it in the right place for the configuration number - ie, for config330 with frequency=10, it goes in the 33rd
-        return excarray
-
+                                yns=self._yn2bool(temp['exceptional'][length*row:length*(row+1)]) #get list of booleans for each first row
+                                excdf.loc[int(cfn/freq),row]=yns #put the list in the right place in the dataframe
+        if found==False:
+            self._message("this parameter combination does not exist in this file")
+            return None
+        return excdf
     
+    def find_attempts(self,src_dir,**kwargs): #this is very similar to find_exc
+        missing_params=[]
+        for p in self.parameters:
+            if p not in kwargs.keys():
+                missing_params.append(p)
+        if len(missing_params) > 0:
+            self._error_message("Missing parameters in input: ", missing_params)
+            return None #tells you if you didn't put in enough paramters, again just like get_data
+        src_path = os.getcwd()+'/'+src_dir+'/' #create path to run directory
+        found=False #I want to check that I've found a file that matches, so that if I get through the for loop and never have, I can say the parameters don't match
+        for item in os.listdir(src_path):#loop over all files in the run directory
+            if item.startswith(self.dirheader): #pick out the sub-directories (each is an individual run of the code)
+                params=self.get_file_params(item,fordir=True) #if directory, not file, don't need to take off .csv
+                if params==kwargs: #find the right file
+                    found=True
+                    dir_path = src_path+item #create path to that sub-directory
+                    length=params['length']
+                    freq=params['freq']
+                    nMC=params['nMC']
+                    for file in os.listdir(dir_path): #loop over every file in the run sub-directory
+                        file_path = dir_path+"/"+file #create path to the file we're looking at
+                        if file.startswith(self.header): #if it's the full observable logfile
+                            f = open(file_path, "r")
+                            len_file = int(len(f.readlines()))-1 #take out top line
+                            len_complete = int(nMC/freq)
+                            if len_file != len_complete: #we can still look at where the exceptional configurations are in an imcomplete file!
+                                status_msg = "Status: "+str(len_file)+" lines written. Continuing..."
+                                self._message("run not yet complete",file[20:-4],status_msg)
+                    attdf=pd.DataFrame(columns=np.arange(0,length,1),index=np.arange(0,len_file,1)) #create empty df of correct shape
+                    for file in os.listdir(dir_path): #loop over every file in the subdirectory
+                        file_path = dir_path+"/"+file #make path to that file
+                        if file.startswith("config"): #pick out just the config files
+                            cfn=int(file[7:-4]) #get number of the configuration from file name
+                            temp=pd.read_csv(file_path, skipinitialspace = True)
+                            for row in range(length):
+                                nattempts=list(temp['numAttempts'][length*row:length*(row+1)]) #get data for each row
+                                attdf.loc[int(cfn/freq),row]=nattempts #put it in the right place in the dataframe
+        if found==False:
+            self._error_message("this parameter combination does not exist in this file")
+            return None
+        return attdf
+
     def convert_config_spherical(self,src_dir):
         '''
         Add Andy's to_spherical function in here to convert each config to spherical??
@@ -451,5 +463,3 @@ class LatticeData:
     def _message(self, *args):
         for arg in args:
             print(arg)
-            
-    
