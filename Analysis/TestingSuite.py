@@ -3,16 +3,31 @@ import numpy as np
 import pandas as pd
 from LatticeData import *
 
+'''
+Notes and plans for changes
+
+For even L=10 lattices, catalog_sites is extremely long. 
+    Is there a way to submit a batch job to do this in parallel and then save the results? 
+    Try parallelizing: https://dmnfarrell.github.io/python/parallelize-python-df
+    What about finding a way to output this data in the simulation itself?
+'''
+
 class TestingSuite(LatticeData):
     
-    def setup(self,run_dirpath, test_log = "test.log"):
+    def setup(self,run_dirpath, use_full_filepath = False, test_log = "test.log"):
         self.set_run_dir(run_dirpath)
+        self.use_full_filepath = use_full_filepath
         self.set_test_logfile(test_log = test_log)
         self.site_catalog = None
         self.test_params = None
     
     def set_run_dir(self,run_dirpath):
-        self.test_run_dir = os.getcwd()+"/"+run_dirpath
+        #select location of data
+        if self.use_full_filepath:
+            self.test_run_dir = run_dirpath+'/'
+        else:
+            self.test_run_dir = os.getcwd()+"/"+run_dirpath
+        
         
     def set_test_logfile(self,test_log = "test.log"):
         self.test_log = test_log
@@ -22,6 +37,8 @@ class TestingSuite(LatticeData):
         mask = (sites["step"] == step) & (sites["i"] == i) & (sites["j"] == j)
         return sites[mask]
                     
+    def create_catalog(self, logfile_subset):
+        
     def catalog_sites(self, **kwargs):
         missing_params = []
         for p in self.parameters:
