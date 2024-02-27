@@ -15,21 +15,21 @@ It's up to you to run the scripts once they're generated.
 #beta = 1/g = 1.6
 beta = 1.6
 #number of steps in thermalization
-ntherm = 4000
+ntherm = 0
 #number of monte carlo steps
-nMC = 10000
+nMC = 20
 #number of steps between samples
-freq = 100
+freq = 1
 #list of values for lattice length L
-L_list = [10,40,80,120,180]
+L_list = [40]
 #list of values for itheta (as fractions of pi)
-itheta_list = [0.0,0.0625,0.125,1875,0.25,0.3125,0.375,0.4375,0.5,0.5636,0.625,0.6875,0.75,0.8125,0.875,0.9375,1.,1.0625,1.125]
+itheta_list = [0.0,0.5,1.]
 
 script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
 email = "cberger@smith.edu"
-num_cpus = 28
-partition = "phyq" #phyq for smith, cpu-long for unity
+num_cpus = 60
+partition = "cpu-long" #phyq for smith, cpu-long for unity
 time_limit = "14-00:00:00" #dd-hh:mm:ss
 
 
