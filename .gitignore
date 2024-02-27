@@ -6,3 +6,7 @@ run_*
 old/
 Analysis/data*
 Analysis/old_data/
+Analysis/*data/
+Analysis/test_*/
+Analysis/__pycache*
+nonlinearsigma

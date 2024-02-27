@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: July 14, 2023
+// Last edited: Nov 8, 2023
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -78,6 +78,9 @@ int main (int argc, char *argv[])
 #endif
 
     cout << "Initializing lattice" << endl;
+#ifdef TESTING_MODE
+    cout << "MC step 0" << endl;
+#endif
     L.initialize(); //initialize 3-component phi everywhere
     create_logfile(L); //generates logfile with header 
     
@@ -103,23 +106,25 @@ int main (int argc, char *argv[])
     cout << "Starting Monte Carlo loop of length " << L.getnMC() << endl;
     
     time(&begin_mc);
-
+    
     for (int n = 0; n<L.getnMC(); n++){
+#ifdef TESTING_MODE
+        cout << "MC step "<<n << endl;
+#endif
         L.metropolisStep();
-        //most of these observable calculations don't need to happen unless you're saving the output
-        //edit for speedup
-        L.calcGij();
-        phi  = L.getPhiTot();
-        A_L  = L.calcAL();
-        Q_L  = L.calcQL();
-        S_L  = L.calcSL();
-        Xi_L = L.calcXi();
-        F_L  = L.calcF();
-        acc  = L.acceptanceRate();
-        time(&time_now);
-        dt = time_now - begin_mc;
         if (n%step_freq == 0){
+            L.calcGij();//should I do this every step or only when saving?
+            phi  = L.getPhiTot();
+            A_L  = L.calcAL();
+            Q_L  = L.calcQL();
+            S_L  = L.calcSL();
+            Xi_L = L.calcXi();
+            F_L  = L.calcF();
+            acc  = L.acceptanceRate();
+            time(&time_now);
+            dt = time_now - begin_mc;
             write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
+            L.saveConfig(n);
         }
 #ifdef TESTING_MODE
         time(&time_now);
@@ -293,7 +298,6 @@ void test_phi_distribution(Lattice L){
     /*for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             field phi = L.getPhi(i,j);
-            double phimag = L.getPhiMag(i,j);
             double *r = L.getRandNums();
             fout << i <<","<< j << ",";
             fout << phi[0]<< "," << phi[1]<< "," << phi[2] << "," << phimag << ",";
@@ -304,7 +308,7 @@ void test_phi_distribution(Lattice L){
 }
 
 void save_correlation_function(Lattice L){
-    //output phi distributions as .csv file
+    //output average correlation function as .csv file
     cout << "Saving average correlation function to file" <<endl;
     //create header of logfile
     string fname = "Gij_avg_"+L.getFilename();
@@ -319,12 +323,11 @@ void save_correlation_function(Lattice L){
     }
     fout.setf(ios::fixed);
     fout << "i,j,G_avg" << endl;
-    int len = L.getLength(); 
+    int len = L.getLength();
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             double G = L.getAvgG(i,j);
-            fout << i <<","<< j << ",";
-            fout << G << endl;
+            fout << i <<","<< j << ","<< G << endl;
         }
     }
     fout.close();

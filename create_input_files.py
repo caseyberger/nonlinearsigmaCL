@@ -15,21 +15,22 @@ It's up to you to run the scripts once they're generated.
 #beta = 1/g = 1.6
 beta = 1.6
 #number of steps in thermalization
-ntherm = 4000
+ntherm = 0
 #number of monte carlo steps
-nMC = 10000
+nMC = 20
 #number of steps between samples
-freq = 100
+freq = 1
 #list of values for lattice length L
-L_list = [10,40,80,120,180]
+L_list = [40]
 #list of values for itheta (as fractions of pi)
-itheta_list = [0.0,0.0625,0.125,1875,0.25,0.3125,0.375,0.4375,0.5,0.5636,0.625,0.6875,0.75,0.8125,0.875,0.9375,1.,1.0625,1.125]
+itheta_list = [0.0,0.5,1.]
 
 script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
 email = "cberger@smith.edu"
-num_cpus = 28
-partition = "phyq"
+num_cpus = 60
+partition = "cpu-long" #phyq for smith, cpu-long for unity
+time_limit = "14-00:00:00" #dd-hh:mm:ss
 
 
 def generate_input_file(length,beta,itheta,nMC,ntherm,freq):
@@ -65,7 +66,7 @@ def copy_executable(script_name, file_ext):
 	copy_cmd = "cp "+source_path+" "+destination_path
 	os.system(copy_cmd)
 
-def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_per_task=38):
+def generate_slurm_script(script_name,file_ext,job_name,email, partition, time_limit, cpus_per_task=38):
 	#generates the sbatch file that you run with sbatch filename
 	#should be paired with the appropriate input file somehow...
 	filename = "submit_sigma.sh"
@@ -83,7 +84,7 @@ def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_p
 	slurm_file.write("#SBATCH --nodes=1\t\t\t# Number of nodes\n")
 	slurm_file.write("#SBATCH --cpus-per-task="+str(cpus_per_task)+"\t\t\t# Number of threads per task (OpenMP)\n")
 	slurm_file.write("#SBATCH --mem=1gb\t\t\t# Job memory request\n")
-	slurm_file.write("##SBATCH --time=05:00:00\t\t\t# Time limit hrs:min:sec\n")
+	slurm_file.write("#SBATCH --time="+str(time_limit)+"\t\t\t# Time limit dd-hh:mm:ss\n")
 	slurm_file.write("#SBATCH --output="+str(job_name)+"%j.log\t\t\t# Standard output\n")
 	slurm_file.write("#SBATCH --error=err_"+str(job_name)+"%j.log\t\t\t# Standard error log\n\n")
 	slurm_file.write("pwd; hostname; date\n\n")
@@ -97,5 +98,5 @@ def generate_slurm_script(script_name,file_ext,job_name,email, partition, cpus_p
 for length in L_list:
 	for itheta in itheta_list:
 		file_ext = generate_input_file(length,beta,itheta,nMC,ntherm,freq)
-		generate_slurm_script(script_name,file_ext,job_name,email,partition,cpus_per_task = num_cpus)
+		generate_slurm_script(script_name,file_ext,job_name,email,partition,time_limit,cpus_per_task = num_cpus)
 		copy_executable(script_name, file_ext)

@@ -1,7 +1,16 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: July 18, 2023 - put cosine domain adjustment back, A_L double counting still removed
-
+// Last edited: Feb 16, 2023
+/* changelog for last edit: 
+ - added new function exceptionalTriangles to check all six triangles that touch vertex (i,j)
+ - updated removeExceptional to use the new exceptionalTriangles function
+ 
+ 
+ suggestions for changes
+ - can you create a class in C++ that inherits the lattice object? 
+         If so, make a testing object so you can put functions like fixRNG 
+        and freeRNG and setTrig into another class to streamline this one.
+*/
 #include <iostream> //cout, endl
 #include <cmath> //sqrt, sin, cos, acos, asin, exp, abs, remainder
 #include <string> //string
@@ -11,6 +20,8 @@
 #include <random> //default_random_engine
 #include <array> 
 #include <omp.h>
+#include <fstream> //fout
+
 #include "mathlib.h" //dot, cross
 #include "lattice.h"
 
@@ -25,7 +36,6 @@ namespace nonlinearsigma{
         Lattice::setnTherm(1000); //set therm steps to default number
         Lattice::setnMC(1000); //set Monte Carlo steps to default number
         Lattice::setFreq(100); //set frequency between saved configs to default number
-        
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
         use_arcsin_ = true;
@@ -48,14 +58,6 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         itheta_ = itheta;
         Lattice::generateFilename_();
-    }
-    
-    void Lattice::setPhi(int i, int j, Lattice::field phi){
-        //tested 6/5/2023
-        //optimization target -- remove this function
-        grid_[i][j][0] = phi[0];
-        grid_[i][j][1] = phi[1];
-        grid_[i][j][2] = phi[2];
     }
     
     void Lattice::setnTherm(int ntherm){
@@ -121,18 +123,14 @@ namespace nonlinearsigma{
         return grid_[i][j];
     }
     
+    int Lattice::getAttempts(int i, int j){
+        return gridAttempts_[i][j];
+    }
+    
     double* Lattice::getRandNums(){
         //tested 6/1/2023
         static double r[2] = {r1_, r2_};
         return r;
-    }
-    
-    double Lattice::getPhiMag(int i, int j){
-        //tested 6/1/2023
-        //field phi = Lattice::getPhi(i,j);
-        field phi(Lattice::getPhi(i,j));//optimization 7/4/23
-        double phi_mag = dot(phi,phi);
-        return phi_mag;
     }
     
     double Lattice::getPhiTot(){
@@ -142,7 +140,8 @@ namespace nonlinearsigma{
         #pragma omp parallel for collapse(2) default(none) shared(length_) reduction(+:phi_tot)
         for(int i = 0; i < length_; i++){
             for(int j = 0; j < length_; j++){
-                phi_tot += Lattice::getPhiMag(i, j);
+                field phi(Lattice::getPhi(i,j)); 
+                phi_tot += dot(phi,phi);
             }
         }
         return phi_tot;
@@ -154,25 +153,149 @@ namespace nonlinearsigma{
         return Gij;
     }
     
+    void Lattice::removeExceptional(int i, int j, int exc_lim){
+        bool exceptional_config = true;
+        int exc_count = 0;
+        while (exceptional_config){
+            //checks the six triangles that inclue vertex (i,j) 
+            if (Lattice::exceptionalTriangles(i, j, exc_count)){
+                exceptional_config = true;
+                exc_count++;
+                //try new field value
+                field phi_new = Lattice::makePhi_();
+                grid_[i][j][0] = phi_new[0];
+                grid_[i][j][1] = phi_new[1];
+                grid_[i][j][2] = phi_new[2]; 
+            }
+            else{
+                exceptional_config = false;
+            }
+            if (exc_count >= exc_lim){
+                break;
+            }
+        }//while still exceptional at vertex (i,j)
+        gridAttempts_[i][j] = exc_count;//update grid with number of attempts made
+    }
+    
+    bool Lattice::exceptionalTriangles(int i, int j, int exc_count){
+        //triangles owned by vertex i,j
+        //algorithm: check each triangle individually and print (in test mode) which is exceptional
+        bool any_exceptional = false;
+        bool tri1, tri2, tri3, tri4, tri5, tri6;
+        int im1 = Lattice::minusOne_(i);
+        int jm1 = Lattice::minusOne_(j);
+        //triangle 1: vertex (i,j), upper triangle
+        if (Lattice::exceptionalConfig(i,j,0)){
+            tri1 = true;
+            any_exceptional = true;
+            }
+        else{tri1 = false;}
+        //triangle 2: vertex (i,j), lower triangle
+        if (Lattice::exceptionalConfig(i,j,1)){
+            tri2 = true;
+            any_exceptional = true;
+        }
+        else{tri2 = false;}
+        //triangle 3: vertex (i-1,j-1), upper triangle
+        if (Lattice::exceptionalConfig(im1,jm1,0)){
+            tri3 = true;
+            any_exceptional = true;
+        }
+        else{tri3 = false;}
+        //triangle 4: vertex (i-1,j-1), lower triangle
+        if (Lattice::exceptionalConfig(im1,jm1,1)){
+            tri4 = true;
+            any_exceptional = true;
+        }
+        else{tri4 = false;}
+        //triangle 5: vertex (i-1,j), lower triangle
+        if (Lattice::exceptionalConfig(im1,j,1)){
+            tri5 = true;
+            any_exceptional = true;
+        }
+        else{tri5 = false;}
+        //triangle 6: vertex (i,j-1), upper triangle
+        if (Lattice::exceptionalConfig(i,jm1,0)){
+            tri6 = true;
+            any_exceptional = true;
+        }
+        else{tri6 = false;}
+        
+        
+#ifdef TESTING_MODE
+        if (any_exceptional){
+            Lattice::printPhi_(i, j);
+            std::cout << "Attempt "<< exc_count << ":" << std::endl;
+            if (tri1){
+                std::cout << "Triangle 1 exceptional "<<std::endl; 
+            }
+            if (tri2){
+                std::cout << "Triangle 2 exceptional "<<std::endl;
+            }
+            if (tri3){
+                std::cout << "Triangle 3 exceptional "<<std::endl;
+            }
+            if (tri4){
+                std::cout << "Triangle 4 exceptional "<<std::endl;
+            }
+            if (tri5){
+                std::cout << "Triangle 5 exceptional "<<std::endl;
+            }
+            if (tri6){
+                std::cout << "Triangle 6 exceptional "<<std::endl;
+            }
+        }
+#endif
+        return any_exceptional;
+    }
+    
+    
+    void Lattice::clean(){
+        //cleaning the lattice means removing exceptional configurations
+        int nsites(length_*length_); 
+        std::vector<int> site_arr(nsites);
+        std::iota(site_arr.begin(), site_arr.end(), 0);     
+        shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
+        
+        int exc_lim(10000);
+
+        for(unsigned int n = 0; n < site_arr.size(); n++){
+            int i(site_arr[n]/length_);
+            int j(site_arr[n]%length_);
+            Lattice::removeExceptional(i, j, exc_lim);
+        }//loop over sites
+    }
+    
     void Lattice::initialize(){
         //tested 5/30/2023
         std::vector < std::vector < Lattice::field > > grid;
         std::vector < std::vector < double > > Gij;
+        std::vector < std::vector < int > > gridAttempts;
+        std::vector < std::vector < bool > > gridMCAccepted;
         for(int i = 0; i < length_; i++){
             std::vector <double> Gj;
+            std::vector <int> gridAttemptsj;
+            std::vector <bool> gridMCAcceptedj;
             std::vector < Lattice::field > gridj;
             for (int j = 0; j<length_; j++){
                 field phi = Lattice::makePhi_();
                 gridj.push_back(phi);
                 Gj.push_back(0.);
+                gridAttemptsj.push_back(0);
+                gridMCAcceptedj.push_back(false);
             }
             Gij.push_back(Gj);
             grid.push_back(gridj);
+            gridAttempts.push_back(gridAttemptsj);
+            gridMCAccepted.push_back(gridMCAcceptedj);
         }
         grid_ = grid;
         Gij_ = Gij;
+        gridAttempts_ = gridAttempts;
+        gridMCAccepted_ = gridMCAccepted;
         Lattice::makeTriangles_();
         Lattice::zeroCount();
+        Lattice::clean();
     }
     
     void Lattice::printLattice(){
@@ -206,6 +329,37 @@ namespace nonlinearsigma{
         std::cout << "(" << nn[1][0] << "," << nn[1][1] << "), with phi (" << nnphi[1][0] << "," << nnphi[1][1] << "," << nnphi[1][2] << ")" << std::endl;
         std::cout << "(" << nn[2][0] << "," << nn[2][1] << "), with phi (" << nnphi[2][0] << "," << nnphi[2][1] << "," << nnphi[2][2] << ")" << std::endl;
         std::cout << "(" << nn[3][0] << "," << nn[3][1] << "), with phi (" << nnphi[3][0] << "," << nnphi[3][1] << "," << nnphi[3][2] << ")" << std::endl;
+    }
+    
+    void Lattice::saveConfig(int step){
+        std::string step_str   = std::to_string(step);
+        std::string fname = "config_"+step_str+".csv";
+        std::ofstream fout; //output stream
+        fout.open(fname.c_str(),std::ios::out);
+
+        // check if files are open
+        if (!fout.is_open())
+        {
+            std::cerr << "Unable to open file " << fname <<"." << std::endl;
+            std::exit(10);
+        }
+        fout.setf(std::ios::fixed);
+        fout << "i,j,phi_x,phi_y,phi_z,Gij, numAttempts, exceptional, MCAccepted" << std::endl;
+        for (int i = 0; i < length_; i++){
+            for (int j = 0; j < length_; j++){
+                field phi = Lattice::getPhi(i,j);
+                double Gij = Lattice::getAvgG(i,j);
+                int numAttempts = Lattice::getAttempts(i,j);
+                fout << i <<","<< j << ",";
+                fout << phi[0] << "," << phi[1] << "," << phi[2] << ",";
+                fout << Gij << "," <<  numAttempts;
+                if (Lattice::exceptionalConfig(i,j,0) or Lattice::exceptionalConfig(i,j,1)){fout << ", Y";}
+                else{fout << ", N";}
+                if (gridMCAccepted_[i][j]){fout << ", Y" << std::endl;}
+                else{fout << ", N" << std::endl;}
+            }
+        }
+        fout.close();
     }
     
     double Lattice::calcQL(){
@@ -302,36 +456,32 @@ namespace nonlinearsigma{
         //tested 6/5/2023
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
+        int exc_lim = 10000;
         
-        //int nsites = length_*length_;
-        int nsites(length_*length_); //optimization 7/4/23
+        //generate randomized array of sites
+        int nsites(length_*length_); 
         std::vector<int> site_arr(nsites);
         std::iota(site_arr.begin(), site_arr.end(), 0);     
         shuffle(site_arr.begin(), site_arr.end(), std::default_random_engine(1232));
 
         for(unsigned int n = 0; n < site_arr.size(); n++){
-            //int i = site_arr[n]/length_;
-            int i(site_arr[n]/length_);//optimization 7/4/23
-            //int j = site_arr[n]%length_;
-            int j(site_arr[n]%length_);//optimization 7/4/23
-            //Si = Lattice::calcSL();
-            //optimization: remove function call for simple function
+            int i(site_arr[n]/length_);
+            int j(site_arr[n]%length_);
             Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
-            //end optimization
-            phi_old = Lattice::getPhi(i, j);
-
-            //update lattice
+            phi_old = Lattice::getPhi(i, j);//store old field in case you reject the change
+            
+            //generate new field at site
             phi_new = Lattice::makePhi_();
-            //Lattice::setPhi(i, j, phi_new);
-            //optimization: remove function call for simple function
             grid_[i][j][0] = phi_new[0];
             grid_[i][j][1] = phi_new[1];
             grid_[i][j][2] = phi_new[2];
-            //end optimization
-            //Sf = Lattice::calcSL();
-            //optimization: remove function call for simple function
+            
+            //make sure the change isn't exceptional
+            Lattice::removeExceptional(i, j, exc_lim);
+            
+            
+            //calculate change in action with new field 
             Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
-            //end optimization
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
             r = 0.5;
@@ -340,20 +490,20 @@ namespace nonlinearsigma{
 #endif
             if(dS < 0 || r < std::exp(-1.*dS)){
                 acceptCount_++;//increment accept counter
+                gridMCAccepted_[i][j] = true; //update MC results for this sweep
             }
             else{
-                
-                //Lattice::setPhi(i, j, phi_old);//change the value back to the old phi
-                //optimization: remove function call for simple function
                 grid_[i][j][0] = phi_old[0];
                 grid_[i][j][1] = phi_old[1];
                 grid_[i][j][2] = phi_old[2];
-                //end optimization
                 rejectCount_++;//increment reject counter
+                gridAttempts_[i][j] = 0; //reset num attempts to zero because we stuck with the old config
+                gridMCAccepted_[i][j] = false; //update MC results for this sweep
             }
         }//loop over sites
         double acc_rate = (double)acceptCount_/((double)acceptCount_ + (double)rejectCount_);
         accRate_ = acc_rate;
+        
 #ifdef EXTREME_TESTING_MODE
         std:: cout << "Acceptance rate: " << acc_rate << std::endl;
 #endif
@@ -381,6 +531,23 @@ namespace nonlinearsigma{
     double Lattice::acceptanceRate(){
         //tested 6/5/2023
         return accRate_;
+    }
+    
+    bool Lattice::exceptionalConfig(int i, int j, int n){
+        //check that these are done counterconclockwise
+        int i1(triangles_[i][j][n][0][0]);
+        int j1(triangles_[i][j][n][0][1]);
+        int i2(triangles_[i][j][n][1][0]);
+        int j2(triangles_[i][j][n][1][1]);
+        int i3(triangles_[i][j][n][2][0]);
+        int j3(triangles_[i][j][n][2][1]);
+        Lattice::field phi1(Lattice::getPhi(i1,j1));
+        Lattice::field phi2(Lattice::getPhi(i2,j2));
+        Lattice::field phi3(Lattice::getPhi(i3,j3));
+        double check1 = dot(phi1,cross(phi2,phi3));
+        double check2 = 1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1);
+        if (check1 == 0 or check2 <= 0.){return true;}
+        else {return false;}
     }
     
     //private functions
@@ -414,6 +581,7 @@ namespace nonlinearsigma{
         r2_ = r2;//save for debugging -- consider wrapping in a #ifndef statement for optimization
         return phi;
     }
+    
     
     int Lattice::plusOne_(int i){
         //tested 5/30/2023

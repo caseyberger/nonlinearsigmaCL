@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: May 24, 2023
-// Last edited: July 14, 2023 - triangles
+// Last edited: Feb 16 2024
 #include <array>
 #include <vector>
 #include <omp.h>
@@ -23,7 +23,6 @@ namespace nonlinearsigma{
         void setLength(int length);//tested 6/1/2023
         void setBeta(double beta);//tested 6/1/2023
         void setiTheta(double itheta);//tested 6/1/2023
-        void setPhi(int i, int j, field phi);//tested 6/5/2023
         void setnTherm(int ntherm);
         void setnMC(int nMC);
         void setFreq(int freq);
@@ -40,17 +39,22 @@ namespace nonlinearsigma{
         std::string getFilename();
         field getPhi(int i, int j);//tested 5/30/2023
         double* getRandNums();//tested 6/1/2023
-        double getPhiMag(int i, int j); //tested 6/1/2023
         double getPhiTot(); //tested 6/1/2023
         double getAvgG(int i, int j);
+        int getAttempts(int i, int j);
         
-        //initialize the lattice
+        //initialize the lattice and clean lattice (remove exceptional)
         void initialize(); //tested 5/30/2023
+        void removeExceptional(int i, int j, int exc_lim);
+        void clean();
         
         //print things to the screen
         void printLattice();//tested 5/30/2023
         void printTriangles(int i, int j);//updated 7/14/2023
         void printNeighbors(int i, int j);//tested 6/1/2023
+        
+        //write things to file
+        void saveConfig(int step);
         
         //calculate and test lattice quantities
         double calcQL();//updated 7/14/2023
@@ -60,18 +64,23 @@ namespace nonlinearsigma{
         void calcGij();
         double calcXi();
         double* calcF();
+        bool exceptionalConfig(int i, int j, int n);
+        bool exceptionalTriangles(int i, int j, int exc_count);//added 2/16/2024
         
         //monte carlo tools
         void metropolisStep();//tested 6/5/2023
         void thermalize();//tested 6/5/2023
         void zeroCount();//tested 6/5/2023
         double acceptanceRate();//tested 6/5/2023
+
     
         //private members -- only accessible within the class functions
         private:
         //variables
         int length_;
         std::vector < std::vector < field > > grid_;
+        std::vector < std::vector < int > > gridAttempts_;
+        std::vector < std::vector < bool > > gridMCAccepted_;
         std::vector < std::vector < site_triangles > > triangles_;
         double beta_;
         double itheta_;

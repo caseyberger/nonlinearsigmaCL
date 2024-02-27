@@ -1,6 +1,6 @@
-L = 5
+L = 4
 beta = 1.6
 itheta = 1.
-ntherm = 10
+ntherm = 0
 nMC = 10
 freq = 1
