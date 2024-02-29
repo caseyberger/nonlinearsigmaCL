@@ -127,9 +127,9 @@ class LatticeData:
             df.reset_index()
         return df
     
-    def do_stats(self, therm = 0., stack = False, **kwargs):
+    def do_stats(self, therm_frac = 0., stack = False, **kwargs):
         df = self.get_data(**kwargs)
-        therm_condition = df["step"].astype(float) >= therm*df["nMC"].astype(float)
+        therm_condition = df["step"].astype(float) >= therm_frac*df["nMC"].astype(float)
         df = df[therm_condition]
         df.drop(columns = ["step"], inplace = True)
         if stack:
