@@ -10,3 +10,9 @@ CL_prelim Branch Notes
             - Should the user have to program in their own action, drift function etc?
             - Maybe it should inherit the action and drift function and just implement the evolution?
         - Where do I define the complex variable operations, etc? In this class, or a class that inherits this one?
+
+TO DO
+- finish cleaning up the new CL.cpp and CL.h and test out:
+    - creating just a simple, small lattice with complex fields
+    - performing a complex dot product and a complex cross product
+    - printing the results to a file
