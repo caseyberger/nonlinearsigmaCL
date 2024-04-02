@@ -1,6 +1,6 @@
 CL_prelim Branch Notes
 
-4.1.2024
+4.2.2024
 - created new branch
 - created CL library + header to do complex dot and cross products
 - Open questions:
@@ -10,6 +10,7 @@ CL_prelim Branch Notes
             - Should the user have to program in their own action, drift function etc?
             - Maybe it should inherit the action and drift function and just implement the evolution?
         - Where do I define the complex variable operations, etc? In this class, or a class that inherits this one?
+            - https://www.geeksforgeeks.org/inheritance-in-c/
 
 TO DO
 - finish cleaning up the new CL.cpp and CL.h and test out:
