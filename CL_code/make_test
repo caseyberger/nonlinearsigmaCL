@@ -65,13 +65,16 @@ TARGET = nonlinearsigma
 # ****************************************************
 # Targets needed to bring the executable up to date
 
-test: test.o cllib.o mathlib.o
-	$(CXX) $(CXXFLAGS) -o test test.o cllib.o mathlib.o
+test: test.o CL.o cllib.o mathlib.o
+	$(CXX) $(CXXFLAGS) -o test test.o CL.o cllib.o mathlib.o
 
-test.o: test.cpp cllib.h mathlib.h 
+test.o: test.cpp CL.h cllib.h mathlib.h 
 	$(CXX) $(CXXFLAGS) -c test.cpp 
 
 # Dependencies
+CL.o: CL.cpp CL.h cllib.h mathlib.h
+	$(CXX) $(CXXFLAGS) -c CL.cpp
+    
 cllib.o: cllib.cpp cllib.h mathlib.h
 	$(CXX) $(CXXFLAGS) -c cllib.cpp
     

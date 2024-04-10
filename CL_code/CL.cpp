@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Apr 2, 2024
-// Last edited: Apr 2, 2024
+// Last edited: Apr 9, 2024
 /* 
 Plans: this class will be the base class, and individual CL projects will inherit it
 It should be able to do CL evolution if fed the drift function
@@ -17,41 +17,40 @@ It should store complex fields and numbers and do complex dot and cross products
 #include <algorithm>  // shuffle
 #include <random> //default_random_engine
 
-
+#include "CL.h"
 #include "mathlib.h" //dot, cross
 #include "cllib.h" //complex dot, complex cross (put those in here??)
 
 
-namespace cl{
+namespace complexlangevin{
     //public functions
     //constructor
-    ComplexLattice::Lattice(int length){
-        ComplexLattice::SetLength(length); //set length
-        ComplexLattice::GenerateFilename_();//set output filename
+    CL::CL(int argc, char *argv[]){
+        std::cout << "CL::Lattice" << std::endl;
+        CL::GetInputs_(argc, argv);
+        //CL::GenerateFilename_();//set output filename
     }
     //other public functions
-    void ComplexLattice::SetLength(int length){
+    void CL::SetLength(int length){
         length_ = length;
-        Lattice::generateFilename_();
-        Lattice::initialize();
+        std::cout << "Lattice length set to " << length_ << std::endl;
+        //Lattice::generateFilename_();
     }
-    
-    int ComplexLattice::GetLength(){
-        //tested 6/1/2023
+
+    int CL::GetLength(){
         return length_;
     }
-    
-    std::string ComplexLattice::GetFilename(){
+      /*  
+    std::string CL::GetFilename(){
         return filename_;
     }
     
-    ComplexLattice::complex_field ComplexLattice::GetField(int i, int j){
+    CL::complex_field CL::GetField(int i, int j){
         return lattice_[i][j];
     }
+ 
     
-   
-    void ComplexLattice::Initialize(){
-        //tested 5/30/2023
+    void CL::Initialize(){
         std::vector < std::vector < Lattice::field > > grid;
         std::vector < std::vector < double > > Gij;
         std::vector < std::vector < int > > gridAttempts;
@@ -82,7 +81,7 @@ namespace cl{
         Lattice::clean();
     }
     
-    void ComplexLattice::PrintLattice(){
+    void CL::PrintLattice(){
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 Lattice::printPhi_(i, j);
@@ -90,8 +89,7 @@ namespace cl{
         }
     }
     
-    
-    void ComplexLattice::PrintNeighbors(int i, int j){
+    void CL::PrintNeighbors(int i, int j){
         std::array < Lattice::vertex, 4 > nn = Lattice::getNeighbors_(i,j);
         std::array < Lattice::field, 4 > nnphi = Lattice::getNeighborPhis_(i,j);
         std::cout << "At (i,j) = " << i << "," << j << " the neighbors are: " << std::endl;
@@ -101,7 +99,7 @@ namespace cl{
         std::cout << "(" << nn[3][0] << "," << nn[3][1] << "), with phi (" << nnphi[3][0] << "," << nnphi[3][1] << "," << nnphi[3][2] << ")" << std::endl;
     }
     
-    void ComplexLattice::SaveConfig(int step){
+    void CL::SaveConfig(int step){
         std::string step_str   = std::to_string(step);
         std::string fname = "config_"+step_str+".csv";
         std::ofstream fout; //output stream
@@ -131,24 +129,76 @@ namespace cl{
         }
         fout.close();
     }
-   
-    void ComplexLattice::CalcGij(){
-        #pragma omp parallel for collapse(2) default(none) shared(length_)
-        for (int i = 0; i < length_; i++){
-            for (int j = 0; j < length_; j++){
-                Lattice::field phi_00(Lattice::getPhi(0,0));
-                Lattice::field phi_ij(Lattice::getPhi(i,j));
-                double G(dot(phi_00, phi_ij));
-                double oldAvgG(Lattice::getAvgG(i, j));
-                int n(acceptCount_+rejectCount_);
-                double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
-                Gij_[i][j] = newAvgG;
-            }
-        }
-    }
+    */
     
     //private functions
-    Lattice::field Lattice::makePhi_(){
+    
+    //reading in parameters, changing parameters, etc
+    
+    void CL::GetInputs_(int argc, char *argv[]){
+        //read in parameters
+        //consider making one testing flag that you turn on with #ifdef TESTING_MODE so you can just do if (testing){THING TO DO;}
+        std::cout << "Function: CL::GetInputs_" << std::endl;
+        #ifdef TESTING_MODE 
+            std::cout << "Function: CL::GetInputs_" << std::endl;
+        #endif
+            std::string str, filename;
+            const int n_params = 3; //L, nL, freq
+            std::string inputs [n_params] = {"length","nL", "freq"};//read in keywords for parameters
+            if (argc != 2){ //exits if input file is not given
+                std::cerr << "Usage: ./executable_name input.txt"<< std::endl << "Exiting program" << std::endl;
+                std::exit(10);
+            }
+            else{
+                std::ifstream input_file(argv[1]);
+                if (!input_file.is_open()){
+                    std::cerr << "input file cannot be opened";
+                    std::exit(10);
+                }
+                else{
+                    int count = 0;
+        #ifdef TESTING_MODE
+                    std::cout << "Starting param search in file: ";
+                    for (int n=0; n<n_params; n++){
+                        std::cout << inputs[n] << ',';
+                    }
+                    std::cout << std::endl;
+        #endif  
+                    while (count < n_params) {
+                        while (getline(input_file, str)) {
+                            //search for params in input
+                            size_t found = str.find(inputs[count]);
+                            size_t start;
+                            if (found != std::string::npos) {
+                                start = str.find_last_of(' ');
+                                inputs[count] = str.substr(start + 1);
+                                count++;
+                            }
+                            else{
+                                //if your inputs file doesn't have that parameter listed 
+                                std::cerr << "parameter "<< inputs[count] << " not in input file.";
+                                std::exit(10);
+                            }
+                        }
+                    }
+                    int length = stod(inputs[0]);
+                    CL::SetLength(length);
+                    int nL = stod(inputs[1]);
+                    int freq = stod(inputs[2]);
+        #ifdef TESTING_MODE
+                    std::cout << "parameters acquired: ";
+                    for (int n=0; n<n_params; n++){
+                        std::cout << inputs[n] << ',';
+                    }
+                    std::cout << std::endl;
+        #endif  
+                }
+            }
+        }
+    
+    /*
+    
+    CL::field CL::makePhi_(){
         //tested 6/1/2023
         Lattice::field phi;
         double r1, r2;
@@ -178,144 +228,52 @@ namespace cl{
         r2_ = r2;//save for debugging -- consider wrapping in a #ifndef statement for optimization
         return phi;
     }
-    
-    
-    int Lattice::plusOne_(int i){
+
+    int CL::plusOne_(int i){
         //tested 5/30/2023
         if(i+1 == length_){ return 0;}
         else{return i+1;}
     }
     
-    int Lattice::minusOne_(int i){
+    int CL::minusOne_(int i){
         //tested 5/30/2023
         if(i == 0){ return length_-1;}
         else{return i-1;}
     }
     
-    void Lattice::makeTriangles_(){
-        //tested 6/16/2023
-        //updated 7/14/2023
-        
-        std::vector < std::vector < site_triangles > > all_triangles;
-        for(int i = 0; i < length_; i++){
-            std::vector < site_triangles > tri_y;
-            for (int j = 0; j<length_; j++){
-                site_triangles local_triangles;
-                //triangle 1
-                Lattice::vertex v1({i,j});
-                Lattice::vertex v2({Lattice::plusOne_(i),Lattice::plusOne_(j)});
-                Lattice::vertex v3({i,Lattice::plusOne_(j)});
-                local_triangles[0] = {v1, v2, v3};
-                
-                //triangle 2
-                v3 = v2;
-                v2 = {Lattice::plusOne_(i),j};
-                local_triangles[1] = {v1, v2, v3};
-                
-                tri_y.push_back(local_triangles);
-            }
-            all_triangles.push_back(tri_y);
-        }
-        triangles_ = all_triangles;
-    }
     
-    double Lattice::locQL_(int i, int j, int n, bool use_arcsin){
-        //updated 7/14/2023 for new triangles
-        //Calculates QL on the nth triangle with central vertex i,j
-        double tol = 1.0e-5;
-        double rho, QLc, QLs;
-        int i1(triangles_[i][j][n][0][0]);
-        int j1(triangles_[i][j][n][0][1]);
-        int i2(triangles_[i][j][n][1][0]);
-        int j2(triangles_[i][j][n][1][1]);
-        int i3(triangles_[i][j][n][2][0]);
-        int j3(triangles_[i][j][n][2][1]);
-        Lattice::field phi1(Lattice::getPhi(i1,j1));
-        Lattice::field phi2(Lattice::getPhi(i2,j2));
-        Lattice::field phi3(Lattice::getPhi(i3,j3));
-        rho = std::sqrt(2.*(1. + dot(phi1, phi2))*(1. + dot(phi2, phi3))*(1. + dot(phi3, phi1)));
-        QLc = (1. + dot(phi1, phi2) + dot(phi2, phi3) + dot(phi3, phi1))/rho;
-        QLs = dot(phi1,cross(phi2,phi3))/rho;
-        double QLcos = std::acos(QLc)/(2.*M_PI);
-        double QLsin = std::asin(QLs)/(2.*M_PI);
-        if(use_arcsin){return QLsin;}
-        else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-            if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
-            if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
-            return QLcos;
-        }
-    }
-    
-    void Lattice::checkQL(){
+    std::array < CL::vertex, 4> CL::getNeighbors_(int i, int j){
         //tested 6/1/2023
-        //ensures we get the same QLtri with either cosine or sine
-        //also ensures that QLtri is in the correct range of [-pi/2, pi/2]
-        //also ensures that QL over all triangles is an integer (w/in some tolerance)
-        double QLtot = 0;
-        double tol = 1.0e-5;
-        for (int i = 0; i < length_; i++){
-            for (int j = 0; j < length_; j++){
-                for (int n = 0; n < 2; n++){
-                    double QLcos, QLsin;
-                    bool use_cosine = true;
-                    bool use_sine = false;
-                    QLcos = Lattice::locQL_(i,j,n,use_cosine);
-                    QLsin = Lattice::locQL_(i,j,n,use_sine);
-                    //adjust arccos to match arcsin domain
-                    if (QLcos > 0.5*M_PI){QLcos -= 2*M_PI;}
-                    if (std::abs(QLcos + QLsin) < tol){QLcos = -1.*QLcos;}
-                    //check if they are equivalent
-                    if (std::abs(QLcos - QLsin) > tol){
-                        std::cout << "QLcos = " << QLcos << ", QLsin = " << QLsin << std::endl;
-                    }
-                    else{
-                        std::cout << "QLcos = QLsin = " << QLsin << std::endl;
-                    }
-                    if (QLsin > 0.5 || QLsin < -0.5){
-                        std::cout << "QL of triangle outside range [-1/2,1/2]: " << QLsin << std::endl;
-                    }
-                    QLtot += QLsin;
-                }//loop over n
-            }//loop over j
-        }//loop over i
-        std::cout << "QLtot = " << QLtot << std::endl;
-        if (std::abs(std::remainder(QLtot,1)) > tol){
-            std::cout << "QL not an integer value: " << QLtot << std::endl;
-        }
-    }
-    
-    std::array < Lattice::vertex, 4> Lattice::getNeighbors_(int i, int j){
-        //tested 6/1/2023
-        std::array < Lattice::vertex, 4> nn;
-        nn[0][0] = Lattice::plusOne_(i);
+        std::array < CL::vertex, 4> nn;
+        nn[0][0] = CL::plusOne_(i);
         nn[0][1] = j;
         nn[1][0] = i;
-        nn[1][1] = Lattice::plusOne_(j);
-        nn[2][0] = Lattice::minusOne_(i);
+        nn[1][1] = CL::plusOne_(j);
+        nn[2][0] = CL::minusOne_(i);
         nn[2][1] = j;
         nn[3][0] = i;
-        nn[3][1] = Lattice::minusOne_(j);
+        nn[3][1] = CL::minusOne_(j);
         return nn;
     }
     
-    std::array < Lattice::field, 4 > Lattice::getNeighborPhis_(int i, int j){
+    std::array < CL::field, 4 > CL::getNeighborPhis_(int i, int j){
         //tested 6/1/2023
-        std::array < Lattice::field, 4> nnPhis;
-        nnPhis[0] = Lattice::getPhi(Lattice::plusOne_(i), j);
-        nnPhis[1] = Lattice::getPhi(i, Lattice::plusOne_(j));
-        nnPhis[2] = Lattice::getPhi(Lattice::minusOne_(i), j);
-        nnPhis[3] = Lattice::getPhi(i, Lattice::minusOne_(j));
+        std::array < CL::field, 4> nnPhis;
+        nnPhis[0] = CL::getPhi(CL::plusOne_(i), j);
+        nnPhis[1] = CL::getPhi(i, CL::plusOne_(j));
+        nnPhis[2] = CL::getPhi(CL::minusOne_(i), j);
+        nnPhis[3] = CL::getPhi(i, CL::minusOne_(j));
         return nnPhis;
     }
     
-    void Lattice::printPhi_(int i, int j){
+    void CL::printField_(int i, int j){
         //tested 5/30/2023
-        Lattice::field phi = Lattice::getPhi(i,j);
+        CL::field phi = CL::getPhi(i,j);
         std::cout << "At point (" << i << "," << j <<"), phi = (";
         std::cout << phi[0] << "," << phi[1] << ","<< phi[2] << ")" << std::endl;
     }
-    
-    void Lattice::generateFilename_(){
+
+    void CL::generateFilename_(){
         std::string l_str   = std::to_string(length_);
         std::string b_str   = std::to_string(beta_);
         std::string th_str  = std::to_string(itheta_);
@@ -325,5 +283,6 @@ namespace cl{
         std::string fname = "nonlinearsigma_data_L_" + l_str + "_beta_" + b_str + "_itheta_" + th_str + "_ntherm_" + nt_str + "_nMC_" + nmc_str + "_freq_" + frq_str + ".csv";
         filename_ = fname;
     }
+    */
     
 }//end class definition

@@ -17,3 +17,7 @@ TO DO
     - creating just a simple, small lattice with complex fields
     - performing a complex dot product and a complex cross product
     - printing the results to a file
+    
+
+4.9.2024
+- 

@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: April 2, 2024
-// Last edited: April 2, 2024
+// Last edited: April 9, 2024
 //
 // takes input file. Run with ./test_nlsigma inputs
 //
@@ -16,10 +16,12 @@
 #include <omp.h> //openMP
 
 //custom header files
+#include "CL.h"
 #include "cllib.h"
 #include "mathlib.h"
 
 using namespace std;
+using complexlangevin::CL;
 
 int main (int argc, char *argv[])
 {
@@ -32,8 +34,11 @@ int main (int argc, char *argv[])
     srand(1723); //seed random number
     time(&begin);
     
-    
-    
+     //Initalize the lattice - dynamically allocate the memory for the lattice
+    cout << "Constructing lattice" << endl;    
+    CL Lattice(argc, argv);//construct lattice
+    //int length = L.GetLength();
+    //cout << "Lattice has length " << length << endl;  
    
     time(&end);
     dt = end - begin;

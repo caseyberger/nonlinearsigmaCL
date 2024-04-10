@@ -6,7 +6,7 @@
 #include <array>
 #include "mathlib.h"
 
-double complex_dot(std::array<double, 6> a, std::array<double, 6> b){
+ std::array<double, 2> complex_dot(std::array<double, 6> a, std::array<double, 6> b){
     //even indices are the real components, odd indices are the imaginary components
     std::array<double, 3> a_Re = {a[0], a[2], a[4]};
     std::array<double, 3> b_Re = {b[0], b[2], b[4]};
@@ -20,7 +20,7 @@ double complex_dot(std::array<double, 6> a, std::array<double, 6> b){
     //z components
     
     
-    return 0.5*s;
+    return s;
 }
 
 std::array<double, 6> complex_cross(std::array<double, 6> a, std::array<double, 6> b){
