@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Apr 2, 2024
-// Last edited: Apr 9, 2024
+// Last edited: Apr 10, 2024
 /* 
 Plans: this class will be the base class, and individual CL projects will inherit it
 It should be able to do CL evolution if fed the drift function

@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Apr 2, 2024
-// Last edited: Apr 9, 2024
+// Last edited: Apr 10, 2024
 #include <array>
 #include <vector>
 #include <omp.h>

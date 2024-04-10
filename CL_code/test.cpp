@@ -1,6 +1,6 @@
 // Casey Berger
-// Created: April 2, 2024
-// Last edited: April 9, 2024
+// Created: April 10, 2024
+// Last edited: April 10, 2024
 //
 // takes input file. Run with ./test_nlsigma inputs
 //
@@ -25,9 +25,7 @@ using complexlangevin::CL;
 
 int main (int argc, char *argv[])
 {
-#ifdef TESTING_MODE
-    cout << "Testing mode ON." << endl;
-#endif
+    cout << "Running testing suite for CL_simulation." << endl;
     cout << "Starting clock." << endl;
     time_t begin, end;
     double dt;
@@ -37,8 +35,12 @@ int main (int argc, char *argv[])
      //Initalize the lattice - dynamically allocate the memory for the lattice
     cout << "Constructing lattice" << endl;    
     CL Lattice(argc, argv);//construct lattice
-    //int length = L.GetLength();
-    //cout << "Lattice has length " << length << endl;  
+    int length = Lattice.GetLength();
+    cout << "Lattice has length " << length << endl;
+    cout << "Setting new lattice length to " << 2*length << endl;
+    Lattice.SetLength(2*length);
+    length = Lattice.GetLength();
+    cout << "Lattice now has length " << length << endl;
    
     time(&end);
     dt = end - begin;
