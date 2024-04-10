@@ -64,5 +64,6 @@ mathlib.o: mathlib.cpp mathlib.h
 clean:
 	rm -f *.o 
 	rm -f *.gcno
+	rm -f *.gcda
 	touch *
 
