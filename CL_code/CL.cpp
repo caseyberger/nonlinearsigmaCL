@@ -26,18 +26,26 @@ namespace complexlangevin{
     //public functions
     //constructor
     CL::CL(int argc, char *argv[]){
-        std::cout << "CL::Lattice" << std::endl;
+        testing_ = false;
+#ifdef TESTING_MODE
+        testing_ = true;
+#endif
+        if(testing_){std::cout << "CL::CL" << std::endl;}
+        
         CL::GetInputs_(argc, argv);
         //CL::GenerateFilename_();//set output filename
     }
+    
+    
     //other public functions
-    void CL::SetLength(int length){
+    void CL::SetLength(int length){//tested 4/10/2024
+        if(testing_){std::cout << "CL::SetLength" << std::endl;}
         length_ = length;
-        std::cout << "Lattice length set to " << length_ << std::endl;
         //Lattice::generateFilename_();
     }
 
-    int CL::GetLength(){
+    int CL::GetLength(){//tested 4/10/2024
+        if(testing_){std::cout << "CL::GetLength" << std::endl;}
         return length_;
     }
       /*  
@@ -136,65 +144,56 @@ namespace complexlangevin{
     //reading in parameters, changing parameters, etc
     
     void CL::GetInputs_(int argc, char *argv[]){
-        //read in parameters
-        //consider making one testing flag that you turn on with #ifdef TESTING_MODE so you can just do if (testing){THING TO DO;}
-        std::cout << "Function: CL::GetInputs_" << std::endl;
-        #ifdef TESTING_MODE 
-            std::cout << "Function: CL::GetInputs_" << std::endl;
-        #endif
-            std::string str, filename;
-            const int n_params = 3; //L, nL, freq
-            std::string inputs [n_params] = {"length","nL", "freq"};//read in keywords for parameters
-            if (argc != 2){ //exits if input file is not given
-                std::cerr << "Usage: ./executable_name input.txt"<< std::endl << "Exiting program" << std::endl;
-                std::exit(10);
-            }
-            else{
-                std::ifstream input_file(argv[1]);
-                if (!input_file.is_open()){
-                    std::cerr << "input file cannot be opened";
-                    std::exit(10);
-                }
+        //tested 4/10/2024
+        if(testing_){std::cout << "Function: CL::GetInputs_" << std::endl;}
+        
+        std::string str, filename;
+        const int n_params = 3; //L, nL, freq
+        std::string inputs [n_params] = {"length","nL", "freq"};//read in keywords for parameters
+        if (argc != 2){ 
+            std::cerr << "Usage: ./executable_name input.txt"<< std::endl << "Exiting program" << std::endl;
+            std::exit(10);
+        }//exits if input file is not given
+        std::ifstream input_file(argv[1]);
+        if (!input_file.is_open()){
+            std::cerr << "input file cannot be opened";
+            std::exit(10);
+        }//exits if input file cannot be opened
+        int count = 0;
+        if(testing_){
+            std::cout << "Starting param search in file: ";
+            for (int n=0; n<n_params; n++){std::cout << inputs[n] << ',';}
+            std::cout << std::endl;
+            } //testing print statement
+        
+        //read in params
+        while (count < n_params) {
+            while (getline(input_file, str)) {
+                size_t found = str.find(inputs[count]);
+                size_t start;
+                if (found != std::string::npos) {
+                    start = str.find_last_of(' ');
+                    inputs[count] = str.substr(start + 1);
+                    count++;
+                }//adds parameters found to list
                 else{
-                    int count = 0;
-        #ifdef TESTING_MODE
-                    std::cout << "Starting param search in file: ";
-                    for (int n=0; n<n_params; n++){
-                        std::cout << inputs[n] << ',';
-                    }
-                    std::cout << std::endl;
-        #endif  
-                    while (count < n_params) {
-                        while (getline(input_file, str)) {
-                            //search for params in input
-                            size_t found = str.find(inputs[count]);
-                            size_t start;
-                            if (found != std::string::npos) {
-                                start = str.find_last_of(' ');
-                                inputs[count] = str.substr(start + 1);
-                                count++;
-                            }
-                            else{
-                                //if your inputs file doesn't have that parameter listed 
-                                std::cerr << "parameter "<< inputs[count] << " not in input file.";
-                                std::exit(10);
-                            }
-                        }
-                    }
-                    int length = stod(inputs[0]);
-                    CL::SetLength(length);
-                    int nL = stod(inputs[1]);
-                    int freq = stod(inputs[2]);
-        #ifdef TESTING_MODE
-                    std::cout << "parameters acquired: ";
-                    for (int n=0; n<n_params; n++){
-                        std::cout << inputs[n] << ',';
-                    }
-                    std::cout << std::endl;
-        #endif  
-                }
-            }
-        }
+                    //if your inputs file doesn't have that parameter listed 
+                    std::cerr << "parameter "<< inputs[count] << " not in input file.";
+                    std::exit(10);
+                }//exits if a parameter cannot be found
+            }//search for params in input
+        }//read in parameters until we have them all
+        
+        int length = stod(inputs[0]);
+        CL::SetLength(length);
+        int nL = stod(inputs[1]);
+        int freq = stod(inputs[2]);
+        if(testing_){
+            std::cout << "parameters acquired: ";
+            for (int n=0; n<n_params; n++){std::cout << inputs[n] << ',';}
+                std::cout << std::endl;
+            }//testing print statement
+    }
     
     /*
     

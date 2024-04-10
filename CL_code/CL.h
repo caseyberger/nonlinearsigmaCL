@@ -48,6 +48,7 @@ namespace complexlangevin{
         private:
         //variables
         int length_;
+        bool testing_;
         //std::vector < std::vector < complex_field > > lattice_;
         int nL_;
         int freq_;

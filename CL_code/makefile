@@ -3,6 +3,7 @@ SHELL=/bin/sh
 
 # set flags for compilation
 
+TESTING_MODE ?= FALSE
 USE_OMP ?= FALSE
 USE_GPROF ?= FALSE
 USE_ARCCOS ?= FALSE
@@ -10,6 +11,10 @@ USE_CONST_RN ?= FALSE
 
 
 # create flags for compilation
+
+ifeq ($(TESTING_MODE), TRUE)
+	DEFINES += -DTESTING_MODE
+endif
 
 ifeq ($(USE_GPROF),TRUE)
 	DEFINES += -pg
