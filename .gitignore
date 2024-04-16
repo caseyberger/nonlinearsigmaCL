@@ -10,3 +10,5 @@ Analysis/*data/
 Analysis/test_*/
 Analysis/__pycache*
 nonlinearsigma
+CL_code/CL
+CL_code/test

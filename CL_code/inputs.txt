@@ -1,0 +1,3 @@
+length = 4
+nL = 100
+freq = 10
