@@ -2,5 +2,6 @@ L = 4
 beta = 1.6
 itheta = 1.
 ntherm = 0
-nMC = 10
+nMC = 20
 freq = 1
+cfg freq = 10

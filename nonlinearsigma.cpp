@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Nov 8, 2023
+// Last edited: Sep 26, 2024
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -25,7 +25,7 @@ using nonlinearsigma::Lattice;
 double Z_renorm(double beta, int len);
 void create_logfile(Lattice L);
 void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt);
-void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, double &beta,double &itheta);
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, int &cfg_freq, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
 void testing_suite(int len, double beta, double itheta);
@@ -45,16 +45,18 @@ int main (int argc, char *argv[])
     int ntherm = 1000;
     int nMC = 1000;
     int step_freq = 10;
+    int cfg_freq = nMC;
     double beta = 1.6;
     double itheta = M_PI;
     
-    read_in_inputs(argc, argv,len, ntherm, nMC, step_freq, beta, itheta);
+    read_in_inputs(argc, argv,len, ntherm, nMC, step_freq, cfg_freq, beta, itheta);
     cout << "len = " << len << endl;
     cout << "beta = " << beta << endl;
     cout << "itheta = " << itheta << endl;
     cout << "ntherm = " << ntherm << endl;
     cout << "nMC = " << nMC << endl;
     cout << "step frequency = " << step_freq << endl;
+    cout << "configuration save frequency = " << cfg_freq << endl;
      
 #ifdef EXTREME_TESTING_MODE
     testing_suite(len, beta, itheta);
@@ -124,7 +126,9 @@ int main (int argc, char *argv[])
             time(&time_now);
             dt = time_now - begin_mc;
             write_to_file(L, n, phi, Q_L, A_L, S_L, Xi_L, F_L, acc, dt);
+            if (n%cfg_freq == 0){
             L.saveConfig(n);
+            }
         }
 #ifdef TESTING_MODE
         time(&time_now);
@@ -213,15 +217,15 @@ void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double 
     fout.close();
 }
 
-void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, double &beta, double &itheta)
+void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, int &cfg_freq, double &beta, double &itheta)
 {
     //read in parameters -- note itheta is read in as a multiple/fraction of pi
 #ifdef TESTING_MODE
     cout << "Function: read_in_inputs" << endl;
 #endif
     string str, filename;
-    const int n_params = 6;
-    string inputs [n_params] = {"L","beta", "itheta", "ntherm","nMC", "freq"};//read in keywords for parameters
+    const int n_params = 7;
+    string inputs [n_params] = {"L","beta", "itheta", "ntherm","nMC", "freq", "cfg freq"};//read in keywords for parameters
     if (argc != 2){ //exits if input file is not given
         cerr << "Usage: ./nonlinearsigma input.txt"<< endl << "Exiting program" << endl;
         exit(10);
@@ -264,6 +268,7 @@ void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int 
             ntherm = stod(inputs[3]);
             nMC = stod(inputs[4]);
             step_freq = stod(inputs[5]);
+            cfg_freq = stod(inputs[6]);
 #ifdef TESTING_MODE
     cout << "parameters acquired: ";
     for (int n=0; n<n_params; n++){
