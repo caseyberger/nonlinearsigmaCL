@@ -444,7 +444,7 @@ class LatticeData:
         return df
     
     def ta(self,data_array):
-        acf = self.autocorr_func_1d(data_array, norm=False)#switch back to true
+        acf = self.autocorr_func_1d(data_array, norm=True)
         decorr = np.where(acf < 0.3)
         return decorr[0][1]
     
