@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Feb 21, 2023
-// Last edited: Sep 26, 2024
+// Last edited: Feb 13, 2025
 //
 // takes input file. Run with ./nonlinearsigma inputs
 //
@@ -114,8 +114,8 @@ int main (int argc, char *argv[])
         cout << "MC step "<<n << endl;
 #endif
         L.metropolisStep();
+        L.calcGij();
         if (n%step_freq == 0){
-            L.calcGij();//should I do this every step or only when saving?
             phi  = L.getPhiTot();
             A_L  = L.calcAL();
             Q_L  = L.calcQL();

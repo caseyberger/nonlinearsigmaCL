@@ -1,6 +1,6 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Feb 16, 2023
+// Last edited: Feb 13, 2025
 /* changelog for last edit: 
  - added new function exceptionalTriangles to check all six triangles that touch vertex (i,j)
  - updated removeExceptional to use the new exceptionalTriangles function
@@ -408,7 +408,7 @@ namespace nonlinearsigma{
         return S_L;
     }
     
-    void Lattice::calcGij(){
+    void Lattice::calcGij(){//updated 2.13.2025
         #pragma omp parallel for collapse(2) default(none) shared(length_)
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
@@ -417,8 +417,15 @@ namespace nonlinearsigma{
                 double G(dot(phi_00, phi_ij));
                 double oldAvgG(Lattice::getAvgG(i, j));
                 int n(acceptCount_+rejectCount_);
-                double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
-                Gij_[i][j] = newAvgG;
+                if (n==1){
+                    double newAvgG = G;
+                    Gij_[i][j] = newAvgG;
+                }
+                else {
+                    double newAvgG = (oldAvgG*n)/(n+1)+G/(n+1);
+                    Gij_[i][j] = newAvgG;
+                }
+                
             }
         }
     }

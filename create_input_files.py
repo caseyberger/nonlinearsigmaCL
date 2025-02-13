@@ -17,19 +17,19 @@ beta = 1.6
 #number of steps in thermalization
 ntherm = 0
 #number of monte carlo steps
-nMC = 20
+nMC = 10000
 #number of steps between samples
 freq = 1
 #list of values for lattice length L
-L_list = [40]
+L_list = [10,20,40]
 #list of values for itheta (as fractions of pi)
-itheta_list = [0.0,0.5,1.]
+itheta_list = [0.0,0.25,0.5,0.75, 1.]
 
 script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
-email = "cberger@smith.edu"
+email = "cberger3@bates.edu"
 num_cpus = 60
-partition = "cpu-long" #phyq for smith, cpu-long for unity
+partition = "faculty" 
 time_limit = "14-00:00:00" #dd-hh:mm:ss
 
 
@@ -83,7 +83,7 @@ def generate_slurm_script(script_name,file_ext,job_name,email, partition, time_l
 	slurm_file.write("#SBATCH --partition="+str(partition)+"\t\t\t# Which partition to use\n")
 	slurm_file.write("#SBATCH --nodes=1\t\t\t# Number of nodes\n")
 	slurm_file.write("#SBATCH --cpus-per-task="+str(cpus_per_task)+"\t\t\t# Number of threads per task (OpenMP)\n")
-	slurm_file.write("#SBATCH --mem=1gb\t\t\t# Job memory request\n")
+	#slurm_file.write("#SBATCH --mem=1gb\t\t\t# Job memory request\n")
 	slurm_file.write("#SBATCH --time="+str(time_limit)+"\t\t\t# Time limit dd-hh:mm:ss\n")
 	slurm_file.write("#SBATCH --output="+str(job_name)+"%j.log\t\t\t# Standard output\n")
 	slurm_file.write("#SBATCH --error=err_"+str(job_name)+"%j.log\t\t\t# Standard error log\n\n")
