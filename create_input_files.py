@@ -21,7 +21,7 @@ nMC = 10000
 #number of steps between samples
 freq = 1
 #list of values for lattice length L
-L_list = [10,20,40]
+L_list = [10]
 #list of values for itheta (as fractions of pi)
 itheta_list = [0.0,0.25,0.5,0.75, 1.]
 
@@ -53,6 +53,7 @@ def generate_input_file(length,beta,itheta,nMC,ntherm,freq):
 	input_file.write("ntherm = "+str(ntherm)+'\n')
 	input_file.write("nMC = "+str(nMC)+'\n')
 	input_file.write("freq = "+str(freq)+'\n')
+	input_file.write("cfg freq = "+str(int(nMC/100))+'\n')
 	input_file.close()
 	return file_ext
 
