@@ -88,11 +88,13 @@ namespace nonlinearsigma{
         double r2_;
         bool fixedr_;
         bool use_arcsin_;
+        bool thermalized_;//added 3/11/25
         int nTherm_;
         int nMC_;
         int freq_;
         int acceptCount_;
         int rejectCount_;
+        int step_;//added 3/11/25
         double accRate_;
         std::vector < std::vector < double > > Gij_;
         std::string filename_;

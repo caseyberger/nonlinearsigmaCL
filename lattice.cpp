@@ -62,11 +62,13 @@ namespace nonlinearsigma{
     
     void Lattice::setnTherm(int ntherm){
         nTherm_ = ntherm;
+        thermalized_ = false;
         Lattice::generateFilename_();
     }
     
     void Lattice::setnMC(int nMC){
         nMC_ = nMC;
+        step_ = 0;
         Lattice::generateFilename_();
     }
     
@@ -416,7 +418,7 @@ namespace nonlinearsigma{
                 Lattice::field phi_ij(Lattice::getPhi(i,j));
                 double G(dot(phi_00, phi_ij));
                 double oldAvgG(Lattice::getAvgG(i, j));
-                int n(acceptCount_+rejectCount_);
+                int n(step_);
                 if (n==1){
                     double newAvgG = G;
                     Gij_[i][j] = newAvgG;
@@ -464,6 +466,7 @@ namespace nonlinearsigma{
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
         int exc_lim = 10000;
+        if (thermalized_){step_ += 1;}//added 3/11/25
         
         //generate randomized array of sites
         int nsites(length_*length_); 
@@ -515,10 +518,12 @@ namespace nonlinearsigma{
         std:: cout << "Acceptance rate: " << acc_rate << std::endl;
 #endif
         site_arr.clear();
+        Lattice::calcGij();//added 3/11/25
     }
     
     void Lattice::thermalize(){
         //tested 6/5/2023
+        if(nTherm_ == 0){thermalized_ = true;}
         for (int n = 0; n < nTherm_; n++){
 #ifdef EXTREME_TESTING_MODE
             std::cout << "Thermalization step " << n << std::endl;
@@ -533,6 +538,7 @@ namespace nonlinearsigma{
         acceptCount_ = 0;
         rejectCount_ = 0;
         accRate_ = 0.;
+        thermalized_ = true;
     }
     
     double Lattice::acceptanceRate(){

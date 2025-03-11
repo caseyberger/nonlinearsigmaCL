@@ -114,7 +114,6 @@ int main (int argc, char *argv[])
         cout << "MC step "<<n << endl;
 #endif
         L.metropolisStep();
-        L.calcGij();
         if (n%step_freq == 0){
             phi  = L.getPhiTot();
             A_L  = L.calcAL();
