@@ -12,19 +12,25 @@ Finally, it copies the executable to the appropriate directory.
 It's up to you to run the scripts once they're generated.
 
 '''
-#beta = 1/g = 1.6
+
+'''
+MODIFY THE VARIABLES BELOW AS NEEDED
+'''
+
+#beta = 1/g = 1.6 (float)
 beta = 1.6
-#number of steps in thermalization
-ntherm = 0
-#number of monte carlo steps
+#number of steps in thermalization (int)
+ntherm = 1000
+#number of monte carlo steps (int)
 nMC = 10000
-#number of steps between samples
+#number of steps between samples saved (int)
 freq = 1
-#list of values for lattice length L
-L_list = [10]
-#list of values for itheta (as fractions of pi)
+#list of values for lattice length L (list of ints)
+L_list = [20]
+#list of values for itheta (as fractions of pi) (list of floats)
 itheta_list = [0.0,0.25,0.5,0.75, 1.]
 
+#this information goes in the SLURM script -- make sure you use your own email address
 script_name = "nonlinearsigma"
 job_name = "nlsigma_prelim_tests"
 email = "cberger3@bates.edu"
@@ -32,6 +38,10 @@ num_cpus = 60
 partition = "faculty" 
 time_limit = "14-00:00:00" #dd-hh:mm:ss
 
+
+'''
+DO NOT MODIFY ANYTHING BELOW THIS COMMENT
+'''
 
 def generate_input_file(length,beta,itheta,nMC,ntherm,freq):
 	#generate file extension 
