@@ -1,10 +1,7 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2024-2-16 by Casey 
+#Last updated: 2026-07-09 by Casey 
 #Last edit: 
-# modified __init__ to allow us to use the full filepath (works better on Unity)
-# fixed get_file_params to cope with the existence of underscores in the filenames
-# fixed copy_data_from_directory and get_exceptional to allow us to use the full filepath
-# changed instances of appending to pandas dataframe to concat instead (append is deprecated now). Also used reset_index() on these
+# added Chandler's autocorrelation_error function
 
 '''
 Some proposed changes:
@@ -157,6 +154,20 @@ class LatticeData:
         self.df_stats = df_all
         self.df_stacked = stack
         return df_all
+
+    def autocorrelation_error(self, run):
+        '''
+        Author: Chandler Folkerts
+        Last updated: Jul 09 2026
+        '''
+        errors = {}
+        run = self.autocorrelation(run) 
+        for obs in self.observables: 
+            ta = run[f"{obs}_ta"] 
+            var = np.var(run[obs], ddof=1) 
+            N = len(run[obs]) 
+            errors[obs] = np.sqrt(var*(1 + 2*ta)/ N) 
+        return errors
     
     def get_plot_data(self, obs = "Q_L", L = 10, beta = 1.6, nMC = 10000, ntherm = 1000, freq = 100):
         if len(self.df_stats) == 0:
