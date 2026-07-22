@@ -91,7 +91,8 @@ int main (int argc, char *argv[])
     double Q_L = 0.0;
     double S_L = 0.0;
     double Xi_L = 0.0;
-    double* F_L;
+    //double* F_L; //modified 7.22.26
+    std::array<double, 2> F_L;
     double acc = 0.0;
     
     //thermalization loop

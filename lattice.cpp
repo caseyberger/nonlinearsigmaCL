@@ -181,6 +181,8 @@ namespace nonlinearsigma{
     bool Lattice::exceptionalTriangles(int i, int j, int exc_count){
         //triangles owned by vertex i,j
         //algorithm: check each triangle individually and print (in test mode) which is exceptional
+        //note: the compiler will throw a warning when you compile this not in testing mode, because these 
+        //      boolean variables are only used in testing mode. You can ignore this warning.
         bool any_exceptional = false;
         bool tri1, tri2, tri3, tri4, tri5, tri6;
         int im1 = Lattice::minusOne_(i);
@@ -443,7 +445,8 @@ namespace nonlinearsigma{
         return Xi;
     }
     
-    double* Lattice::calcF(){
+    //double* Lattice::calcF(){
+    std::array<double, 2> Lattice::calcF(){ //modified 7.22.26
         //double F_Re = 0.;
         //double F_Im = 0.;
         double F_Re(0.),F_Im(0.);//optimization 7/4/23
@@ -451,13 +454,14 @@ namespace nonlinearsigma{
         for (int i = 0; i < length_; i++){
             for (int j = 0; j < length_; j++){
                 double Gij = Lattice::getAvgG(i,j);
-                F_Re += 0.5*Gij*(std::cos(2.*M_PI*i/length_) + std::cos(2.*M_PI*j/length_));
-                F_Im += 0.5*Gij*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
+                F_Re += 0.5 * Gij * (std::cos(2. * M_PI * i/length_) + std::cos(2. * M_PI * j/length_));
+                F_Im += 0.5 * Gij * (std::sin(2. * M_PI * i/length_) + std::sin(2. * M_PI * j/length_));
             }
         }
         //static double F[2] = {F_Re, F_Im}; 
-        double F[2] = {F_Re, F_Im}; // modified  7.22.26 to update F 
-        return F;
+        //double F[2] = {F_Re, F_Im}; // modified  7.22.26 to update F 
+        //return F;
+        return {F_Re, F_Im};
     }
     
     

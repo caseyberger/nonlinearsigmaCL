@@ -63,7 +63,8 @@ namespace nonlinearsigma{
         double calcSL();//tested 6/1/2023
         void calcGij();
         double calcXi();
-        double* calcF();
+        //double* calcF();//modified 7.22.26
+        std::array<double, 2> Lattice::calcF;
         bool exceptionalConfig(int i, int j, int n);
         bool exceptionalTriangles(int i, int j, int exc_count);//added 2/16/2024
         
