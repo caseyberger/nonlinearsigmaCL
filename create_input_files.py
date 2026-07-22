@@ -22,17 +22,17 @@ beta = 1.6
 #number of steps in thermalization (int)
 ntherm = 1000
 #number of monte carlo steps (int)
-nMC = 10000
+nMC = 100000
 #number of steps between samples saved (int)
-freq = 1
+freq = 100
 #list of values for lattice length L (list of ints)
-L_list = [20]
+L_list = [180]
 #list of values for itheta (as fractions of pi) (list of floats)
 itheta_list = [0.0,0.25,0.5,0.75, 1.]
 
 #this information goes in the SLURM script -- make sure you use your own email address
 script_name = "nonlinearsigma"
-job_name = "nlsigma_prelim_tests"
+job_name = "nlsigma_Q_L_180"
 email = "cberger3@bates.edu"
 num_cpus = 60
 partition = "faculty" 

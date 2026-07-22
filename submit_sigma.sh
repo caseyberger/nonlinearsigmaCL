@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=nonlinearsigma_omp_test           # Job name
 #SBATCH --mail-type=ALL                              # Mail events (NONE, BEGIN, END, FAIL, ALL)
-#SBATCH --mail-user=cberger@smith.edu                # Where to send mail
-#SBATCH --partition=phyq                             # Which partition to use
+#SBATCH --mail-user=cberger3@bates.edu               # Where to send mail
+#SBATCH --partition=faculty                          # Which partition to use
 #SBATCH --nodes=1                                    # Number of nodes
 #SBATCH --cpus-per-task=28                           # Number of threads per task (OpenMP)
 #SBATCH --mem=1gb                                    # Job memory request
