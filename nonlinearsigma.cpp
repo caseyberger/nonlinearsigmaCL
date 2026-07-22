@@ -24,7 +24,8 @@ using nonlinearsigma::Lattice;
 //function declaration
 double Z_renorm(double beta, int len);
 void create_logfile(Lattice L);
-void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt);
+//void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt);
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, const std::array<double, 2>& F_L, double acc, double dt);
 void read_in_inputs(int argc, char *argv[],int &len, int &ntherm, int &nMC, int &step_freq, int &cfg_freq, double &beta,double &itheta);
 void test_phi_distribution(Lattice L);
 void save_correlation_function(Lattice L);
