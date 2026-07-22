@@ -194,7 +194,8 @@ void create_logfile(Lattice L)
     fout.close();
 }
 
-void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt)
+//void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, double F_L[2], double acc, double dt)
+void write_to_file(Lattice L, int n, double phi, double Q_L, double A_L, double S_L, double Xi_L, const std::array<double, 2>& F_L, double acc, double dt)//modified 7.22.26
 {
     //output calculations .csv file
     string fname = L.getFilename();
