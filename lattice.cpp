@@ -1,9 +1,8 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Feb 13, 2025
+// Last edited: Jul 22, 2026
 /* changelog for last edit: 
- - added new function exceptionalTriangles to check all six triangles that touch vertex (i,j)
- - updated removeExceptional to use the new exceptionalTriangles function
+ - modified calcF to make F_Re and F_Im no longer static
  
  
  suggestions for changes
@@ -456,7 +455,8 @@ namespace nonlinearsigma{
                 F_Im += 0.5*Gij*(std::sin(2.*M_PI*i/length_) + std::sin(2.*M_PI*j/length_));
             }
         }
-        static double F[2] = {F_Re, F_Im};
+        //static double F[2] = {F_Re, F_Im}; 
+        double F[2] = {F_Re, F_Im}; // modified  7.22.26 to update F 
         return F;
     }
     
