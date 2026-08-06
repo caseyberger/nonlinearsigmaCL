@@ -1,7 +1,8 @@
 #Authors: Casey Berger and Andy Esseln
-#Last updated: 2026-07-09 by Casey 
+#Last updated: 2026-08-06 by Casey 
 #Last edit: 
-# added Chandler's autocorrelation_error function
+#    switched to using the C++ calculations of F_Re and F_Im in the correlation length
+#    corrected the expression for correlation length (Xi/F - 1) not just Xi/F
 
 '''
 Some proposed changes:
@@ -36,7 +37,7 @@ class LatticeData:
         
         self.tol = tol #set the error range for parameters -- this is for filtering
         self.palette = palette #option to change seaborn palette
-        self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L'] #observables whose expectation values can be computed
+        self.observables = ['Q_L', 'A_L', 'S_L', 'Xi_L', 'F_LRe','F_LIm'] #observables whose expectation values can be computed
         self.parameters = ["itheta", "beta", "length","nMC", "ntherm", "freq"] #parameters read in by the simulation code
         self.df_stats = pd.DataFrame() #initialize an empty dataframe to fill later
         self.df_stacked = False #set internal state for that dataframe
@@ -108,8 +109,10 @@ class LatticeData:
                     for observable in self.observables:
                         temp[observable+"_ta"]= self.ta(temp[observable])
                     F_py = self.calc_F(**pdict)
-                    corr_length = self.calc_corr_length(temp["Xi_L"],temp["length"],F_py)
-                    mass_gap = 1./corr_length
+                    i = complex(0.,1.)
+                    F_cpp = temp["F_LRe"].to_numpy() + i * temp["F_LIm"].to_numpy()
+                    corr_length = self.calc_corr_length(temp["Xi_L"],temp["length"],F_cpp)
+                    mass_gap = complex(1.,0.)/corr_length
                     temp["corr_length_Re"] = corr_length.real
                     temp["corr_length_Im"] = corr_length.imag
                     temp["F_Re_py"] = F_py.real
@@ -412,13 +415,15 @@ class LatticeData:
         i = complex(0,1)
         for x1 in range(0,L):
             for x2 in range(0,L):
-                F += (np.exp(2.*np.pi*i*x1/L)+ np.exp(2.*np.pi*i*x2/L))*G_avg[x1,x2]
-        return 0.5*F
+                F += 0.5*(np.exp(2.*np.pi*i*x1/L)+ np.exp(2.*np.pi*i*x2/L))*G_avg[x1,x2]
+        return F
     
-    def calc_corr_length(self,Xi,L,F_py):
+    def calc_corr_length(self,Xi,L,F):
         Xi = Xi.to_numpy()
         L = L.to_numpy()
-        return np.sqrt(Xi/F_py)/(2.*np.sin(np.pi/L))
+        numerator = np.sqrt((Xi/F) - complex(1.,0.))
+        denominator = 2.*np.sin(np.pi/L)
+        return numerator/denominator
     
     def next_pow_two(self,n):
         i = 1
