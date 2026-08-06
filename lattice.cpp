@@ -1,9 +1,10 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Jul 22, 2026
+// Last edited: Aug 6, 2026
 /* changelog for last edit: 
  - modified calcF to make F_Re and F_Im no longer static
- 
+ - changed the Metropolis loop to use calcSL instead of calculating it manually.
+
  
  suggestions for changes
  - can you create a class in C++ that inherits the lattice object? 
@@ -407,7 +408,7 @@ namespace nonlinearsigma{
         //tested 6/1/2023
         //calculates the full lattice action S_L = A_L - i theta Q_L
         //optimization target -- remove this function
-        double S_L = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+        double S_L = Lattice::calcAL() - 1. * itheta_ * Lattice::calcQL();
         return S_L;
     }
     
@@ -467,6 +468,7 @@ namespace nonlinearsigma{
     
     void Lattice::metropolisStep(){
         //tested 6/5/2023
+        //edited 8/6/2026 to use calcSL 
         double Si, Sf, dS, r;
         Lattice::field phi_old, phi_new;
         int exc_lim = 10000;
@@ -481,7 +483,8 @@ namespace nonlinearsigma{
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
             int j(site_arr[n]%length_);
-            Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            //Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            Si = Lattice::calcSL();
             phi_old = Lattice::getPhi(i, j);//store old field in case you reject the change
             
             //generate new field at site
@@ -495,7 +498,8 @@ namespace nonlinearsigma{
             
             
             //calculate change in action with new field 
-            Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            //Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
+            Sf = Lattice::calcSL();
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
             r = 0.5;
