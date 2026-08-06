@@ -3,6 +3,7 @@
 #Last edit: 
 #    switched to using the C++ calculations of F_Re and F_Im in the correlation length
 #    corrected the expression for correlation length (Xi/F - 1) not just Xi/F
+#    added an if statement to ignore error when autocorrelation never falls below 0.3
 
 '''
 Some proposed changes:
@@ -378,6 +379,8 @@ class LatticeData:
         return data_files
 
     def get_file_params(self, file, fordir = False):
+        #print(os.getcwd())
+        #print(file)
         if not fordir:
             file = file[:-4]#remove ".csv" before splitting
         temp = file.split("_")
@@ -462,7 +465,15 @@ class LatticeData:
     def ta(self,data_array):
         acf = self.autocorr_func_1d(data_array, norm=True)
         decorr = np.where(acf < 0.3)
-        return decorr[0][1]
+        #print(np.shape(decorr))
+        #print(decorr)
+        #print(decorr[0])
+        #print(np.shape(decorr)[1])
+        if np.shape(decorr)[1] == 0:
+            print("run autocorrelation never falls below 0.3")
+            return 0.
+        else:    
+            return decorr[0][1]
     
     def _error_message(self, *args):
         print("Error: ")
