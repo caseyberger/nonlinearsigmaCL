@@ -1,7 +1,12 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Aug 6, 2026
+// Last edited: Aug 10, 2026
 /* changelog for last edit: 
+
+Aug 10 edit
+- divided AL by 2 due to double counting of lattice sites
+
+Aug 6 edit
  - modified calcF to make F_Re and F_Im no longer static
  - changed the Metropolis loop to use calcSL instead of calculating it manually.
 
@@ -401,7 +406,7 @@ namespace nonlinearsigma{
                 //A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
             }
         }
-        return -1.*beta_*A_L;
+        return -1.*0.5*beta_*A_L;
     }
     
     double Lattice::calcSL(){
