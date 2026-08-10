@@ -3,8 +3,13 @@
 // Last edited: Aug 10, 2026
 /* changelog for last edit: 
 
-Aug 10 edit
-- divided AL by 2 due to double counting of lattice sites
+Aug 10 edit 2
+- removed the division of AL by 2
+- when use_arcsin_ is false, the Q_L calculation will use atan instead of acos
+- DID NOT UPDATE CHECKQL -- will need to modify this for testing mode if this works
+
+Aug 10 edit 
+- divided AL by 2 due to avoid double counting of lattice sites
 
 Aug 6 edit
  - modified calcF to make F_Re and F_Im no longer static
@@ -43,7 +48,8 @@ namespace nonlinearsigma{
         Lattice::setFreq(100); //set frequency between saved configs to default number
         Lattice::generateFilename_();
         fixedr_ = false; //this should only be set to true when testing
-        use_arcsin_ = true;
+        //use_arcsin_ = true;
+        use_arcsin_ = false;
     }
     //other public functions
     void Lattice::setLength(int length){
@@ -406,7 +412,7 @@ namespace nonlinearsigma{
                 //A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
             }
         }
-        return -1.*0.5*beta_*A_L;
+        return -1.*beta_*A_L;
     }
     
     double Lattice::calcSL(){
@@ -488,7 +494,6 @@ namespace nonlinearsigma{
         for(unsigned int n = 0; n < site_arr.size(); n++){
             int i(site_arr[n]/length_);
             int j(site_arr[n]%length_);
-            //Si = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
             Si = Lattice::calcSL();
             phi_old = Lattice::getPhi(i, j);//store old field in case you reject the change
             
@@ -503,7 +508,6 @@ namespace nonlinearsigma{
             
             
             //calculate change in action with new field 
-            //Sf = Lattice::calcAL() - 1.*itheta_*Lattice::calcQL();
             Sf = Lattice::calcSL();
             dS = Sf - Si;
 #ifdef TEST_CONSTANT_RN
@@ -667,11 +671,13 @@ namespace nonlinearsigma{
         QLs = dot(phi1,cross(phi2,phi3))/rho;
         double QLcos = std::acos(QLc)/(2.*M_PI);
         double QLsin = std::asin(QLs)/(2.*M_PI);
+        double QLtan = std::atan2(QLs,QLc)/(2.*M_PI);
         if(use_arcsin){return QLsin;}
         else{//adjust arccos so it has the same domain as arcsin (-pi/2,pi/2)
-            if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
-            if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
-            return QLcos;
+            //if (QLcos > 0.5*M_PI){QLcos += -2.*M_PI;}
+            //if (std::abs(QLcos + QLsin) < tol){QLcos *= -1.;}
+            //return QLcos;
+            return QLtan;
         }
     }
     
