@@ -1,7 +1,12 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Aug 10, 2026
+// Last edited: Aug 11, 2026
 /* changelog for last edit: 
+
+Aug 11 edit
+
+- since the 1/2 AL version is working better, let's try both
+- divided AL by 2 again. Kept atan
 
 Aug 10 edit 2
 - removed the division of AL by 2
@@ -408,11 +413,9 @@ namespace nonlinearsigma{
                 std::array < Lattice::field, 4> phiNN(Lattice::getNeighborPhis_(i,j));
                 //nearest neighbors in positive direction:
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
-                //nearest neighbors in negative direction:
-                //A_L += dot(phi, phiNN[2]) + dot(phi, phiNN[2]);
             }
         }
-        return -1.*beta_*A_L;
+        return -1.*0.5*beta_*A_L;
     }
     
     double Lattice::calcSL(){
