@@ -1,7 +1,11 @@
 // Casey Berger
 // Created: Mar 28, 2023
-// Last edited: Aug 11, 2026
+// Last edited: Aug 18, 2026
 /* changelog for last edit: 
+
+Aug 18 edit
+- removed the 1/2 from AL - it's not better for large lattices
+- multiplied Q_L by 2* pi (in 
 
 Aug 11 edit
 
@@ -395,7 +399,7 @@ namespace nonlinearsigma{
                 Q_L += Lattice::locQL_(i, j, 1, use_arcsin_);
             }//loop over j
         }//loop over i
-        return Q_L;
+        return 2.0 * M_PI * Q_L; //Aug 18 edit to test
     }
     
     double Lattice::calcAL(){
@@ -567,7 +571,7 @@ namespace nonlinearsigma{
     }
     
     bool Lattice::exceptionalConfig(int i, int j, int n){
-        //check that these are done counterconclockwise
+        //check that these are done counterclockwise
         int i1(triangles_[i][j][n][0][0]);
         int j1(triangles_[i][j][n][0][1]);
         int i2(triangles_[i][j][n][1][0]);
