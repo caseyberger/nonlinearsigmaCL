@@ -3,6 +3,9 @@
 // Last edited: Aug 18, 2026
 /* changelog for last edit: 
 
+Aug 19 edit
+- removed the 1/2 for real this time
+
 Aug 18 edit
 - removed the 1/2 from AL - it's not better for large lattices
 - multiplied Q_L by 2* pi (in 
@@ -419,7 +422,7 @@ namespace nonlinearsigma{
                 A_L += dot(phi, phiNN[0]) + dot(phi, phiNN[1]);
             }
         }
-        return -1.*0.5*beta_*A_L;
+        return -1.*beta_*A_L;
     }
     
     double Lattice::calcSL(){
